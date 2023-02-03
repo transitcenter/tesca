@@ -1,0 +1,25 @@
+{
+    "analyst": "Pytest",
+    "project": "Testing Pytest",
+    "uid": "pytest",
+    "demographics": {
+        "pop_total": "Total Population",
+        "pop_black": "Black population",
+        "pop_poverty": "Low-income individuals"
+    },
+    "opportunities": {
+        "population": "Total Population"
+    },
+    "scenarios": [
+        {
+            "name": "Rush Hour",
+            "start_datetime": "2023-02-03 07:00:00",
+            "duration": 120
+        },
+        {
+            "name": "Evening Service",
+            "start_datetime": "2023-02-03 19:00:00",
+            "duration": 120
+        }
+    ]
+}
