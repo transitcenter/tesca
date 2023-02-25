@@ -12,6 +12,7 @@ import numpy as np
 
 from r5py import TransportNetwork, TravelTimeMatrixComputer, TransitMode, LegMode
 
+from .util import transit_mode
 
 log_formatter = logging.Formatter(
     "%(asctime)s %(name)-12s %(levelname)-8s %(message)s", "%Y-%m-%d %H:%M:%S"
@@ -93,6 +94,9 @@ class Analysis:
 
     def validate_data(self):
         # TODO: Add validation data
+        # TODO: Add MobilityData validator check
+        # TODO: Check to make sure there is service in all GTFS dates on the specified analysis dates
+        # TODO: Check or report on total number of routes/trips in each of the provided datasets
         pass
 
     def compute_travel_times(self):
@@ -108,28 +112,37 @@ class Analysis:
             )
 
             gtfs = []
-            for path in os.listdir(os.path.join(self.cache_folder, f"gtfs{idx}")):
-                self.log.debug(f"Including GTFS Path: {path}")
+            gtfs_folder = os.path.join(self.cache_folder, f"gtfs{idx}")
+            for path in os.listdir(gtfs_folder):
+                gtfs_filepath = os.path.join(gtfs_folder, path)
                 if (
-                    os.path.isfile(os.path.join(self.cache_folder, path))
-                    and os.path.splitext(os.path.join(self.cache_folder, path))[1]
-                    == ".zip"
+                    os.path.isfile(gtfs_filepath)
+                    and os.path.splitext(gtfs_filepath)[1] == ".zip"
                 ):
-                    gtfs.append(os.path.join(self.cache_folder, path))
-            duration = dt.timedelta(minutes=int(scenario["duration"]))
+                    self.log.debug(f"Including GTFS: {gtfs_filepath}")
+                    gtfs.append(gtfs_filepath)
+
             tn = TransportNetwork(
                 os.path.join(self.cache_folder, "osm.pbf"),
                 gtfs,
             )
+
+            # Build the transport modes starting as always with walking
+            transport_modes = [LegMode.WALK]
+            for tm in scenario["transit_modes"]:
+                transport_modes.append(transit_mode[tm]["r5"])
 
             ttmc = TravelTimeMatrixComputer(
                 tn,
                 origins=origins,
                 destinations=origins,
                 departure=start_time,
-                departure_time_window=duration,
+                departure_time_window=dt.timedelta(minutes=int(scenario["duration"])),
                 max_time=MAX_TIME,
-                transport_modes=[TransitMode.TRANSIT, LegMode.WALK],
+                max_time_walking=dt.timedelta(
+                    minutes=int(self.config["max_time_walking"])
+                ),
+                transport_modes=transport_modes,
             )
             self.log.info(f"{scenario['name']}: Computing travel time matrix")
             start = time.time()
