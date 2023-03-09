@@ -1,6 +1,7 @@
 # Data folders
 ny_data/
-cache/
+cache/*
+visualization/*
 test_data/
 
 # VSCode
