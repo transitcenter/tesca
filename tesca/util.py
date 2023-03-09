@@ -14,7 +14,7 @@ transit_mode = {
     "TRAM": {
         "r5": TransitMode.TRAM,
         "name": "Tram",
-        "description": "Modes classifeid as trams"
+        "description": "Modes classifeid as trams",
     },
     "SUBWAY": {
         "r5": TransitMode.SUBWAY,
@@ -34,7 +34,7 @@ transit_mode = {
     "FERRY": {
         "r5": TransitMode.FERRY,
         "name": "Ferry",
-        "description": "Modes classified as ferries"
+        "description": "Modes classified as ferries",
     },
     "CABLE_CAR": {
         "r5": TransitMode.CABLE_CAR,
@@ -44,11 +44,11 @@ transit_mode = {
     "GONDOLA": {
         "r5": TransitMode.GONDOLA,
         "name": "Gondola",
-        "description": "Modes classfied as gondolas"
+        "description": "Modes classfied as gondolas",
     },
     "FUNICULAR": {
         "r5": TransitMode.FUNICULAR,
         "name": "Funicular",
-        "description": "Modes classified as funiculars"
-    }
+        "description": "Modes classified as funiculars",
+    },
 }

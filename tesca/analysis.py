@@ -4,26 +4,29 @@ from itertools import combinations
 import json
 import logging
 import os
+import pathlib
+import subprocess
 import time
 
+os.environ["USE_PYGEOS"] = "0"
 import geopandas as gpd
+from gtfslite import GTFS
 import pandas as pd
 import numpy as np
-
 from r5py import TransportNetwork, TravelTimeMatrixComputer, TransitMode, LegMode
 
 from .util import transit_mode
 
-log_formatter = logging.Formatter(
-    "%(asctime)s %(name)-12s %(levelname)-8s %(message)s", "%Y-%m-%d %H:%M:%S"
-)
+log_formatter = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
 
 # File and folder naming conventions
 CACHE_FOLDER = "cache"
 CENTROIDS_FILENAME = "analysis_centroids.geojson"
 COMPARED_FILENAME = "compared.csv"
 DEMOGRAPHICS_FILENAME = "demographics.csv"
+OPPORTUNITIES_FILENAME = "opportunities.csv"
 IMPACT_AREA_FILENAME = "impact_area.csv"
+MOBILITY_DATA_VALIDATOR_JAR = "gtfs-validator-4.0.0-cli.jar"
 SUMMARY_FILENAME = "summary.csv"
 
 MAX_TIME = dt.timedelta(
@@ -92,35 +95,33 @@ class Analysis:
 
         self.log.setLevel(STREAM_LOG)
 
-    def validate_data(self):
-        # TODO: Add validation data
-        # TODO: Add MobilityData validator check
-        # TODO: Check to make sure there is service in all GTFS dates on the specified analysis dates
-        # TODO: Check or report on total number of routes/trips in each of the provided datasets
-        pass
+    def assemble_gtfs_files(self, scenario_idx: int) -> list:
+        gtfs = []
+        gtfs_folder = os.path.join(self.cache_folder, f"gtfs{scenario_idx}")
+        for path in os.listdir(gtfs_folder):
+            gtfs_filepath = os.path.join(gtfs_folder, path)
+            if (
+                os.path.isfile(gtfs_filepath)
+                and os.path.splitext(gtfs_filepath)[1] == ".zip"
+            ):
+                self.log.debug(f"Including GTFS: {gtfs_filepath}")
+                gtfs.append(gtfs_filepath)
+        return gtfs
 
     def compute_travel_times(self):
         """Compute the travel times for the provided scenarios"""
         self.log.info("Starting travel time matrix computations")
-        origins = gpd.read_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
+        origins = gpd.read_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME), dtype={"id": str}
+        )
         self.log.debug(f"There are {origins.shape[0]} origins")
 
         for idx, scenario in enumerate(self.config["scenarios"]):
+            gtfs = self.assemble_gtfs_files(idx)
             self.log.info(f"{scenario['name']}: Building analysis network")
             start_time = dt.datetime.strptime(
                 scenario["start_datetime"], "%Y-%m-%d %H:%M"
             )
-
-            gtfs = []
-            gtfs_folder = os.path.join(self.cache_folder, f"gtfs{idx}")
-            for path in os.listdir(gtfs_folder):
-                gtfs_filepath = os.path.join(gtfs_folder, path)
-                if (
-                    os.path.isfile(gtfs_filepath)
-                    and os.path.splitext(gtfs_filepath)[1] == ".zip"
-                ):
-                    self.log.debug(f"Including GTFS: {gtfs_filepath}")
-                    gtfs.append(gtfs_filepath)
 
             tn = TransportNetwork(
                 os.path.join(self.cache_folder, "osm.pbf"),
@@ -172,7 +173,7 @@ class Analysis:
             opportunity_df = pd.read_csv(
                 os.path.join(
                     self.cache_folder,
-                    "opportunities.csv",
+                    OPPORTUNITIES_FILENAME,
                 ),
                 dtype={"bg_id": str},
             )
@@ -354,7 +355,7 @@ class Analysis:
         compared = reduce(lambda df1, df2: pd.merge(df1, df2, on="bg_id"), compared_dfs)
         compared.to_csv(os.path.join(self.cache_folder, COMPARED_FILENAME), index=False)
 
-    def weighted_summaries(self):
+    def compute_weighted_summaries(self):
         # Take the compared metrics and summarize all of them
         compared = pd.read_csv(
             os.path.join(self.cache_folder, COMPARED_FILENAME),
@@ -392,3 +393,166 @@ class Analysis:
         result.columns = demographics.columns
         result.index.name = "metric"
         result.to_csv(os.path.join(self.cache_folder, SUMMARY_FILENAME))
+
+    def validate_analysis_area(self):
+        # Open up the analysis area and the geojson
+        self.log.info("Validating Analysis Area")
+        analysis_area = gpd.read_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME),
+            dtype={"id": str},
+        )
+        impact_area = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
+        # Check to make sure the ID string is long enough to be a block group
+        wrong_length = analysis_area[analysis_area["id"].str.len() != 12].shape[0]
+        if wrong_length > 0:
+            self.log.error(
+                f"  There are {wrong_length} rows in the analysis area with invalid zone IDs"
+            )
+        wrong_length = impact_area[impact_area["bg_id"].str.len() != 12].shape[0]
+        if wrong_length > 0:
+            self.log.error(
+                f"  There are {wrong_length} rows in the impact area with invalid zone IDs"
+            )
+        impact_not_in_analysis = impact_area[
+            ~impact_area["bg_id"].isin(analysis_area["id"])
+        ].shape[0]
+        if impact_not_in_analysis > 0:
+            self.log.error(
+                f"  There are {impact_not_in_analysis} zones in the impact area that are not in the analysis area."
+            )
+
+    def validate_demographics(self):
+        # Let's pull the demographics file and the equity file
+        self.log.info("Validating Demographic Data")
+        demographics = pd.read_csv(
+            os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), dtype={"bg_id": str}
+        )
+        impact_area = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
+        no_demographics = impact_area[
+            ~impact_area["bg_id"].isin(demographics["bg_id"])
+        ].shape[0]
+        if no_demographics > 0:
+            self.log.error(
+                f"  There are {no_demographics} impact area zones that do not have demographic data."
+            )
+
+    def validate_gtfs_data(self):
+        # TODO: Add validation data
+        # TODO: Add MobilityData validator check
+        # TODO: Check to make sure there is service in all GTFS dates on the specified analysis dates
+        # TODO: Check or report on total number of routes/trips in each of the provided datasets
+
+        # Run a mobility data validator check
+        for idx, scenario in enumerate(self.config["scenarios"]):
+            gtfs_list = self.assemble_gtfs_files(idx)
+            for g in gtfs_list:
+                # Create an output folder in the cache
+                validator_folder = os.path.join(
+                    self.cache_folder, f"gtfs_validation{idx}"
+                )
+                if not os.path.exists(validator_folder):
+                    os.mkdir(validator_folder)
+
+                gtfs_filename = pathlib.Path(g).stem
+                output_folder = os.path.join(validator_folder, gtfs_filename)
+                if not os.path.exists(output_folder):
+                    os.mkdir(output_folder)
+                self.log.info(f"Running MobilityData Validator on {g}")
+                try:
+                    subprocess.call(
+                        [
+                            "java",
+                            "-jar",
+                            MOBILITY_DATA_VALIDATOR_JAR,
+                            "-i",
+                            f"{g}",
+                            "-o",
+                            f"{output_folder}",
+                        ],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.STDOUT,
+                    )
+                except Exception as e:
+                    self.log.exception(e)
+
+                # First let's check for system errors
+                with open(
+                    os.path.join(output_folder, "system_errors.json")
+                ) as system_errors_file:
+                    system_errors = json.load(system_errors_file)
+                    self.log.info(
+                        f"  There were {len(system_errors['notices'])} system errors."
+                    )
+                    for i in system_errors["notices"]:
+                        self.log.error(f"{i}")
+
+                # Next let's go through the notices
+                with open(
+                    os.path.join(output_folder, "report.json")
+                ) as validation_report_file:
+                    validation_report = json.load(validation_report_file)
+                    # Let's sort the relevant outputs
+                    levels = {
+                        "ERROR": {"total_count": 0, "unique_count": 0, "codes": []},
+                        "WARNING": {"total_count": 0, "unique_count": 0, "codes": []},
+                        "INFO": {"total_count": 0, "unique_count": 0, "codes": []},
+                    }
+                    for notice in validation_report["notices"]:
+                        levels[notice["severity"]]["total_count"] += notice[
+                            "totalNotices"
+                        ]
+                        levels[notice["severity"]]["unique_count"] += 1
+                        levels[notice["severity"]]["codes"].append(notice["code"])
+
+                    self.log.info(
+                        f"  There are {levels['ERROR']['total_count']} errors, {levels['WARNING']['total_count']} warnings, and {levels['INFO']['total_count']} infos."
+                    )
+
+                    for code in levels["ERROR"]["codes"]:
+                        self.log.error(f"  {code}")
+                    for code in levels["WARNING"]["codes"]:
+                        self.log.warning(f"  {code}")
+                    for code in levels["INFO"]["codes"]:
+                        self.log.info(f"  {code}")
+
+                self.log.info(f"Performing additional validation on {g}")
+                # Load the thing into gtfs-lite
+                gtfs_lite = GTFS.load_zip(g)
+                # Get the scenario that's going to be run
+                start_time = dt.datetime.strptime(
+                    self.config["scenarios"][idx]["start_datetime"], "%Y-%m-%d %H:%M"
+                )
+                end_time = start_time + dt.timedelta(
+                    minutes=self.config["scenarios"][idx]["duration"]
+                )
+                if (
+                    gtfs_lite.valid_date(start_time.date()) == False
+                    or gtfs_lite.valid_date(end_time.date()) == False
+                ):
+                    self.log.error(f"  Start or end date of analysis {idx} is invalid")
+                # Analysis date
+
+    def validate_open_street_map(self):
+        raise NotImplementedError
+
+    def validate_opportunities(self):
+        # Let's pull the demographics file and the equity file
+        self.log.info("Validating Opporutnities Data")
+        opportunities = pd.read_csv(
+            os.path.join(self.cache_folder, OPPORTUNITIES_FILENAME),
+            dtype={"bg_id": str},
+        )
+        analysis_area = gpd.read_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME), dtype={"bg_id": str}
+        )
+        no_opportunities = analysis_area[
+            ~analysis_area["id"].isin(opportunities["bg_id"])
+        ].shape[0]
+        if no_opportunities > 0:
+            self.log.error(
+                f"  There are {no_opportunities} analysis area zones that do not have opportunity data."
+            )

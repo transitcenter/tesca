@@ -1,0 +1,17 @@
+name: tesca
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.9
+  - r5py
+  - pip
+  - pip:
+    - pyqt6
+  # Testing, development, and documentation related
+  - black
+  - jupyterlab
+  - numpydoc
+  - pytest
+  - sphinx
+  - sphinx_rtd_theme
