@@ -28,7 +28,7 @@ html_theme_options = {"navigation_depth": 4, "collapse_navigation": False}
 html_static_path = ["_static"]
 
 # add tesca package directory to path
-import pathlib
+import os
 import sys
 
-sys.path.insert(0, str(pathlib.Path().absolute().parent))
+sys.path.insert(0, os.path.abspath("../.."))

@@ -1,3 +1,16 @@
+"""This is an analysis
+
+Returns
+-------
+_type_
+    _description_
+
+Raises
+------
+NotImplementedError
+    _description_
+    """
+
 import datetime as dt
 from functools import reduce
 from itertools import combinations
@@ -36,6 +49,8 @@ STREAM_LOG = logging.DEBUG
 
 
 class Analysis:
+    """The analysis object"""
+
     def __init__(self, config):
         self.config = config
         self.uid = str(config["uid"])
@@ -65,6 +80,18 @@ class Analysis:
 
     @classmethod
     def from_config_file(cls, config_file):
+        """Create an analysis object from a configuration file.
+
+        Parameters
+        ----------
+        config_file : str
+            Path to the configuration file
+
+        Returns
+        -------
+        Analysis
+            The instantiated analysis object
+        """
         with open(config_file) as infile:
             config = json.load(infile)
 

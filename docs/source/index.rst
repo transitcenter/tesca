@@ -10,6 +10,9 @@ TESCA: TransitCenter Equity Scenario Comparison Application
    :maxdepth: 2
    :caption: Contents:
 
+   guide/index
+   reference
+
 
 
 Indices and tables
