@@ -38,3 +38,9 @@ opportunities = opportunities[opportunities["bg_id"].isin(bgs["id"])]
 opportunities.to_csv(os.path.join(base_folder, "opportunities.csv"), index=False)
 
 print(opportunities[~opportunities["bg_id"].isin(bgs["id"])])
+
+
+# hlstatusvars <- c("B03002_003", # white alone
+#                   "B03002_004", # black alone
+#                   "B03002_006", # Asian
+#                   "B03002_012") # Hispanic or Latino

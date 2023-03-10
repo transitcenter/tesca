@@ -30,10 +30,12 @@ from r5py import TransportNetwork, TravelTimeMatrixComputer, TransitMode, LegMod
 
 from .util import transit_mode
 
-log_formatter = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
+LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
 
 # File and folder naming conventions
 CACHE_FOLDER = "cache"
+VALIDATION_SUBFOLDER = "validation"
+GTFS_VALIDATION_SUBFOLDER = "gtfs_validation"
 CENTROIDS_FILENAME = "analysis_centroids.geojson"
 COMPARED_FILENAME = "compared.csv"
 DEMOGRAPHICS_FILENAME = "demographics.csv"
@@ -78,6 +80,10 @@ class Analysis:
                 os.mkdir(os.path.join(CACHE_FOLDER, self.config["uid"], f"gtfs{idx}"))
                 self.log.info(f"Created empty gtfs{idx} folder")
 
+        if not os.path.exists(os.path.join(self.cache_folder, VALIDATION_SUBFOLDER)):
+            os.mkdir(os.path.join(self.cache_folder, VALIDATION_SUBFOLDER))
+            self.log.info("Created validation folder")
+
     @classmethod
     def from_config_file(cls, config_file):
         """Create an analysis object from a configuration file.
@@ -101,25 +107,24 @@ class Analysis:
 
     def _setup_logging(self):
         """Set up the loggers for the session"""
-        # Set up the logging
+        # Set up the main logger
         self.log = logging.getLogger(self.config["uid"])
         stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(log_formatter)
+        stream_handler.setFormatter(LOG_FORMATTER)
         stream_handler.setLevel(logging.DEBUG)
         self.log.addHandler(stream_handler)
 
         handler_info = logging.FileHandler(os.path.join(self.cache_folder, "info.log"))
-        handler_info.setFormatter(log_formatter)
+        handler_info.setFormatter(LOG_FORMATTER)
         handler_info.setLevel(logging.INFO)
         self.log.addHandler(handler_info)
 
         handler_error = logging.FileHandler(
             os.path.join(self.cache_folder, "error.log")
         )
-        handler_error.setFormatter(log_formatter)
+        handler_error.setFormatter(LOG_FORMATTER)
         handler_error.setLevel(logging.ERROR)
         self.log.addHandler(handler_error)
-
         self.log.setLevel(STREAM_LOG)
 
     def assemble_gtfs_files(self, scenario_idx: int) -> list:
@@ -432,22 +437,38 @@ class Analysis:
             os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
         )
         # Check to make sure the ID string is long enough to be a block group
-        wrong_length = analysis_area[analysis_area["id"].str.len() != 12].shape[0]
-        if wrong_length > 0:
-            self.log.error(
-                f"  There are {wrong_length} rows in the analysis area with invalid zone IDs"
+        wrong_length = analysis_area[analysis_area["id"].str.len() != 12]
+        if wrong_length.shape[0] > 0:
+            wrong_length_filename = os.path.join(
+                self.cache_folder,
+                VALIDATION_SUBFOLDER,
+                "length_error_analysis_area.csv",
             )
-        wrong_length = impact_area[impact_area["bg_id"].str.len() != 12].shape[0]
-        if wrong_length > 0:
+            wrong_length.to_csv(wrong_length_filename, index=False)
             self.log.error(
-                f"  There are {wrong_length} rows in the impact area with invalid zone IDs"
+                f"  There are {wrong_length.shape[0]} rows in the analysis area with invalid zone IDs. See {wrong_length_filename} for a list."
+            )
+        wrong_length = impact_area[impact_area["bg_id"].str.len() != 12]
+        if wrong_length.shape[0] > 0:
+            wrong_length_filename = os.path.join(
+                self.cache_folder, VALIDATION_SUBFOLDER, "length_error_impact_area.csv"
+            )
+            wrong_length.to_csv(wrong_length_filename, index=False)
+            self.log.error(
+                f"  There are {wrong_length.shape[0]} rows in the impact area with invalid zone IDs. See {wrong_length_filename} for a list."
             )
         impact_not_in_analysis = impact_area[
             ~impact_area["bg_id"].isin(analysis_area["id"])
-        ].shape[0]
-        if impact_not_in_analysis > 0:
+        ]
+        if impact_not_in_analysis.shape[0] > 0:
+            impact_not_in_analysis_filename = os.path.join(
+                self.cache_folder,
+                VALIDATION_SUBFOLDER,
+                "impact_not_in_analysis_area.csv",
+            )
+            impact_not_in_analysis.to_csv(impact_not_in_analysis_filename, index=False)
             self.log.error(
-                f"  There are {impact_not_in_analysis} zones in the impact area that are not in the analysis area."
+                f"  There are {impact_not_in_analysis.shape[0]} zones in the impact area that are not in the analysis area. See {impact_not_in_analysis_filename} for a list."
             )
 
     def validate_demographics(self):
@@ -459,18 +480,20 @@ class Analysis:
         impact_area = pd.read_csv(
             os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
         )
-        no_demographics = impact_area[
-            ~impact_area["bg_id"].isin(demographics["bg_id"])
-        ].shape[0]
-        if no_demographics > 0:
-            self.log.error(
-                f"  There are {no_demographics} impact area zones that do not have demographic data."
+        no_demographics = impact_area[~impact_area["bg_id"].isin(demographics["bg_id"])]
+        if no_demographics.shape[0] > 0:
+            invalid_demographics_file = os.path.join(
+                self.cache_folder,
+                VALIDATION_SUBFOLDER,
+                f"missing_{DEMOGRAPHICS_FILENAME}",
             )
+            no_demographics.to_csv(invalid_demographics_file, index=False)
+            self.log.error(
+                f"  There are {no_demographics.shape[0]} impact area zones that do not have demographic data. See {invalid_demographics_file} for zones with missing data."
+            )
+        self.log.info("Demographic data validation complete")
 
     def validate_gtfs_data(self):
-        # TODO: Add validation data
-        # TODO: Add MobilityData validator check
-        # TODO: Check to make sure there is service in all GTFS dates on the specified analysis dates
         # TODO: Check or report on total number of routes/trips in each of the provided datasets
 
         # Run a mobility data validator check
@@ -479,7 +502,9 @@ class Analysis:
             for g in gtfs_list:
                 # Create an output folder in the cache
                 validator_folder = os.path.join(
-                    self.cache_folder, f"gtfs_validation{idx}"
+                    self.cache_folder,
+                    VALIDATION_SUBFOLDER,
+                    f"{GTFS_VALIDATION_SUBFOLDER}{idx}",
                 )
                 if not os.path.exists(validator_folder):
                     os.mkdir(validator_folder)
@@ -538,15 +563,18 @@ class Analysis:
                     self.log.info(
                         f"  There are {levels['ERROR']['total_count']} errors, {levels['WARNING']['total_count']} warnings, and {levels['INFO']['total_count']} infos."
                     )
+                    self.log.info(
+                        f"  Please see {os.path.join(output_folder, 'report.html')} for details."
+                    )
 
-                    for code in levels["ERROR"]["codes"]:
-                        self.log.error(f"  {code}")
-                    for code in levels["WARNING"]["codes"]:
-                        self.log.warning(f"  {code}")
-                    for code in levels["INFO"]["codes"]:
-                        self.log.info(f"  {code}")
+                    # for code in levels["ERROR"]["codes"]:
+                    #     self.log.error(f"  {code}")
+                    # for code in levels["WARNING"]["codes"]:
+                    #     self.log.warning(f"  {code}")
+                    # for code in levels["INFO"]["codes"]:
+                    #     self.log.info(f"  {code}")
 
-                self.log.info(f"Performing additional validation on {g}")
+                self.log.info(f"Performing additional GTFS validation on {g}")
                 # Load the thing into gtfs-lite
                 gtfs_lite = GTFS.load_zip(g)
                 # Get the scenario that's going to be run
@@ -578,8 +606,12 @@ class Analysis:
         )
         no_opportunities = analysis_area[
             ~analysis_area["id"].isin(opportunities["bg_id"])
-        ].shape[0]
-        if no_opportunities > 0:
+        ]
+        if no_opportunities.shape[0] > 0:
+            no_opportunities_filename = os.path.join(
+                self.cache_folder, VALIDATION_SUBFOLDER, "no_opportunities.csv"
+            )
+            no_opportunities[["id"]].to_csv(no_opportunities_filename, index=False)
             self.log.error(
-                f"  There are {no_opportunities} analysis area zones that do not have opportunity data."
+                f"  There are {no_opportunities.shape[0]} analysis area zones that do not have opportunity data. See {no_opportunities_filename} for zones with missing data."
             )
