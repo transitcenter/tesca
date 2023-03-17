@@ -32,16 +32,25 @@ from .util import transit_mode
 
 LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
 
-# File and folder naming conventions
+#: Cache folder for project storage
 CACHE_FOLDER = "cache"
+#: Validation subfolder name for validation outputs
 VALIDATION_SUBFOLDER = "validation"
+#: Validation subsubfolder for GTFS validation outputs
 GTFS_VALIDATION_SUBFOLDER = "gtfs_validation"
+#: Expected filename of the centroids for matrix generation
 CENTROIDS_FILENAME = "analysis_centroids.geojson"
+#: Output filename of compared access metrics
 COMPARED_FILENAME = "compared.csv"
+#: Expected input filename for demographic data
 DEMOGRAPHICS_FILENAME = "demographics.csv"
+#: Expected input filename for opportunities data
 OPPORTUNITIES_FILENAME = "opportunities.csv"
+#: Expected input file name for impact area zone list
 IMPACT_AREA_FILENAME = "impact_area.csv"
+#: Expected file name for the JAR file for MobilityData validation
 MOBILITY_DATA_VALIDATOR_JAR = "gtfs-validator-4.0.0-cli.jar"
+#: Output filename of summary data
 SUMMARY_FILENAME = "summary.csv"
 
 MAX_TIME = dt.timedelta(
@@ -111,7 +120,10 @@ class Analysis:
         self.log = logging.getLogger(self.config["uid"])
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(LOG_FORMATTER)
-        stream_handler.setLevel(logging.DEBUG)
+        if self.config["verbosity"] == "DEBUG":
+            stream_handler.setLevel(logging.DEBUG)
+        else:
+            stream_handler.setLevel(logging.INFO)
         self.log.addHandler(stream_handler)
 
         handler_info = logging.FileHandler(os.path.join(self.cache_folder, "info.log"))
@@ -222,20 +234,22 @@ class Analysis:
                         )
                         self.log.debug(f"Result has {metric_df.shape[0]} rows.")
                         metrics.append(metric_df)
-                if self.config["opportunities"][opportunity]["method"] == "travel_time":
+                elif (
+                    self.config["opportunities"][opportunity]["method"] == "travel_time"
+                ):
                     for n in self.config["opportunities"][opportunity]["parameters"]:
                         self.log.debug(
                             f"{scenario['name']}: Computing {self.config['opportunities'][opportunity]['method']} ({n}) access to {self.config['opportunities'][opportunity]['name']}"
                         )
                         metric_df = Analysis.compute_travel_time_measure(
-                            matrix,
-                            opportunity_df,
-                            opportunity,
-                            n=n,
-                            infity_value=self.config["infinity_value"],
+                            matrix, opportunity_df, opportunity, n=n
                         )
                         self.log.debug(f"Result has {metric_df.shape[0]} rows.")
                         metrics.append(metric_df)
+                else:
+                    raise KeyError(
+                        f"Invalid method specification {self.config['opportunities'][opportunity]['method']} for metrics calculation"
+                    )
 
             # Merge all dataframes together.
             metrics = reduce(lambda df1, df2: pd.merge(df1, df2, on="bg_id"), metrics)
@@ -294,7 +308,6 @@ class Analysis:
         opportunty_df: pd.DataFrame,
         opportunity_name: str,
         n: int = 1,
-        infity_value=np.inf,
     ) -> pd.DataFrame:
         """Calculate travel time to nth nearest destination
 
@@ -306,10 +319,11 @@ class Analysis:
             A dataframe containing the opportunities (1 or greater indicates opportunity is located there)
         opportunity_name : str
             The name of the opportunity to be used in the header. This will be appended with a '_tn' where n is as described below.
+        infinity_value : int
+            The value to use for infinite travel times
         n : int, optional
             The nth nearest item to use (e.g. 1 is closest, 3 is 3rd closest), by default 1
-        infinity_value : numeric
-            The value to use for infinite travel times, by default np.inf
+
         Returns
         -------
         pd.DataFrame
@@ -341,14 +355,61 @@ class Analysis:
             .apply(get_nth, o=opportunity_name, n=n)
         )
         result.columns = ["bg_id", f"{opportunity_name}_t{n}"]
-        # TODO: Remove this and determine infinite
-        result[f"{opportunity_name}_t{n}"] = result[f"{opportunity_name}_t{n}"].fillna(
-            infity_value
-        )
         return result
+
+    def compute_unreachable(self):
+        """Compute the number of individuals in the impact area who cannot reach their desired travel time destination"""
+
+        self.log.info("Computing unreachable destinations")
+        # Grab the "metrics" file for each one
+        demographics = pd.read_csv(
+            os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), dtype={"bg_id": str}
+        )
+        impact_area = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
+
+        unreachable_dfs = []
+        for idx, scenario in enumerate(self.config["scenarios"]):
+            metrics = pd.read_csv(
+                os.path.join(self.cache_folder, f"metrics{idx}.csv"),
+                dtype={"bg_id": str},
+            )
+            # Shrink file to the analysis area
+            metrics = metrics[metrics["bg_id"].isin(impact_area["bg_id"])]
+            # Let's join the metrics with the demographics now
+            metrics_demo = pd.merge(metrics, demographics, on="bg_id")
+
+            # If the measure is travel time, let's find the unreachables
+            for opportunity in self.config["opportunities"]:
+                if self.config["opportunities"][opportunity]["method"] == "travel_time":
+                    for parameter in self.config["opportunities"][opportunity][
+                        "parameters"
+                    ]:
+                        # Filter dataframe to only keep where this parameter is NA
+                        na_metrics = metrics_demo[
+                            metrics_demo[f"{opportunity}_t{parameter}"].isna()
+                        ]
+                        # Sum all the demographic keys
+                        na_metrics_sum = (
+                            na_metrics[[i for i in self.config["demographics"].keys()]]
+                            .sum()
+                            .to_frame()
+                            .T
+                        )
+                        # na_metrics_sum.columns = ["unreachable"]
+                        na_metrics_sum["scenario"] = idx
+                        na_metrics_sum["metric"] = f"{opportunity}_t{parameter}"
+                        unreachable_dfs.append(na_metrics_sum)
+
+        result = pd.concat(unreachable_dfs, axis="index").reset_index(drop=True)
+        result[result.columns[::-1]].to_csv(
+            os.path.join(self.cache_folder, "unreachable.csv"), index=False
+        )
 
     def compare_scenarios(self):
         """Compute the differences between all scenarios"""
+        self.log.info("Computing Scenario Comparisons")
         idxs = [i for i in range(len(self.config["scenarios"]))]
         compared_dfs = []
         for pair in combinations(idxs, 2):
@@ -367,6 +428,8 @@ class Analysis:
                 suffixes=[f"_{pair[0]}", f"_{pair[1]}"],
             )
 
+            metrics = metrics.fillna(self.config["infinity_value"])
+
             for opportunity in self.config["opportunities"]:
                 if self.config["opportunities"][opportunity]["method"] == "cumulative":
                     method = "c"
@@ -375,19 +438,18 @@ class Analysis:
                 for parameter in self.config["opportunities"][opportunity][
                     "parameters"
                 ]:
-                    # Subtract the two things
+                    series_a = metrics[f"{opportunity}_{method}{parameter}_{pair[1]}"]
+                    series_b = metrics[f"{opportunity}_{method}{parameter}_{pair[0]}"]
                     metrics[
                         f"{opportunity}_{method}{parameter}_{pair[1]}-{pair[0]}"
-                    ] = (
-                        metrics[f"{opportunity}_{method}{parameter}_{pair[1]}"]
-                        - metrics[f"{opportunity}_{method}{parameter}_{pair[0]}"]
-                    )
+                    ] = (series_a - series_b)
+
             compared_dfs.append(metrics)
 
         compared = reduce(lambda df1, df2: pd.merge(df1, df2, on="bg_id"), compared_dfs)
         compared.to_csv(os.path.join(self.cache_folder, COMPARED_FILENAME), index=False)
 
-    def compute_weighted_summaries(self):
+    def compute_summaries(self):
         # Take the compared metrics and summarize all of them
         compared = pd.read_csv(
             os.path.join(self.cache_folder, COMPARED_FILENAME),

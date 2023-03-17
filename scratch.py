@@ -1,7 +1,7 @@
 import os
 
 from tesca.analysis import Analysis
-
+import pandas as pd
 
 # conn = cenpy.products.APIConnection("ACSDT5Y2021")
 # data = conn.query(
@@ -18,13 +18,15 @@ from tesca.analysis import Analysis
 
 a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.json"))
 
+
 # a.validate_gtfs_data()
 # a.validate_analysis_area()
 # a.validate_demographics()
-a.validate_opportunities()
+# a.validate_opportunities()
 
 
 # a.compute_travel_times()
 # a.compute_metrics()
 # a.compare_scenarios()
-# a.compute_weighted_summaries()
+# a.compute_summaries()
+a.compute_unreachable()
