@@ -1,4 +1,6 @@
+import json
 import os
+import yaml
 
 from tesca.analysis import Analysis
 import pandas as pd
@@ -18,6 +20,12 @@ import pandas as pd
 
 a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.json"))
 
+# with open(os.path.join("cache", "chicago-test", "config.json")) as infile:
+#     config = json.load(infile)
+
+# with open(os.path.join("cache", "chicago-test", "config.yml"), 'w') as outfile:
+#     yaml.dump(config, outfile, default_flow_style=False)
+
 
 # a.validate_gtfs_data()
 # a.validate_analysis_area()
@@ -29,4 +37,4 @@ a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.json
 # a.compute_metrics()
 # a.compare_scenarios()
 # a.compute_summaries()
-a.compute_unreachable()
+# a.compute_unreachable()

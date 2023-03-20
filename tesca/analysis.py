@@ -14,7 +14,7 @@ NotImplementedError
 import datetime as dt
 from functools import reduce
 from itertools import combinations
-import json
+import yaml
 import logging
 import os
 import pathlib
@@ -95,20 +95,20 @@ class Analysis:
 
     @classmethod
     def from_config_file(cls, config_file):
-        """Create an analysis object from a configuration file.
+        """Create an analysis object from a yaml configuration file.
 
         Parameters
         ----------
         config_file : str
-            Path to the configuration file
+            Path to the yaml configuration file
 
         Returns
         -------
         Analysis
             The instantiated analysis object
         """
-        with open(config_file) as infile:
-            config = json.load(infile)
+        with open(config_file, 'r') as infile:
+            config = yaml.safe_load(infile)
 
         a = cls(config)
         a.log.info(f"Created analysis instance from {config_file}")
