@@ -3,6 +3,7 @@ ny_data/
 cache/*
 visualization/*
 test_data/
+config.py
 
 # VSCode
 .vscode/

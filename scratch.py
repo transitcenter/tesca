@@ -5,6 +5,8 @@ import yaml
 from tesca.analysis import Analysis
 import pandas as pd
 
+from config import CENSUS_API_KEY
+
 # conn = cenpy.products.APIConnection("ACSDT5Y2021")
 # data = conn.query(
 #     ["B02009_001E"],
@@ -18,7 +20,10 @@ import pandas as pd
 # #     "chicago_black.csv"
 # # )
 
-a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.json"))
+a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.yml"))
+
+# result = a.fetch_demographic_data(api_key=CENSUS_API_KEY)
+# result.to_csv("census_pull.csv", index=False)
 
 # with open(os.path.join("cache", "chicago-test", "config.json")) as infile:
 #     config = json.load(infile)
@@ -29,7 +34,7 @@ a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.json
 
 # a.validate_gtfs_data()
 # a.validate_analysis_area()
-# a.validate_demographics()
+a.validate_demographics()
 # a.validate_opportunities()
 
 
