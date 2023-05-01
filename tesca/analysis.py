@@ -18,15 +18,13 @@ import yaml
 
 os.environ["USE_PYGEOS"] = "0"
 
-import cenpy
 import geopandas as gpd
 from gtfslite import GTFS
 import pandas as pd
 import numpy as np
+from pygris import block_groups
 from pygris.data import get_census
-from r5py import TransportNetwork, TravelTimeMatrixComputer, TransitMode, LegMode
-
-from .util import transit_mode
+from r5py import TransportNetwork, TravelTimeMatrixComputer
 
 LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
 
@@ -50,6 +48,8 @@ IMPACT_AREA_FILENAME = "impact_area.csv"
 MOBILITY_DATA_VALIDATOR_JAR = "gtfs-validator-4.0.0-cli.jar"
 #: Output filename of summary data
 SUMMARY_FILENAME = "summary.csv"
+#: Settings location
+SETTINGS_FILENAME = "settings.yml"
 
 MAX_TIME = dt.timedelta(hours=2)  # The maximum trip time for the analysis (could make adjustable later)
 STREAM_LOG = logging.DEBUG
@@ -62,6 +62,10 @@ class Analysis:
         self.config = config
         self.uid = str(config["uid"])
         self.cache_folder = os.path.join(CACHE_FOLDER, self.uid)
+
+        # Pull in settings file
+        with open(SETTINGS_FILENAME) as settings_file:
+            self.settings = yaml.safe_load(settings_file)
 
         new_cache_folder = False
         # Let's first set up the folder structure
@@ -130,12 +134,13 @@ class Analysis:
         self.log.setLevel(STREAM_LOG)
 
     def assemble_gtfs_files(self, scenario_idx: int) -> list:
+        self.log.info("  Assembling GTFS Files")
         gtfs = []
         gtfs_folder = os.path.join(self.cache_folder, f"gtfs{scenario_idx}")
         for path in os.listdir(gtfs_folder):
             gtfs_filepath = os.path.join(gtfs_folder, path)
             if os.path.isfile(gtfs_filepath) and os.path.splitext(gtfs_filepath)[1] == ".zip":
-                self.log.debug(f"Including GTFS: {gtfs_filepath}")
+                self.log.debug(f"    Including GTFS: {gtfs_filepath}")
                 gtfs.append(gtfs_filepath)
         return gtfs
 
@@ -156,9 +161,11 @@ class Analysis:
             )
 
             # Build the transport modes starting as always with walking
-            transport_modes = [LegMode.WALK]
+            transport_modes = ["WALK"]
             for tm in scenario["transit_modes"]:
-                transport_modes.append(transit_mode[tm]["r5"])
+                transport_modes.append(tm)
+
+            self.log.debug(f"  Transport Modes: {', '.join(transport_modes)}")
 
             ttmc = TravelTimeMatrixComputer(
                 tn,
@@ -428,14 +435,30 @@ class Analysis:
         result.index.name = "metric"
         result.to_csv(os.path.join(self.cache_folder, SUMMARY_FILENAME))
 
+    def fetch_block_groups(self, counties_by_state: dict, overwrite=False):
+        # Fetch all block groups based on a list of states/counties
+        # TODO: Check if analysis file already exists?
+        if overwrite == False:
+            if os.path.exists(os.path.join(self.cache_folder, CENTROIDS_FILENAME)):
+                raise FileExistsError("An analysis centroids file already exists")
+        bg_dfs = []
+        for state in counties_by_state.keys():
+            bgs = block_groups(
+                state=str(state), county=counties_by_state[state], year=self.settings["census_year"], cb=True
+            )
+            bg_dfs.append(bgs)
+
+        bg_df = pd.concat(bg_dfs, axis="index")
+        bg_df.to_file("bg_2021.geojson")
+
     def fetch_demographic_data(self, api_key):
         # See: https://api.census.gov/data/2021/acs/acs5
         # Read in the analysis centroids
         self.log.info("Fetching Demographic Data")
-        analysis = gpd.read_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
-        analysis["state"] = analysis["id"].str[:2]
-        analysis["county"] = analysis["id"].str[2:5]
-        states_and_counties = analysis[["state", "county"]].drop_duplicates().sort_values("state")
+        impact_area_bgs = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
+        impact_area_bgs["state"] = impact_area_bgs["bg_id"].str[:2]
+        impact_area_bgs["county"] = impact_area_bgs["bg_id"].str[2:5]
+        states_and_counties = impact_area_bgs[["state", "county"]].drop_duplicates().sort_values("state")
         all_data = []
         variables = [i for i in self.config["demographics"].keys()]
         print(variables)
@@ -457,7 +480,7 @@ class Analysis:
         result = pd.concat(all_data, axis="index")
         # Rename our GEOID
         result = result.rename(columns={"GEOID": "bg_id"})
-        result = result[result["bg_id"].isin(analysis["id"])]
+        result = result[result["bg_id"].isin(impact_area_bgs["bg_id"])]
         result.to_csv(os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), index=False)
         return result
 

@@ -20,8 +20,9 @@ from config import CENSUS_API_KEY
 # #     "chicago_black.csv"
 # # )
 
-a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.yml"))
-
+a = Analysis.from_config_file(os.path.join("cache", "septa-redesign-weekend", "config.yml"))
+# a.fetch_demographic_data("42d198a43a10e9c91fdf19fcc15c8f81f6bf55a2")
+# a.compute_travel_times()
 # result = a.fetch_demographic_data(api_key=CENSUS_API_KEY)
 # result.to_csv("census_pull.csv", index=False)
 
@@ -34,12 +35,12 @@ a = Analysis.from_config_file(os.path.join("cache", "chicago-test", "config.yml"
 
 # a.validate_gtfs_data()
 # a.validate_analysis_area()
-a.validate_demographics()
+# a.validate_demographics()
 # a.validate_opportunities()
 
 
-# a.compute_travel_times()
-# a.compute_metrics()
-# a.compare_scenarios()
-# a.compute_summaries()
+a.compute_travel_times()
+a.compute_metrics()
+a.compare_scenarios()
+a.compute_summaries()
 # a.compute_unreachable()

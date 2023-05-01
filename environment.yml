@@ -1,0 +1,25 @@
+# Basic conda environment for running TESCA
+name: tesca
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pip
+  - geopandas
+  - configargparse
+  - fiona
+  - joblib
+  - jpype1
+  - numpy
+  - pandas
+  - psutil
+  - requests
+  - shapely
+  - jupyterlab
+  - altair
+  - numpydoc
+  - pip:
+    - gtfs-lite
+    - pygris
+    - git+https://github.com/r5py/r5py.git#egg=r5py

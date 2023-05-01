@@ -1,0 +1,29 @@
+name: tesca-dev-310
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pip
+  - geopandas
+  - configargparse
+  - fiona
+  - joblib
+  - jpype1
+  - numpy
+  - pandas
+  - psutil
+  - requests
+  - shapely
+  # Testing, development, and documentation related
+  - black
+  - jupyterlab
+  - altair
+  - numpydoc
+  - pytest
+  - sphinx
+  - sphinx_rtd_theme
+  - pip:
+    - gtfs-lite
+    - pygris
+    - git+https://github.com/r5py/r5py.git#egg=r5py
