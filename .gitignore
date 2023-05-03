@@ -1,6 +1,5 @@
 # Data folders
 ny_data/
-cache/*
 visualization/*
 test_data/
 settings.yml
