@@ -3,7 +3,6 @@ ny_data/
 cache/*
 visualization/*
 test_data/
-config.py
 settings.yml
 
 # VSCode
