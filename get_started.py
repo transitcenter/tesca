@@ -4,8 +4,6 @@ import os
 
 from tesca.analysis import Analysis
 
-from config import CENSUS_API_KEY
-
 a = Analysis.from_config_file(os.path.join("cache", "project-id", "config.yml"))
 
 # Create a demographics CSV file using the config demographic keys
