@@ -9,7 +9,7 @@ from config import CENSUS_API_KEY
 a = Analysis.from_config_file(os.path.join("cache", "project-id", "config.yml"))
 
 # Create a demographics CSV file using the config demographic keys
-a.fetch_demographic_data(api_key=CENSUS_API_KEY)
+a.fetch_demographic_data()
 
 #  DATA VALIDATION  #
 # Fist, data validation can happen on the GTFS files

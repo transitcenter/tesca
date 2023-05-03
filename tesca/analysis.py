@@ -451,9 +451,10 @@ class Analysis:
         bg_df = pd.concat(bg_dfs, axis="index")
         bg_df.to_file("bg_2021.geojson")
 
-    def fetch_demographic_data(self, api_key):
+    def fetch_demographic_data(self):
         # See: https://api.census.gov/data/2021/acs/acs5
         # Read in the analysis centroids
+        api_key = self.settings["api_key"]
         self.log.info("Fetching Demographic Data")
         impact_area_bgs = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
         impact_area_bgs["state"] = impact_area_bgs["bg_id"].str[:2]
