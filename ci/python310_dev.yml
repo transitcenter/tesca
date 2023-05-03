@@ -17,6 +17,7 @@ dependencies:
   - shapely
   # Testing, development, and documentation related
   - black
+  - flake8
   - jupyterlab
   - altair
   - numpydoc
