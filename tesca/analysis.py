@@ -443,13 +443,19 @@ class Analysis:
                 raise FileExistsError("An analysis centroids file already exists")
         bg_dfs = []
         for state in counties_by_state.keys():
+            print(state)
+            print(counties_by_state[state])
             bgs = block_groups(
                 state=str(state), county=counties_by_state[state], year=self.settings["census_year"], cb=True
             )
             bg_dfs.append(bgs)
 
         bg_df = pd.concat(bg_dfs, axis="index")
-        bg_df.to_file("bg_2021.geojson")
+        bg_centroid = bg_df.copy()
+        bg_centroid["geometry"] = bg_centroid["geometry"].centroid
+        bg_centroid = bg_centroid.rename(columns={"GEOID":"id"})
+        bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
+        bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
 
     def fetch_demographic_data(self):
         # See: https://api.census.gov/data/2021/acs/acs5
