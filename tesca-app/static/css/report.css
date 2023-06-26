@@ -1,0 +1,72 @@
+.addendum {
+    display: inline;
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: 0.7em;
+}
+
+.program-score {
+  font-size: 1.3em;
+}
+
+.print-buffer{
+  display: none;
+}
+
+.flag-column{
+  font-size: 0.8em;
+}
+
+#plot{
+  width: 100%;
+  height: 80px;
+}
+
+.axis path{
+  stroke: rgb(161, 161, 161);
+}
+
+.axis text{
+  color: rgb(161, 161, 161);
+}
+
+th{
+  text-align: left;
+}
+
+@media print {
+
+  .print-buffer{
+    display: block;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  p {
+    font-size: 12pt;
+  }
+
+  h1 {
+    font-size: 24pt;
+    font-weight: bold;
+  }
+    
+  nav {
+    display: none;
+  }
+
+  #nav-mobile{
+    display: none;
+  }
+
+  .sidenav{
+    display: none;
+  }
+
+  .no-print{
+    display: none;
+  }
+}

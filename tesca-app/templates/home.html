@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block head %}
+{% endblock%}
+
+{% block content %}
+
+<!-- Primary Page Layout
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<div class='container'>
+<div class='section'>
+  <div class='row'>
+    <div class='col s12'>
+      <h3><b>TransitCenter Equity Scenario Comparison</b></h3>
+      <p class='flow-text'>Please provide the analyst's name and the name of the scenario:</p>
+    </div>
+  </div>
+  <form method='POST' action="/parameters" enctype="multipart/form-data">
+  <div class="row">
+    <div class="input-field col s6">
+        <i class="material-icons prefix">account_circle</i>
+        <input id="icon_prefix" type="text" class="validate", name='analyst'>
+        <label for="icon_prefix">Analyst Name</label>
+    </div>
+    <div class="input-field col s6">
+        <i class="material-icons prefix">assessment</i>
+        <input id="icon_telephone" type="text" class="validate" name='program'>
+        <label for="icon_telephone">Scenario Name</label>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col s12'>
+      <p class='flow-text'>Please upload at least one spatial dataset. Lines, points, and areas must be uploaded separately. See the <a href="/guide">guide</a> for more details on preparing your inputs.</p>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <p class="flow-text red-text darken-4"><b>There were problems with your uploaded data:</b></p>
+        <ul class="collection">
+          {% for message in messages %}
+            <li class="collection-item red lighten-4"><b>{{ message }}</b></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+  <div class='row'>
+      <div class='col s12'>
+            <div class="file-field input-field">
+              <div class="btn btn-spatial blue toronto">
+                <span>Points</span>
+                <input type="file" name='points'>
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+            <div class="file-field input-field">
+                <div class="btn btn-spatial blue toronto">
+                  <span>Lines</span>
+                  <input type="file" name='lines'>
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text">
+                </div>
+              </div>
+              <div class="file-field input-field">
+                <div class="btn blue btn-spatial toronto">
+                  <span>Areas</span>
+                  <input type="file" name='areas'>
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text">
+                </div>
+              </div>
+        </div>
+    </div>
+    <div class="row">
+      <div class='col s12'>
+        <p><label>
+          <input type="checkbox" name='buffers'/>
+          <span class="black-text flow-text">Some or all of my files include a <code>buffer</code> column</span>
+        </label></p>
+        <p><label>
+          <input type="checkbox" name='impacts'/>
+          <span class="black-text flow-text">Some or all of my files include an <code>impact</code> column</span>
+        </label></p>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='col s12'>
+        <button class="btn waves-effect waves-light yellow toronto black-text" type="submit" name="action">Submit
+          <i class="material-icons right">send</i>
+        </button>
+      </div>
+    </div>
+    </form>
+</div>
+</div>
+
+{% endblock %}

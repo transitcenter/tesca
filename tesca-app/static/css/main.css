@@ -1,0 +1,117 @@
+html {
+    font-family: 'Roboto', GillSans, Calibri, Trebuchet, sans-serif;
+  }
+  
+.nav-wrapper .brand-logo img {
+  height: 64px;
+}
+
+/* Remove margins and padding from the list, and add a black background color */
+ul.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #2d74ed;
+  box-shadow: 1px 1px 2px lightgrey;
+}
+
+/* Float the list items side by side */
+ul.topnav li {
+  float: left;
+}
+
+/* Style the links inside the list items */
+ul.topnav li a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 5px 10px 10px 5px;
+  text-decoration: none;
+  transition: 0.3s;
+  font-size: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* Change background color of links on hover */
+/* ul.topnav li a:hover {
+} */
+
+ul.topnav li.icon a:hover{
+  text-decoration: none;
+}
+
+/* Hide the list item that contains the link that should open and close the topnav on small screens */
+ul.topnav li.icon {
+  display: none;
+}
+
+ul.topnav a.title-text {
+  color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+  height: 20px;
+  padding: 5px 10px 10px 5px;
+}
+
+.blue.transit {
+  background-color: #2D74ED !important;
+}
+
+.lightblue.toronto{
+  background-color: #E7EFF3 !important;
+}
+
+.blue.toronto {
+  background-color: #160E44 !important;
+}
+
+.red.toronto {
+  background-color: #6C154B !important;
+}
+
+.yellow.toronto {
+  background-color: #FCB814 !important;
+}
+
+
+.purple.transit {
+  background-color: #481f89 !important;
+}
+
+.text-purple.transit {
+  color: #481f89 !important;
+}
+
+.info > i{
+  vertical-align:middle;
+}
+
+.parallax-container {
+  height: 400px;
+}
+
+.banner {
+  width: 100%;
+}
+
+.btn-spatial{
+    width: 100px;
+}
+
+.nobottom{
+  margin-bottom: 0;
+}
+
+.caption{
+  font-style: italic;
+  padding-top: 0;
+  margin-top: 0;
+  text-align: center;
+}
+
+.bordered{
+  border: 1px solid black;
+}
+  
