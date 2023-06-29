@@ -1,0 +1,29 @@
+analyst: No Analyst Specified  # The analysis name appears on the reporting output
+project: No Project Specified  # The project title is used for plot titles
+description: No Description Provided  # Longer title for reporting outputs
+uid: no-uid
+fetch_demographics: true  # Whether or not to fetch demographics
+infinity_value: 180
+max_time_walking: 30
+verbosity: DEBUG # A flag to set the verbosity of the output
+opportunities:  # Each item in the list of opportunities corresponds with a column in opportunities.csv
+# Demographics are defined here
+demographics:  # Each key correponds with a column in the demographics.csv file and is given a name
+  B03002_001E: Everyone
+  B03002_003E: White People
+  B03002_004E: Black People
+  B03002_006E: Asian
+  B03002_012E: Hispanic or Latino
+  C17002_003E: In Poverty
+# Scenarios are defined as an ordered list
+scenarios:
+- duration: 120  # Duration of analysis, in minutes
+  name: Scenario A  # A pretty name for the analysis
+  start_datetime: 2023-03-29 07:00  # Should be in YYYY-MM-DD HH:MM
+  transit_modes:  # A list of transit modes to use, in capitalized string form
+  - TRANSIT
+- duration: 120
+  name: Scenario B
+  start_datetime: 2023-03-29 07:00
+  transit_modes:
+  - TRANSIT

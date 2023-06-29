@@ -1,0 +1,23 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Configure Opportunties {% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
+{% endblock %}
+
+{% block content %}
+<div class='container' style="text-align:center;">
+    <h1>Perform an Analysis</h1>
+    <p>Upload an opportunities CSV file to get started.</p>
+    <form class="pure-form" method="POST" action="/" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <fieldset>
+            {{ form.file.label }}
+            {{ form.file }}
+            {{ form.submit(class_="pure-button pure-button-primary") }}
+        </fieldset>
+    </form>
+</div>
+
+{% endblock %}

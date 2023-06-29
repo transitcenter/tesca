@@ -1,0 +1,29 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Start Analysis {% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
+{% endblock %}
+
+{% block content %}
+<div class='container' style="text-align:center;">
+    <h1>Perform an Analysis</h1>
+    <p>Upload an opportunities CSV file to get started. The file must have a column <code>bg_id</code> containing block
+        group IDs, and a column for each opportunity.</p>
+    <form class="pure-form" method="POST" action="/" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <fieldset>
+            {{ form.file.label }}
+            {{ form.file }}
+            {{ form.submit(class_="pure-button pure-button-primary") }}
+        </fieldset>
+    </form>
+    {% for field, errors in form.errors.items() %}
+    <div class="alert-error">
+        {{ form[field].label }} {{ ', '.join(errors) }}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Start an Analysis {% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <div class="form-wrapper">
+        <h1 class="title">Analysis Setup</h1>
+        <p>Here you can provide some details about the analysis which will be used during the report generation step,
+            along with providing some base data for the analysis and specifying configurtion parameters for the
+            opportunities you wish to measure.</p>
+        <form method="POST" action="/start" class="pure-form pure-form-stacked" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <fieldset>
+                        <legend>Analysis Details</legend>
+                        <div class="pure-u-1 pure-u-md-11-24">
+                            <div class="pure-control-group">
+                                {{ form.analyst.label }}
+                                {{ form.analyst }}
+                            </div>
+                            <div class="pure-control-group">
+                                {{ form.project.label }}
+                                {{ form.project }}
+                            </div>
+                            <div class="pure-control-group">
+                                {{ form.description.label }}
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        <div class="pure-u-1 pure-u-md-11-24">
+                            <div class="pure-control-group">
+                                {{ form.fetch_demographics.label }}
+                                {{ form.fetch_demographics }}
+                            </div>
+                            <div class="pure-control-group">
+                                {{ form.infinity.label }}
+                                {{ form.infinity }}
+                            </div>
+                            <div class="pure-control-group">
+                                {{ form.max_time_walking.label }}
+                                {{ form.max_time_walking }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <fieldset>
+                        <legend>File Inputs</legend>
+
+                        {# <div class="pure-control-group">
+                            {{ form.block_groups.label }}
+                            {{ form.block_groups }}
+                        </div> #}
+
+                        <div class="pure-control-group">
+                            {{ form.osm.label }}
+                            {{ form.osm}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.impact_area.label }}
+                            {{ form.impact_area}}
+                        </div>
+
+                        {# <div class="pure-control-group">
+                            {{ form.opportunities.label }}
+                            {{ form.opportunities}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.demographics.label }}
+                            {{ form.demographics}}
+                        </div> #}
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <h2>Opportunity Configuration</h2>
+                    <p>For each opportunity, please specify the display name, the method of analysis (cumulative or
+                        travel time), and the associated parameters (minutes or nth nearest) for that measure. Multiple
+                        parameters for the same opportunity can be provided using a comma-separated list (e.g. 15,30)
+                        for 15 and 30 minute parameters.</p>
+                    {% for opportunity_form in form.opportunities %}
+                    <div class="pure-u-1 pure-u-md-7-24">
+                        <fieldset>
+                            <legend>{{ opportunity_form.opportunity.data }}</legend>
+
+                            <div class="pure-control-group">
+                                {{ opportunity_form.hidden_tag() }}
+
+                                {{ opportunity_form.prettyname.label}}
+                                {{ opportunity_form.prettyname}}
+
+                                {{ opportunity_form.method.label}}
+                                {{ opportunity_form.method}}
+
+                                {{ opportunity_form.parameters.label}}
+                                {{ opportunity_form.parameters}}
+                            </div>
+                        </fieldset>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <h2>Scenario Definitions</h2>
+            <p>Please provide details and valid GTFS files for each scenario that is being analyzed.</p>
+            <div class="pure-g">
+
+                <div class="pure-u-1 pure-u-md-11-24">
+                    <fieldset>
+                        <legend>Scenario 0</legend>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario0_name.label }}
+                            {{ form.scenario0_name }}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario0_start.label }}
+                            {{ form.scenario0_start}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario0_duration.label }}
+                            {{ form.scenario0_duration}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario0_modes.label }}
+                            {{ form.scenario0_modes}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario0_gtfs.label }}
+                            {{ form.scenario0_gtfs}}
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="pure-u-1 pure-u-md-1-24"></div>
+
+                <div class="pure-u-1 pure-u-md-11-24">
+                    <fieldset>
+                        <legend>Scenario 1</legend>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario1_name.label }}
+                            {{ form.scenario1_name }}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario1_start.label }}
+                            {{ form.scenario1_start}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario1_duration.label }}
+                            {{ form.scenario1_duration}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario1_modes.label }}
+                            {{ form.scenario1_modes}}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario1_gtfs.label }}
+                            {{ form.scenario1_gtfs}}
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+    </div>
+    {{ form.submit(class_="pure-button pure-button-primary") }}
+
+    </form>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

@@ -1,3 +1,6 @@
+import yaml
+
+
 from r5py import LegMode, TransitMode
 
 transit_mode = {
@@ -46,9 +49,5 @@ transit_mode = {
         "name": "Gondola",
         "description": "Modes classfied as gondolas",
     },
-    "FUNICULAR": {
-        "r5": TransitMode.FUNICULAR,
-        "name": "Funicular",
-        "description": "Modes classified as funiculars",
-    },
+    "FUNICULAR": {"r5": TransitMode.FUNICULAR, "name": "Funicular"},
 }

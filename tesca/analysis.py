@@ -110,6 +110,12 @@ class Analysis:
         a.log.info(f"Created analysis instance from {config_file}")
         return a
 
+    def write_config_file(self):
+        """Write the current configuration state to the configuration file"""
+
+        with open(os.path.join(CACHE_FOLDER, self.uid, "config.yml"), "w") as outfile:
+            yaml.dump(self.config, outfile)
+
     def _setup_logging(self):
         """Set up the loggers for the session"""
         # Set up the main logger
@@ -453,7 +459,7 @@ class Analysis:
         bg_df = pd.concat(bg_dfs, axis="index")
         bg_centroid = bg_df.copy()
         bg_centroid["geometry"] = bg_centroid["geometry"].centroid
-        bg_centroid = bg_centroid.rename(columns={"GEOID":"id"})
+        bg_centroid = bg_centroid.rename(columns={"GEOID": "id"})
         bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
         bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
 
