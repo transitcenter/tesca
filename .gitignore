@@ -3,6 +3,7 @@ ny_data/
 visualization/*
 test_data/
 settings.yml
+config.py
 
 # VSCode
 .vscode/
