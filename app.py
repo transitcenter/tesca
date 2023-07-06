@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import os
 import pickle
 import sys
@@ -194,7 +195,72 @@ def configure(analysis_id):
 
 @app.route("/gtfs/<analysis_id>")
 def gtfs(analysis_id):
-    pass
+    # Compile the appropriate reports into the appropriate JSON
+    # TODO: Add code for when there hasn't been any validation yet.
+    # Scenario 0
+    gtfs_json = dict()
+    gtfs0_folder = os.path.join(CACHE_FOLDER, analysis_id, "gtfs0")
+    gtfs0 = dict()
+    for path in os.listdir(gtfs0_folder):
+        gtfs_filepath = os.path.join(gtfs0_folder, path)
+        if os.path.isfile(gtfs_filepath) and os.path.splitext(gtfs_filepath)[1] == ".zip":
+            gtfs_validation_foldername = os.path.splitext(path)[0]
+            print(gtfs_validation_foldername)
+            gtfs0[gtfs_validation_foldername] = {
+                "ERROR": {"total_count": 0, "unique_count": 0},
+                "WARNING": {"total_count": 0, "unique_count": 0},
+                "INFO": {"total_count": 0, "unique_count": 0},
+            }
+            # Now grab the number of errors, warnings, etc
+            with open(
+                os.path.join(
+                    CACHE_FOLDER,
+                    analysis_id,
+                    "validation",
+                    "gtfs_validation0",
+                    gtfs_validation_foldername,
+                    "report.json",
+                )
+            ) as validation_report_file:
+                validation_report = json.load(validation_report_file)
+
+            for notice in validation_report["notices"]:
+                gtfs0[gtfs_validation_foldername][notice["severity"]]["total_count"] += notice["totalNotices"]
+                gtfs0[gtfs_validation_foldername][notice["severity"]]["unique_count"] += 1
+
+    gtfs_json["0"] = gtfs0
+
+    gtfs1_folder = os.path.join(CACHE_FOLDER, analysis_id, "gtfs1")
+    gtfs1 = dict()
+    for path in os.listdir(gtfs1_folder):
+        gtfs_filepath = os.path.join(gtfs1_folder, path)
+        if os.path.isfile(gtfs_filepath) and os.path.splitext(gtfs_filepath)[1] == ".zip":
+            gtfs_validation_foldername = os.path.splitext(path)[0]
+            gtfs1[gtfs_validation_foldername] = {
+                "ERROR": {"total_count": 0, "unique_count": 0},
+                "WARNING": {"total_count": 0, "unique_count": 0},
+                "INFO": {"total_count": 0, "unique_count": 0},
+            }
+            # Now grab the number of errors, warnings, etc
+            with open(
+                os.path.join(
+                    CACHE_FOLDER,
+                    analysis_id,
+                    "validation",
+                    "gtfs_validation1",
+                    gtfs_validation_foldername,
+                    "report.json",
+                )
+            ) as validation_report_file:
+                validation_report = json.load(validation_report_file)
+
+            for notice in validation_report["notices"]:
+                gtfs1[gtfs_validation_foldername][notice["severity"]]["total_count"] += notice["totalNotices"]
+                gtfs1[gtfs_validation_foldername][notice["severity"]]["unique_count"] += 1
+
+    gtfs_json["1"] = gtfs0
+
+    return render_template("gtfs.jinja2", gtfs=gtfs_json, analysis_id=analysis_id)
 
 
 @app.route("/validate/<analysis_id>")

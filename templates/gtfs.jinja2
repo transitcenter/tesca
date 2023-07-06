@@ -1,0 +1,69 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} GTFS Validation Results {% endblock %}
+
+{% block content %}
+<div class='container'>
+    <h1>GTFS Validation Results</h1>
+    <p>Select a GTFS file below to view detailed validation results.</p>
+    <h2>Scenario 0</h2>
+    <table class="pure-table pure-table-striped">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Total Errors</th>
+                <th>Unique Errors</th>
+                <th>Total Warnings</th>
+                <th>Unique Warnings</th>
+                <th>Total Infos</th>
+                <th>Unique Infos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for g in gtfs["0"] %}
+            <tr>
+                <td><a href="/cache/{{analysis_id}}/validation/gtfs_validation0/{{ g }}/report.html">{{ g }}</a></td>
+                <td>{{ gtfs["0"][g]["ERROR"]["total_count"] }}</td>
+                <td>{{ gtfs["0"][g]["ERROR"]["unique_count"] }}</td>
+                <td>{{ gtfs["0"][g]["WARNING"]["total_count"] }}</td>
+                <td>{{ gtfs["0"][g]["WARNING"]["unique_count"] }}</td>
+                <td>{{ gtfs["0"][g]["INFO"]["total_count"] }}</td>
+                <td>{{ gtfs["0"][g]["INFO"]["unique_count"] }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    <h2>Scenario 1</h2>
+    <table class="pure-table pure-table-striped">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Total Errors</th>
+                <th>Unique Errors</th>
+                <th>Total Warnings</th>
+                <th>Unique Warnings</th>
+                <th>Total Infos</th>
+                <th>Unique Infos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for g in gtfs["1"] %}
+            <tr>
+                <td><a href="/cache/{{analysis_id}}/validation/gtfs_validation1/{{ g }}/report.html">{{ g }}</a></td>
+                <td>{{ gtfs["1"][g]["ERROR"]["total_count"] }}</td>
+                <td>{{ gtfs["1"][g]["ERROR"]["unique_count"] }}</td>
+                <td>{{ gtfs["1"][g]["WARNING"]["total_count"] }}</td>
+                <td>{{ gtfs["1"][g]["WARNING"]["unique_count"] }}</td>
+                <td>{{ gtfs["1"][g]["INFO"]["total_count"] }}</td>
+                <td>{{ gtfs["1"][g]["INFO"]["unique_count"] }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
