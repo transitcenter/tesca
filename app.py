@@ -31,7 +31,7 @@ executor = Executor(app)
 def run_validation(a):
     print("Validation run executed")
     # Let's run through the validation
-    update_status(a.uid, "validating analysis area", value=10)
+    update_status(a.uid, "validating analysis area", stage="validate", value=10)
     a.validate_analysis_area()
     update_status(a.uid, "validating opportunities file", value=20)
     a.validate_opportunities()
@@ -40,15 +40,36 @@ def run_validation(a):
     update_status(a.uid, "validating GTFS data", value=30)
     a.validate_gtfs_data()
     update_status(a.uid, message="awaiting validation review from user", value=100)
-    with open(os.path.join(CACHE_FOLDER, a.uid, "analysis.p"), "wb") as outfile:
-        pickle.dump(a, outfile)
+    return True
+
+
+def run_analysis(a):
+    print("Analysis run executed")
+    # Let's run through the validation
+
+    # Compute the travel time matrix - this takes a while
+    update_status(a.uid, "computing travel times", stage="run", value=0)
+    a.compute_travel_times()
+    # Compute the access metrics as configured in the config.yml file
+    update_status(a.uid, "computing metrics", value=60)
+    a.compute_metrics()
+    # Compute the scenario comparison of the metrics
+    update_status(a.uid, "performing scenario comparison", value=70)
+    a.compare_scenarios()
+    # Summarize these metrics (and comparison) across imapct area demographics
+    update_status(a.uid, "computing demographic summaries", value=80)
+    a.compute_summaries()
+    update_status(a.uid, "computing unreachable destinations", value=90)
+    # Compute unreachable destinations
+    a.compute_unreachable()
+    update_status(a.uid, message="finished running analysis", value=100)
     return True
 
 
 def update_status(analysis_id, message, stage=None, value=None):
     if not os.path.exists(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml")):
         with open(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml"), "w") as outfile:
-            yaml.dump({"message": None, "status": None, "value": None}, outfile)
+            yaml.dump({"message": None, "stage": None, "value": None}, outfile)
 
     with open(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml"), "r") as infile:
         status = yaml.safe_load(infile)
@@ -165,6 +186,15 @@ def configure(analysis_id):
         a.config["infinity_value"] = form.infinity.data
         a.config["max_time_walking"] = form.max_time_walking.data
 
+        # Opportunity configuration
+        a.config["opportunities"] = dict()
+        for opportunity_form in form.opportunities:
+            this_opportunity = dict()
+            this_opportunity["method"] = opportunity_form.method.data
+            this_opportunity["name"] = opportunity_form.prettyname.data
+            this_opportunity["parameters"] = [int(x.strip()) for x in opportunity_form.parameters.data.split(",")]
+            a.config["opportunities"][opportunity_form.opportunity.data] = this_opportunity
+
         a.config["scenarios"][0]["duration"] = form.scenario0_duration.data
         a.config["scenarios"][0]["name"] = form.scenario0_name.data
         a.config["scenarios"][0]["start_datetime"] = form.scenario0_start.data
@@ -185,6 +215,10 @@ def configure(analysis_id):
 
         with open(os.path.join(upload_folder, "config.yml"), "w") as outfile:
             yaml.dump(a.config, outfile)
+
+        # Pickle the analysis
+        with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
+            pickle.dump(a, outfile)
 
         # Start the validation process
         executor.submit(run_validation, a=a)
@@ -266,6 +300,20 @@ def gtfs(analysis_id):
 @app.route("/validate/<analysis_id>")
 def validate(analysis_id):
     return render_template("validate.jinja2", analysis_id=analysis_id)
+
+
+@app.route("/run/<analysis_id>")
+def run(analysis_id):
+    # Load the analysis object
+    # Unpickle the analysis
+    with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "rb") as infile:
+        a = pickle.load(infile)
+    # Check if the state is in the right part
+
+    status = get_status(analysis_id)
+    if status["stage"] == "validate" and status["value"] == 100:
+        executor.submit(run_analysis, a=a)
+    return render_template("run.jinja2", analysis_id=analysis_id)
 
 
 @app.route("/status/<analysis_id>")

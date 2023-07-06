@@ -1,7 +1,14 @@
+/**
+ * Configuration Page
+ * This contains code to render the Leaflet map showing the block group centroids.
+ */
+
+// Set the starting location (is updated right away), currently Toronto
 var zoom = 12
 var lat = "43.715877"
 var lon = "-79.3243027"
 
+// Initialize the map
 var map = L.map('configure-map',
   {
     preferCanvas: true, // Great speedup
@@ -20,14 +27,17 @@ map.createPane('labels');
 map.getPane('labels').style.zIndex = 650;
 map.getPane('labels').style.pointerEvents = 'none';
 
+// Grab the labels map and add it to the map.
 var cartoLabels = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png", {
   maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
   pane: 'labels'
 }).addTo(map);
 
+// Add a scale bar for scale
 var scaleBar = L.control.scale().addTo(map)
 
+// Styling of the circles representing centroids
 var markerOptions = {
   radius: 6,
   fillColor: "#000000",
@@ -36,6 +46,7 @@ var markerOptions = {
   weight: 0
 };
 
+// Fetch and render centroids
 var points = new L.GeoJSON.AJAX("/cache/" + config["analysis_id"] + "/analysis_centroids.geojson", {
   pointToLayer: function (feature, latlng) {
     var m = L.circleMarker(latlng, markerOptions);
@@ -49,6 +60,3 @@ var points = new L.GeoJSON.AJAX("/cache/" + config["analysis_id"] + "/analysis_c
 points.on('data:loaded', function () {
   map.fitBounds(points.getBounds());
 }.bind(this));
-
-
-

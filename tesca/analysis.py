@@ -145,7 +145,19 @@ class Analysis:
         self.log.setLevel(STREAM_LOG)
 
     def assemble_gtfs_files(self, scenario_idx: int) -> list:
-        self.log.info("  Assembling GTFS Files")
+        """Build a list of GTFS files for a given scenario for validation
+
+        Parameters
+        ----------
+        scenario_idx : int
+            Can be 0 or 1 depending on the scenario
+
+        Returns
+        -------
+        list
+            A list of GTFS files to be assessed.
+        """
+        self.log.debug("  Assembling GTFS Files")
         gtfs = []
         gtfs_folder = os.path.join(self.cache_folder, f"gtfs{scenario_idx}")
         for path in os.listdir(gtfs_folder):
@@ -164,7 +176,9 @@ class Analysis:
         for idx, scenario in enumerate(self.config["scenarios"]):
             gtfs = self.assemble_gtfs_files(idx)
             self.log.info(f"{scenario['name']}: Building analysis network")
-            start_time = dt.datetime.strptime(scenario["start_datetime"], "%Y-%m-%d %H:%M")
+            start_time = scenario["start_datetime"]
+            if not isinstance(start_time, dt.datetime):
+                start_time = dt.datetime.strptime(start_time, "%Y-%m-%d %H:%M")
 
             tn = TransportNetwork(
                 os.path.join(self.cache_folder, "osm.pbf"),
@@ -192,13 +206,14 @@ class Analysis:
             start = time.time()
             travel_time_matrix = ttmc.compute_travel_times()
             end = time.time()
-
-            self.log.debug(f"{scenario['name']}: Matrix calcualtion took {end-start} seconds")
+            self.log.info(f"{scenario['name']}: Matrix computation complete")
+            self.log.debug(f"{scenario['name']}: Matrix computation took {end-start} seconds")
             travel_time_matrix.to_csv(
                 os.path.join(CACHE_FOLDER, self.uid, f"matrix{idx}.csv"),
                 index=False,
             )
-            self.log.info(f"{scenario['name']}: Matrix written to matrix{idx}.csv")
+            self.log.debug(f"{scenario['name']}: Matrix written to matrix{idx}.csv")
+        self.log.info(f"All travel times computed")
 
     def compute_metrics(self):
         """Compute the access to opportunity metrics using the calcualted matrices"""
@@ -371,7 +386,7 @@ class Analysis:
 
     def compare_scenarios(self):
         """Compute the differences between all scenarios"""
-        self.log.info("Computing Scenario Comparisons")
+        self.log.info("Computing scenario comparisons")
         idxs = [i for i in range(len(self.config["scenarios"]))]
         compared_dfs = []
         for pair in combinations(idxs, 2):
@@ -409,6 +424,7 @@ class Analysis:
 
     def compute_summaries(self):
         # Take the compared metrics and summarize all of them
+        self.log.info("Computing scenario summaries")
         compared = pd.read_csv(
             os.path.join(self.cache_folder, COMPARED_FILENAME),
             dtype={"bg_id": str},
@@ -607,7 +623,7 @@ class Analysis:
                 output_folder = os.path.join(validator_folder, gtfs_filename)
                 if not os.path.exists(output_folder):
                     os.mkdir(output_folder)
-                self.log.info(f"Running MobilityData Validator on {gtfs_filename}")
+                self.log.info(f"{scenario['name']}: Running MobilityData Validator on {gtfs_filename}")
                 try:
                     subprocess.call(
                         [
@@ -629,9 +645,9 @@ class Analysis:
                 with open(os.path.join(output_folder, "system_errors.json")) as system_errors_file:
                     system_errors = json.load(system_errors_file)
                     if len(system_errors["notices"]) > 0:
-                        self.log.info(f"There were {len(system_errors['notices'])} system errors.")
-                        for i in system_errors["notices"]:
-                            self.log.error(f"{i}")
+                        self.log.info(
+                            f"{scenario['name']}: There were {len(system_errors['notices'])} system errors. See system error report for details."
+                        )
 
                 # Next let's go through the notices
                 with open(os.path.join(output_folder, "report.json")) as validation_report_file:
@@ -647,17 +663,20 @@ class Analysis:
                         levels[notice["severity"]]["unique_count"] += 1
                         levels[notice["severity"]]["codes"].append(notice["code"])
                     if levels["ERROR"]["total_count"] > 0:
-                        self.log.error(f"{levels['ERROR']['total_count']} errors found in {gtfs_filename}")
-                    else:
-                        self.log.info(f"No errors found in {gtfs_filename}")
-                    if levels["WARNING"]["total_count"] > 0:
-                        self.log.warning(
-                            f"{levels['WARNING']['total_count']} warnings found in {gtfs_filename}"
+                        self.log.error(
+                            f"{scenario['name']}: {levels['ERROR']['total_count']} errors found in {gtfs_filename}"
                         )
                     else:
-                        self.log.info(f"No warnings found in {gtfs_filename}")
-                    self.log.info(f"{levels['INFO']['total_count']} infos found in {gtfs_filename}")
-                    self.log.info(f"See additional report for details")
+                        self.log.info(f"{scenario['name']}: No errors found in {gtfs_filename}")
+                    if levels["WARNING"]["total_count"] > 0:
+                        self.log.warning(
+                            f"{scenario['name']}: {levels['WARNING']['total_count']} warnings found in {gtfs_filename}"
+                        )
+                    else:
+                        self.log.info(f"{scenario['name']}: No warnings found in {gtfs_filename}")
+                    self.log.info(
+                        f"{scenario['name']}: {levels['INFO']['total_count']} infos found in {gtfs_filename}"
+                    )
 
                 # Load the thing into gtfs-lite
                 gtfs_lite = GTFS.load_zip(g)

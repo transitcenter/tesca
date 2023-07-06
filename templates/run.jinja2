@@ -1,0 +1,31 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Analysis Validation {% endblock %}
+
+{% block content %}
+<script>
+    var analysis_id = {{analysis_id | safe }};
+</script>
+
+<div class='container'>
+    <h1>Running Analysis</h1>
+    <p>Currently <b id="status-message"></b></p>
+    <div class="hide-until-ready">
+        <a href="/results/{{ analysis_id }}" class="pure-button pure-button-primary">View Results</a>
+    </div>
+    <h2>Detailed Log</h2>
+    <table class="pure-table pure-table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Time</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody id="logtable-body">
+        </tbody>
+    </table>
+</div>
+
+<script src="{{ url_for('static', filename='js/run.js') }}"></script>
+{% endblock %}

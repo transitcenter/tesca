@@ -22,7 +22,9 @@ from wtforms.validators import DataRequired, Length, NumberRange
 class OpportunityMeasureForm(Form):
     prettyname = StringField("Opportunity Name", validators=[DataRequired()])
     method = SelectField(
-        "Computation Method", choices=[("c", "Cumulative"), ("t", "Travel Time to nth Closest")], default="c"
+        "Computation Method",
+        choices=[("cumulative", "Cumulative"), ("travel_time", "Travel Time to nth Closest")],
+        default="c",
     )
     parameters = StringField("Parameters (comma separated)", validators=[DataRequired()], default="30,45")
     opportunity = HiddenField()

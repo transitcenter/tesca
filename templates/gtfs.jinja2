@@ -6,6 +6,7 @@
 <div class='container'>
     <h1>GTFS Validation Results</h1>
     <p>Select a GTFS file below to view detailed validation results.</p>
+    <a href="/validate/{{ analysis_id }}" class="pure-button">Back to validation page</a>
     <h2>Scenario 0</h2>
     <table class="pure-table pure-table-striped">
         <thead>
@@ -22,7 +23,8 @@
         <tbody>
             {% for g in gtfs["0"] %}
             <tr>
-                <td><a href="/cache/{{analysis_id}}/validation/gtfs_validation0/{{ g }}/report.html">{{ g }}</a></td>
+                <td><a href="/cache/{{analysis_id}}/validation/gtfs_validation0/{{ g }}/report.html">{{ g }}</a>
+                </td>
                 <td>{{ gtfs["0"][g]["ERROR"]["total_count"] }}</td>
                 <td>{{ gtfs["0"][g]["ERROR"]["unique_count"] }}</td>
                 <td>{{ gtfs["0"][g]["WARNING"]["total_count"] }}</td>
@@ -51,7 +53,8 @@
         <tbody>
             {% for g in gtfs["1"] %}
             <tr>
-                <td><a href="/cache/{{analysis_id}}/validation/gtfs_validation1/{{ g }}/report.html">{{ g }}</a></td>
+                <td><a href="/cache/{{analysis_id}}/validation/gtfs_validation1/{{ g }}/report.html">{{ g }}</a>
+                </td>
                 <td>{{ gtfs["1"][g]["ERROR"]["total_count"] }}</td>
                 <td>{{ gtfs["1"][g]["ERROR"]["unique_count"] }}</td>
                 <td>{{ gtfs["1"][g]["WARNING"]["total_count"] }}</td>
