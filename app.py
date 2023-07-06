@@ -192,7 +192,7 @@ def configure(analysis_id):
     return render_template("configure.jinja2", form=form, config_json={"analysis_id": analysis_id})
 
 
-@app.route("gtfs/<analysis_id>")
+@app.route("/gtfs/<analysis_id>")
 def gtfs(analysis_id):
     pass
 
