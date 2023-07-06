@@ -1,8 +1,6 @@
 """
 The analysis object is used to initalize and perform a comparative data analysis. 
 It contains a number of validation and helper functions as well as analysis functions.
-    
-    
 """
 
 import datetime as dt
@@ -27,6 +25,7 @@ from pygris.data import get_census
 from r5py import TransportNetwork, TravelTimeMatrixComputer
 
 LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
+LOG_CSV_FORMATTER = logging.Formatter("%(asctime)s,%(levelname)s,%(message)s", datefmt="%Y-%m-%d %H:%M")
 
 #: Cache folder for project storage
 CACHE_FOLDER = "cache"
@@ -79,15 +78,21 @@ class Analysis:
         if new_cache_folder is True:
             self.log.debug(f"Created cache folder at {os.path.join(CACHE_FOLDER, self.config['uid'])}")
 
+        new_analysis = False
         # Create a GTFS folder for each scenario if it doesn't already have one
         for idx, scenario in enumerate(self.config["scenarios"]):
             if not os.path.exists(os.path.join(CACHE_FOLDER, self.config["uid"], f"gtfs{idx}")):
                 os.mkdir(os.path.join(CACHE_FOLDER, self.config["uid"], f"gtfs{idx}"))
-                self.log.info(f"Created empty gtfs{idx} folder")
+                self.log.debug(f"Created gtfs{idx} folder")
+                new_analysis = True
 
         if not os.path.exists(os.path.join(self.cache_folder, VALIDATION_SUBFOLDER)):
             os.mkdir(os.path.join(self.cache_folder, VALIDATION_SUBFOLDER))
-            self.log.info("Created validation folder")
+            self.log.debug("Created validation folder")
+            new_analysis = True
+
+        if new_analysis == True:
+            self.log.info(f"Started a new analysis with ID {self.uid}")
 
     @classmethod
     def from_config_file(cls, config_file):
@@ -107,7 +112,7 @@ class Analysis:
             config = yaml.safe_load(infile)
 
         a = cls(config)
-        a.log.info(f"Created analysis instance from {config_file}")
+        a.log.debug(f"Instantiated instance from {config_file}")
         return a
 
     def write_config_file(self):
@@ -129,12 +134,12 @@ class Analysis:
         self.log.addHandler(stream_handler)
 
         handler_info = logging.FileHandler(os.path.join(self.cache_folder, "info.log"))
-        handler_info.setFormatter(LOG_FORMATTER)
+        handler_info.setFormatter(LOG_CSV_FORMATTER)
         handler_info.setLevel(logging.INFO)
         self.log.addHandler(handler_info)
 
         handler_error = logging.FileHandler(os.path.join(self.cache_folder, "error.log"))
-        handler_error.setFormatter(LOG_FORMATTER)
+        handler_error.setFormatter(LOG_CSV_FORMATTER)
         handler_error.setLevel(logging.ERROR)
         self.log.addHandler(handler_error)
         self.log.setLevel(STREAM_LOG)
@@ -441,6 +446,9 @@ class Analysis:
         result.index.name = "metric"
         result.to_csv(os.path.join(self.cache_folder, SUMMARY_FILENAME))
 
+    def download_block_groups(self, state, county):
+        return block_groups(state=state, county=county, year=self.settings["census_year"], cb=True)
+
     def fetch_block_groups(self, counties_by_state: dict, overwrite=False):
         # Fetch all block groups based on a list of states/counties
         # TODO: Check if analysis file already exists?
@@ -449,11 +457,7 @@ class Analysis:
                 raise FileExistsError("An analysis centroids file already exists")
         bg_dfs = []
         for state in counties_by_state.keys():
-            print(state)
-            print(counties_by_state[state])
-            bgs = block_groups(
-                state=str(state), county=counties_by_state[state], year=self.settings["census_year"], cb=True
-            )
+            bgs = self.download_block_groups(str(state), counties_by_state[state])
             bg_dfs.append(bgs)
 
         bg_df = pd.concat(bg_dfs, axis="index")
@@ -462,6 +466,32 @@ class Analysis:
         bg_centroid = bg_centroid.rename(columns={"GEOID": "id"})
         bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
         bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
+
+    def fetch_block_groups_from_bg_ids(self, ids_list):
+        ids_list = [str(i) for i in ids_list]
+        states = {i[:2]: [] for i in ids_list}
+        for bg in ids_list:
+            states[bg[:2]].append(bg[2:5])
+
+        # Clean up duplicates
+        for key in states.keys():
+            states[key] = list(set(states[key]))
+
+        # Fetch the block groups
+        bg_dfs = []
+        for key in states.keys():
+            bg_df = self.download_block_groups(state=key, county=states[key])
+            bg_dfs.append(bg_df)
+
+        all_bg = pd.concat(bg_dfs, axis="index")
+        all_bg = all_bg[["GEOID", "geometry"]]
+        all_bg = all_bg[all_bg.GEOID.isin(ids_list)]
+        all_bg = all_bg.rename(columns={"GEOID": "bg_id"})
+        bg_centroid = all_bg.copy()
+        bg_centroid["geometry"] = bg_centroid["geometry"].centroid
+        bg_centroid = bg_centroid.rename(columns={"bg_id": "id"})
+        bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
+        all_bg.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
 
     def fetch_demographic_data(self):
         # See: https://api.census.gov/data/2021/acs/acs5
@@ -499,7 +529,7 @@ class Analysis:
 
     def validate_analysis_area(self):
         # Open up the analysis area and the geojson
-        self.log.info("Validating Analysis Area")
+        self.log.info("Validating analysis area")
         analysis_area = gpd.read_file(
             os.path.join(self.cache_folder, CENTROIDS_FILENAME),
             dtype={"id": str},
@@ -537,6 +567,7 @@ class Analysis:
             self.log.error(
                 f"  There are {impact_not_in_analysis.shape[0]} zones in the impact area that are not in the analysis area. See {impact_not_in_analysis_filename} for a list."
             )
+        self.log.info("Validation of analysis area complete")
 
     def validate_demographics(self):
         # Let's pull the demographics file and the equity file
@@ -576,7 +607,7 @@ class Analysis:
                 output_folder = os.path.join(validator_folder, gtfs_filename)
                 if not os.path.exists(output_folder):
                     os.mkdir(output_folder)
-                self.log.info(f"Running MobilityData Validator on {g}")
+                self.log.info(f"Running MobilityData Validator on {gtfs_filename}")
                 try:
                     subprocess.call(
                         [
@@ -597,9 +628,10 @@ class Analysis:
                 # First let's check for system errors
                 with open(os.path.join(output_folder, "system_errors.json")) as system_errors_file:
                     system_errors = json.load(system_errors_file)
-                    self.log.info(f"  There were {len(system_errors['notices'])} system errors.")
-                    for i in system_errors["notices"]:
-                        self.log.error(f"{i}")
+                    if len(system_errors["notices"]) > 0:
+                        self.log.info(f"There were {len(system_errors['notices'])} system errors.")
+                        for i in system_errors["notices"]:
+                            self.log.error(f"{i}")
 
                 # Next let's go through the notices
                 with open(os.path.join(output_folder, "report.json")) as validation_report_file:
@@ -614,27 +646,30 @@ class Analysis:
                         levels[notice["severity"]]["total_count"] += notice["totalNotices"]
                         levels[notice["severity"]]["unique_count"] += 1
                         levels[notice["severity"]]["codes"].append(notice["code"])
+                    if levels["ERROR"]["total_count"] > 0:
+                        self.log.error(f"{levels['ERROR']['total_count']} errors found in {gtfs_filename}")
+                    else:
+                        self.log.info(f"No errors found in {gtfs_filename}")
+                    if levels["WARNING"]["total_count"] > 0:
+                        self.log.warning(
+                            f"{levels['WARNING']['total_count']} warnings found in {gtfs_filename}"
+                        )
+                    else:
+                        self.log.info(f"No warnings found in {gtfs_filename}")
+                    self.log.info(f"{levels['INFO']['total_count']} infos found in {gtfs_filename}")
+                    self.log.info(f"See additional report for details")
 
-                    self.log.info(
-                        f"  There are {levels['ERROR']['total_count']} errors, {levels['WARNING']['total_count']} warnings, and {levels['INFO']['total_count']} infos."
-                    )
-                    self.log.info(f"  Please see {os.path.join(output_folder, 'report.html')} for details.")
-
-                    # for code in levels["ERROR"]["codes"]:
-                    #     self.log.error(f"  {code}")
-                    # for code in levels["WARNING"]["codes"]:
-                    #     self.log.warning(f"  {code}")
-                    # for code in levels["INFO"]["codes"]:
-                    #     self.log.info(f"  {code}")
-
-                self.log.info(f"Performing additional GTFS validation on {g}")
                 # Load the thing into gtfs-lite
                 gtfs_lite = GTFS.load_zip(g)
                 # Get the scenario that's going to be run
-                start_time = dt.datetime.strptime(self.config["scenarios"][idx]["start_datetime"], "%Y-%m-%d %H:%M")
+                start_time = self.config["scenarios"][idx]["start_datetime"]
+                if not isinstance(start_time, dt.datetime):
+                    start_time = dt.datetime.strptime(
+                        self.config["scenarios"][idx]["start_datetime"], "%Y-%m-%d %H:%M"
+                    )
                 end_time = start_time + dt.timedelta(minutes=self.config["scenarios"][idx]["duration"])
                 if gtfs_lite.valid_date(start_time.date()) == False or gtfs_lite.valid_date(end_time.date()) == False:
-                    self.log.error(f"  Start or end date of analysis {idx} is invalid")
+                    self.log.error(f"Start or end date of analysis {idx} is invalid")
                 # Analysis date
 
     def validate_open_street_map(self):
@@ -642,7 +677,7 @@ class Analysis:
 
     def validate_opportunities(self):
         # Let's pull the demographics file and the equity file
-        self.log.info("Validating Opporutnities Data")
+        self.log.info("Starting validation of opportunities file")
         opportunities = pd.read_csv(
             os.path.join(self.cache_folder, OPPORTUNITIES_FILENAME),
             dtype={"bg_id": str},
@@ -655,3 +690,4 @@ class Analysis:
             self.log.error(
                 f"  There are {no_opportunities.shape[0]} analysis area zones that do not have opportunity data. See {no_opportunities_filename} for zones with missing data."
             )
+        self.log.info("Completed validation of opportunities file")

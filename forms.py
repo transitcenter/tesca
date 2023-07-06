@@ -2,11 +2,11 @@ from flask_wtf import FlaskForm
 
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import (
+    Form,
     StringField,
     TextAreaField,
     SubmitField,
     IntegerField,
-    BooleanField,
     SelectField,
     SelectMultipleField,
     DateTimeField,
@@ -19,17 +19,17 @@ from wtforms import (
 from wtforms.validators import DataRequired, Length, NumberRange
 
 
-class OpportunityMeasureForm(FlaskForm):
+class OpportunityMeasureForm(Form):
     prettyname = StringField("Opportunity Name", validators=[DataRequired()])
     method = SelectField(
         "Computation Method", choices=[("c", "Cumulative"), ("t", "Travel Time to nth Closest")], default="c"
     )
-    parameters = StringField("Parameters (comma separated)", validators=[DataRequired(), NumberRange(min=1)])
+    parameters = StringField("Parameters (comma separated)", validators=[DataRequired()], default="30,45")
     opportunity = HiddenField()
 
 
-class OpportunityConfigForm(FlaskForm):
-    opportunities = FieldList(FormField(OpportunityMeasureForm), min_entries=1)
+# class OpportunityConfigForm(Form):
+#     opportunities = FieldList(FormField(OpportunityMeasureForm), min_entries=1)
 
 
 class OpportunitiesUploadForm(FlaskForm):
@@ -41,8 +41,8 @@ class OpportunitiesUploadForm(FlaskForm):
 
 
 class ConfigForm(FlaskForm):
-    analyst = StringField("Analyst Name", validators=[DataRequired()])
-    project = StringField("Scenario Name", validators=[DataRequired()])
+    analyst = StringField("Analyst Name", validators=[DataRequired()], default="Your Name Here")
+    project = StringField("Scenario Name", validators=[DataRequired()], default="Test Project")
     description = TextAreaField("Description", default="")
     # fetch_demographics = BooleanField("Fetch Demographics", [], default=True)
     fetch_demographics = SelectField("Fetch Demographics", choices=[("yes", "Yes"), ("no", "No")], default="yes")
@@ -59,7 +59,7 @@ class ConfigForm(FlaskForm):
 
     opportunities = FieldList(FormField(OpportunityMeasureForm), min_entries=1)
 
-    scenario0_name = StringField("Scenario Name", validators=[DataRequired()])
+    scenario0_name = StringField("Scenario Name", validators=[DataRequired()], default="Scenario A")
     scenario0_start = DateTimeField(
         "Start Date & Time (YYYY-MM-DD HH:MM)", format="%Y-%m-%d %H:%M", validators=[DataRequired()]
     )
@@ -68,12 +68,22 @@ class ConfigForm(FlaskForm):
     )
     scenario0_modes = SelectMultipleField(
         "Transit Modes",
-        choices=[("TRANSIT", "All Modes"), ("BUS", "Bus"), ("SUBWAY", "Subway"), ("FUNICULAR", "Funicular")],
+        choices=[
+            ("TRANSIT", "All Modes"),
+            ("BUS", "Bus"),
+            ("SUBWAY", "Subway"),
+            ("TRAM", "Tram/Streetcar"),
+            ("RAIL", "Rail"),
+            ("FERRY", "Ferry"),
+            ("CABLE_CAR", "Cable Car"),
+            ("GONDOLA", "Gondola"),
+            ("FUNICULAR", "Funicular"),
+        ],
         default=["TRANSIT"],
     )
-    scenario0_gtfs = MultipleFileField("GTFS Files", validators=[FileRequired()])
+    scenario0_gtfs = MultipleFileField("GTFS Files", validators=[DataRequired()])
 
-    scenario1_name = StringField("Scenario Name", validators=[DataRequired()])
+    scenario1_name = StringField("Scenario Name", validators=[DataRequired()], default="Scenario B")
     scenario1_start = DateTimeField(
         "Start Date & Time (YYYY-MM-DD HH:MM)", format="%Y-%m-%d %H:%M", validators=[DataRequired()]
     )
@@ -82,9 +92,19 @@ class ConfigForm(FlaskForm):
     )
     scenario1_modes = SelectMultipleField(
         "Transit Modes",
-        choices=[("TRANSIT", "All Modes"), ("BUS", "Bus"), ("SUBWAY", "Subway"), ("FUNICULAR", "Funicular")],
+        choices=[
+            ("TRANSIT", "All Modes"),
+            ("BUS", "Bus"),
+            ("SUBWAY", "Subway"),
+            ("TRAM", "Tram/Streetcar"),
+            ("RAIL", "Rail"),
+            ("FERRY", "Ferry"),
+            ("CABLE_CAR", "Cable Car"),
+            ("GONDOLA", "Gondola"),
+            ("FUNICULAR", "Funicular"),
+        ],
         default=["TRANSIT"],
     )
-    scenario1_gtfs = MultipleFileField("GTFS Files", validators=[FileRequired()])
+    scenario1_gtfs = MultipleFileField("GTFS Files", validators=[DataRequired()])
 
     submit = SubmitField("Set Up Analysis and Validate")

@@ -14,7 +14,7 @@ html {
  */
 body {
     line-height: 1.7em;
-    color: #7f8c8d;
+    color: #464848;
     font-size: 13px;
 }
 
@@ -37,6 +37,10 @@ legend {
     height: auto;
 }
 
+.pure-table td {
+    padding: .25em 1em
+}
+
 /*
  * -- LAYOUT STYLES --
  * These are some useful classes which I will need
@@ -54,38 +58,44 @@ legend {
     text-align: center;
 }
 
-/* .pure-form-stacked input[type=file] {
-    font-size: 100px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-}
-
-.upload-btn-wrapper {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-  } */
-
 /*
- * -- PURE BUTTON STYLES --
- * I want my pure-button elements to look a little different
+ * -- BUTTON STYLES --
+ * I want to customize how my .pure-menu looks at the top of the page
  */
-/* .pure-button {
-    background-color: #1f8dd6;
-    color: white;
-    padding: 0.5em 2em;
-    border-radius: 5px;
+
+.pure-button {
+    border-radius: 4px;
 }
 
-a.pure-button-primary {
-    background: white;
-    color: #1f8dd6;
-    border-radius: 5px;
-    font-size: 120%;
-} */
+.button-info,
+.button-error,
+.button-warning,
+.button-secondary {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
 
+.button-info {
+    background: rgb(28, 179, 184);
+}
+
+.button-error {
+    background: rgb(202, 60, 60);
+}
+
+.button-warning {
+    background: rgb(223, 117, 20);
+}
+
+.button-log {
+    width: 100px;
+    cursor: default;
+}
+
+.hide-until-ready {
+    visibility: hidden;
+}
 
 /*
  * -- MENU STYLES --
