@@ -1,0 +1,62 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Results {% endblock %}
+
+{% block styles %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}"
+    media="screen,projection" />
+{% endblock %}
+
+{% block content %}
+<script>
+    var analysis_id = {{analysis_id | safe }};
+</script>
+<div class='container'>
+    <h1>Analysis Results</h1>
+    <p>Analysis was run by NAME on DATE</p>
+    <h2>Introduction</h2>
+    <p>This report summarizes an analysis of access to opportunities via public transit in a specific region. The
+        analysis may use two types of measures:
+    </p>
+    <p>
+    <ul>
+        <li>
+            <b>Cumulative measures</b>, which sum the total number of a given destination or opportunity reachable in a
+            specified timeframe. With this metric, <b>higher is typically better</b>. When viewing these measures, the
+            accompanying parameter indicates the maximum travel time within which a desination is considered reachable.
+            For example, a parameter of 45 indicates that the measure counts all destinations within 45 minutes as
+            reachable.
+        </li>
+        <li>
+            <b>Travel time measures</b>, which measure how long it takes to reach the nth (e.g. 1st, 3rd, etc) closest
+            destination. With this metric, <b>lower is typically better</b>. When viewing these measures, the
+            accompanying parameter indicates which nth closest desination was used. For example, a parameter of '2'
+            indicates that the measure counts the travel time to the 2nd closest destination.
+        </li>
+    </ul>
+    </p>
+    <div class="pure-g">
+        <div class="pure-u-1">
+            <div id="summary-map" class="svg-container"></div>
+            <h2>Scenario Comparisons</h2>
+            {% for key, value in config_json['opportunities'].items() %}
+            <h3>{{config_json['opportunities'][key]['name']}}</h3>
+            {% for parameter in config_json['opportunities'][key]['parameters'] %}
+            <div class="pure-u-11-24">
+                {% if config_json['opportunities'][key]['method'] == 'cumulative' %}
+                <h4>Within {{ parameter }} minutes travel time</h4>
+                {% else %}
+                <h4>Travel time to the {{ parameter }} closest</h4>
+                {% endif %}
+                <div id="{{ key }}-{{ parameter }}-chart" class="result-chart"></div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+    <div id="summary-chart" class="svg-container"></div>
+</div>
+<script src="{{ url_for('static', filename='js/d3.v5.js') }}"></script>
+<script src="https://d3js.org/d3-array.v2.min.js"></script>
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,9 @@
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+#summary-chart {
+    width: 900px;
+    height: 900px;
+}

@@ -23,8 +23,9 @@ app.config.from_object(DevelopmentConfig)
 SECRET_KEY = os.urandom(32)
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["WTF_CSRF_SECRET_KEY"] = SECRET_KEY
-csrf = CSRFProtect(app)
+app.config["EXECUTOR_PROPAGATE_EXCEPTIONS"] = True
 
+csrf = CSRFProtect(app)
 executor = Executor(app)
 
 
@@ -35,34 +36,37 @@ def run_validation(a):
     a.validate_analysis_area()
     update_status(a.uid, "validating opportunities file", value=20)
     a.validate_opportunities()
-    # update_status(a.uid, message="Validated opportunities", value=20)
-    # a.validate_demographics()
     update_status(a.uid, "validating GTFS data", value=30)
     a.validate_gtfs_data()
     update_status(a.uid, message="awaiting validation review from user", value=100)
     return True
 
 
-def run_analysis(a):
+@executor.job
+def run_analysis(analysis_id):
     print("Analysis run executed")
-    # Let's run through the validation
+    try:
+        a = Analysis.from_config_file(os.path.join("cache", analysis_id, "config.yml"))
+        update_status(a.uid, "computing travel times", stage="run", value=0)
+        a.compute_travel_times()
 
-    # Compute the travel time matrix - this takes a while
-    update_status(a.uid, "computing travel times", stage="run", value=0)
-    a.compute_travel_times()
-    # Compute the access metrics as configured in the config.yml file
-    update_status(a.uid, "computing metrics", value=60)
-    a.compute_metrics()
-    # Compute the scenario comparison of the metrics
-    update_status(a.uid, "performing scenario comparison", value=70)
-    a.compare_scenarios()
-    # Summarize these metrics (and comparison) across imapct area demographics
-    update_status(a.uid, "computing demographic summaries", value=80)
-    a.compute_summaries()
-    update_status(a.uid, "computing unreachable destinations", value=90)
-    # Compute unreachable destinations
-    a.compute_unreachable()
-    update_status(a.uid, message="finished running analysis", value=100)
+        update_status(a.uid, "computing metrics", value=60)
+        a.compute_metrics()
+
+        update_status(a.uid, "performing scenario comparison", value=70)
+        a.compare_scenarios()
+
+        update_status(a.uid, "downloading demographic data", value=80)
+        a.fetch_demographic_data()
+
+        update_status(a.uid, "computing demographic summaries", value=90)
+        a.compute_summaries()
+
+        update_status(a.uid, "computing unreachable destinations", value=95)
+        a.compute_unreachable()
+        update_status(a.uid, message="finished running analysis!", stage="results", value=100)
+    except Exception as e:
+        update_status(a.uid, f"broken: {e}", stage="error")
     return True
 
 
@@ -87,6 +91,11 @@ def update_status(analysis_id, message, stage=None, value=None):
 
 def get_status(analysis_id):
     with open(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml"), "r") as infile:
+        return yaml.safe_load(infile)
+
+
+def get_config(analysis_id):
+    with open(os.path.join(CACHE_FOLDER, str(analysis_id), "config.yml"), "r") as infile:
         return yaml.safe_load(infile)
 
 
@@ -145,10 +154,9 @@ def configure(analysis_id):
 
     opp_fields = []
     opp_keys = list(a.config["opportunities"].keys())
+
     for o in opp_keys:
         opp_fields.append({"opportunity": o, "prettyname": o})
-        # temp_form = OpportunityMeasureForm()
-        # form.opportunities.append_entry(temp_form.data)
 
     form = ConfigForm(opportunities=opp_fields)
 
@@ -292,7 +300,7 @@ def gtfs(analysis_id):
                 gtfs1[gtfs_validation_foldername][notice["severity"]]["total_count"] += notice["totalNotices"]
                 gtfs1[gtfs_validation_foldername][notice["severity"]]["unique_count"] += 1
 
-    gtfs_json["1"] = gtfs0
+    gtfs_json["1"] = gtfs1
 
     return render_template("gtfs.jinja2", gtfs=gtfs_json, analysis_id=analysis_id)
 
@@ -304,16 +312,17 @@ def validate(analysis_id):
 
 @app.route("/run/<analysis_id>")
 def run(analysis_id):
-    # Load the analysis object
-    # Unpickle the analysis
-    with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "rb") as infile:
-        a = pickle.load(infile)
-    # Check if the state is in the right part
-
     status = get_status(analysis_id)
     if status["stage"] == "validate" and status["value"] == 100:
-        executor.submit(run_analysis, a=a)
+        run_analysis.submit(analysis_id)
     return render_template("run.jinja2", analysis_id=analysis_id)
+
+
+@app.route("/results/<analysis_id>")
+def results(analysis_id):
+    # Let's grab the opportunities information
+    config = get_config(analysis_id)
+    return render_template("results.jinja2", analysis_id=analysis_id, config_json=config)
 
 
 @app.route("/status/<analysis_id>")

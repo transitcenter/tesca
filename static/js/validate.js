@@ -62,7 +62,7 @@ function updateStatusMessage() {
             statusMessage.innerHTML = data.message
 
             // If the status message is complete, show the buttons for review and run
-            if (data.value == 100) {
+            if ((data.stage == "validate") && (data.value == 100)) {
                 document.querySelectorAll(".hide-until-ready").forEach(function (item, index) {
                     item.style.visibility = "visible";
                 })

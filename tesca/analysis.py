@@ -24,6 +24,8 @@ from pygris import block_groups
 from pygris.data import get_census
 from r5py import TransportNetwork, TravelTimeMatrixComputer
 
+from .util import demographic_categories
+
 LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
 LOG_CSV_FORMATTER = logging.Formatter("%(asctime)s,%(levelname)s,%(message)s", datefmt="%Y-%m-%d %H:%M")
 
@@ -218,8 +220,9 @@ class Analysis:
     def compute_metrics(self):
         """Compute the access to opportunity metrics using the calcualted matrices"""
         # Now that the metrics are built...
-        self.log.info("Computing metrics for all scenarios")
+
         for idx, scenario in enumerate(self.config["scenarios"]):
+            self.log.info(f"Computing metrics or {scenario['name']}")
             metrics = []
             matrix = pd.read_csv(
                 os.path.join(self.cache_folder, f"matrix{idx}.csv"),
@@ -258,6 +261,7 @@ class Analysis:
             # Merge all dataframes together.
             metrics = reduce(lambda df1, df2: pd.merge(df1, df2, on="bg_id"), metrics)
             metrics.to_csv(os.path.join(self.cache_folder, f"metrics{idx}.csv"), index=False)
+            self.log.info(f"Finished computing metrics")
 
     @staticmethod
     def compute_cumulative_measure(
@@ -383,6 +387,7 @@ class Analysis:
 
         result = pd.concat(unreachable_dfs, axis="index").reset_index(drop=True)
         result[result.columns[::-1]].to_csv(os.path.join(self.cache_folder, "unreachable.csv"), index=False)
+        self.log.info("Finished computing unreachable destinations")
 
     def compare_scenarios(self):
         """Compute the differences between all scenarios"""
@@ -421,6 +426,7 @@ class Analysis:
 
         compared = reduce(lambda df1, df2: pd.merge(df1, df2, on="bg_id"), compared_dfs)
         compared.to_csv(os.path.join(self.cache_folder, COMPARED_FILENAME), index=False)
+        self.log.info("Finished computing scenario comparisons")
 
     def compute_summaries(self):
         # Take the compared metrics and summarize all of them
@@ -461,6 +467,7 @@ class Analysis:
         result.columns = demographics.columns
         result.index.name = "metric"
         result.to_csv(os.path.join(self.cache_folder, SUMMARY_FILENAME))
+        self.log.info("Finished computing scenario summaries")
 
     def download_block_groups(self, state, county):
         return block_groups(state=state, county=county, year=self.settings["census_year"], cb=True)
@@ -484,6 +491,7 @@ class Analysis:
         bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
 
     def fetch_block_groups_from_bg_ids(self, ids_list):
+        self.log.info("Downloading block group data")
         ids_list = [str(i) for i in ids_list]
         states = {i[:2]: [] for i in ids_list}
         for bg in ids_list:
@@ -508,18 +516,19 @@ class Analysis:
         bg_centroid = bg_centroid.rename(columns={"bg_id": "id"})
         bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
         all_bg.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
+        self.log.info("Finished downloading block group data")
 
     def fetch_demographic_data(self):
         # See: https://api.census.gov/data/2021/acs/acs5
         # Read in the analysis centroids
         api_key = self.settings["api_key"]
-        self.log.info("Fetching Demographic Data")
+        self.log.info("Downloading demographic data")
         impact_area_bgs = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
         impact_area_bgs["state"] = impact_area_bgs["bg_id"].str[:2]
         impact_area_bgs["county"] = impact_area_bgs["bg_id"].str[2:5]
         states_and_counties = impact_area_bgs[["state", "county"]].drop_duplicates().sort_values("state")
         all_data = []
-        variables = [i for i in self.config["demographics"].keys()]
+        variables = [i for i in demographic_categories.keys()]
         print(variables)
         for idx, area in states_and_counties.iterrows():
             self.log.debug(f"  Fetching State: {area['state']} County: {area['county']}")
@@ -541,6 +550,7 @@ class Analysis:
         result = result.rename(columns={"GEOID": "bg_id"})
         result = result[result["bg_id"].isin(impact_area_bgs["bg_id"])]
         result.to_csv(os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), index=False)
+        self.log.info("Finished downloading demographic data")
         return result
 
     def validate_analysis_area(self):
