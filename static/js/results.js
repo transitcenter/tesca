@@ -2,196 +2,264 @@
 // New plan is:
 /* 
 - Load the data via the summary table
-- Sort it into "grouped bar chart" datasets
+- Sort it into "grouped bar chart" dataset
 - Iterate through all SVGs created in the page with a certain name
 - Then make it so.
 */
 
-var chartNodes = d3.selectAll(".result-chart").nodes()
+var chartMargin = {top: 100, right: 20, bottom: 20, left: 30}
+var config = null;
+var colors = ['#f58426', '#264cf5']
 
-// Some parameters
-var summaryColumns = 3
-var summaryPadding = 10
-var summaryData = new Array
+loadConfigData()
 
+/**
+ * Load the configuration data into memory and call the appropriate charts
+ */
+function loadConfigData() {
+    d3.json("/config/" + analysis_id).then(function (data) {
+        config = data;
+        loadSummaryData()
+    })
+}
 
-var summaryChartMargin = {top: 50, right: 60, bottom: 40, left: 30}
-var summaryBoxWidth = d3.select("#summary-chart").node().getBoundingClientRect().width
-var summaryBoxHeight = d3.select("#summary-chart").node().getBoundingClientRect().height
-var summaryChartWidth = summaryBoxWidth - summaryChartMargin.left - summaryChartMargin.right
-var summaryChartHeight = summaryBoxHeight - summaryChartMargin.top - summaryChartMargin.bottom
-
-var summaryInnerChartMargin = {top: 10, right: 10, bottom: 10, left: 10}
-
-// Append the SVG
-var summaryBox = d3.select("#summary-chart").append('svg').attr('width', summaryBoxWidth).attr('height', summaryBoxHeight)
-var summarySVG = summaryBox.append('g').attr("transform", "translate(" + summaryChartMargin.left + "," + summaryChartMargin.top + ")");
-
-function loadSummaryData(filter_plot) {
+/**
+ * Load the summary data and plot the summary charts.
+ * 
+ * This method fetches the CSV file containing the summary data for the results, compiles it into
+ * a useful format for D3, and then iteratively goes through all of the summary div elements in the page
+ * and creates a chart for each of them.
+ */
+function loadSummaryData() {
     d3.csv("/cache/" + analysis_id + "/summary.csv")
+        //d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv")
         .then(function (data) {
-            // Filter the data by comparison
-            data = data.filter(d => d.metric.slice(-3) == "1-0")
-            data.forEach((d, i) => {
-                d.metric = d.metric.slice(0, -4);
-                var dataKeys = Object.keys(d).filter(x => x != "metric")
-                var dataArray = {
-                    demographic: [],
-                    value: []
-                }
-                dataKeys.forEach((k, x) => {
-                    dataArray.demographic.push(k);
-                    dataArray.value.push(d[k])
-                })
-                var parameter = d.metric.split("_").at(-1).slice(1);
-                var method = d.metric.split("_").at(-1).at(0);
-                var opportunity = d.metric.slice(0, -1 * (method.length + parameter.length + 1));
-                d.method = method;
-                d.parameter = parseInt(parameter);
-                d.opportunity = opportunity;
-                summaryData.push([{
-                    method: method,
-                    parameter: parameter,
-                    opportunity: opportunity
-                }, dataArray]);
+            const demographics = data.columns.slice(1)
+            const scenarios = []
+            config.scenarios.forEach(d => {
+                scenarios.push(d.name)
             })
-            renderSummaryChart(summaryData)
+            const plotData = []
+            data = data.filter(d => !(d.metric.slice(-3) == "1-0"))
+            data.forEach((d, i) => {
+                let scenario = scenarios[parseInt(d.metric.at(-1))]
+                let metric = d.metric.slice(0, -2)
+                demographics.forEach((demo, index) => {
+                    let demographic = demo
+                    let value = d[demo]
+                    plotData.push({
+                        scenario: scenario,
+                        metric: metric,
+                        demographic: demographic,
+                        value: value
+                    })
+                })
+
+            })
+            const metrics = [...new Set(data.map(d => d.metric.slice(0, -2)))]
+            metrics.forEach((metric, index) => {
+                // Filter the data appropriately
+                const toPlot = plotData.filter(d => d.metric == metric)
+                const opportunityKey = metric.split("_").slice(0, -1).join("_")
+                const method = metric.split("_").at(-1).at(0)
+                const parameter = metric.split("_").at(-1).slice(1)
+                const unit = config["opportunities"][opportunityKey]["unit"]
+                const opportunity = config["opportunities"][opportunityKey]["name"]
+                const title = "Access to " + opportunity
+                let subtitle = null;
+                if (method == "c") {
+                    subtitle = "Average total " + unit + " reachable in " + parameter + " minutes on transit"
+                }
+                else {
+                    subtitle = "Average minutes of travel time to reach the nearest " + parameter + " " + opportunity.toLowerCase()
+                }
+                renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle)
+            })
         })
 }
 
-function renderSummaryChart(data) {
-    summarySVG.selectAll("*").remove();
-    var rows = Math.ceil(data.length / summaryColumns);
+/**
+ * 
+ * @param {Object} data A dictionary containing the relevant bar chart data
+ * @param {String} id The element ID to create the plot in
+ * @param {Array} groups A list of the groups (demographics) to plot
+ * @param {Array} subgroups A list of the subgroups to make the "grouped" in grouped bar chart
+ * @param {String} title The title to append to the chart
+ * @param {String} subtitle The subtitle to append to the chart
+ */
+function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle) {
+    // Grab the appropriate SVG and get width and heigh metrics
+    const chartDiv = d3.select("#" + id)
+    const boxWidth = chartDiv.node().getBoundingClientRect().width
+    const boxHeight = chartDiv.node().getBoundingClientRect().height
+    const chartWidth = boxWidth - chartMargin.left - chartMargin.right
+    const chartHeight = boxHeight - chartMargin.top - chartMargin.bottom
 
-    // Compute how to divide this up
-    var chartWidth = (summaryBoxWidth - summaryPadding) / summaryColumns - summaryPadding
-    var chartHeight = (summaryBoxHeight - summaryPadding) / rows - summaryPadding
+    // Clear everything out
+    chartDiv.selectAll('*').remove();
 
+    // Add an SVG back in
+    const svg = chartDiv.append("svg").attr("class", "chart-svg")
+    svg.attr('width', boxWidth).attr('height', boxHeight);
+
+    // Dictionarify the labels to make it easier to plot
+    const demoLabels = {}
+    for (var key in demoStyle) {
+        demoLabels[key] = demoStyle[key]['label']
+    }
+
+    // Set up the major X xcale (demographic categories)
     var x = d3.scaleBand()
-        .domain(d3.extent(data, d => d.data.demographic))
-        .range(0, chartWidth)
+        .domain(groups.map(d => demoLabels[d]))
+        .range([0, chartWidth])
+        .padding(0.15);
 
-    // TODO: Incorporate inner margins if needed
-    const plots = summarySVG.selectAll(".plot")
-        .data(data)
-        .enter()
-        .append("g")
-        .attr("transform", (d, i) => {
-            return "translate(" + [(i % summaryColumns) * (summaryPadding + chartWidth) + summaryPadding, Math.floor(i / rows) * (summaryPadding + chartHeight) + summaryPadding] + ")";
-        })
-        .append("rect")
-        .attr("width", chartWidth)
-        .attr("height", chartHeight)
-        .attr("fill", "#ddd")
-
-    // Add all the circles?
-    plots.selectAll(null)
-        .data(d => d[1])
-        .enter()
-        .append("circle")
-        .attr("r", 4)
-        .attr("cy", d => yScale(d.ratio))
-        .attr("cx", d => xScale(d.run))
-    // plots.selectAll("circle")
-    //     .data(d => {
-    //         // console.log(d)
-    //         return d
-    //     })
-    //     .enter()
-    //     .append("circle")
-}
-
-function renderGroupedBarChart(box, svg, scores, id, margin, groups, subgroups, ylabel, groupLabels, unit, note) {
-    var boxWidth = d3.select(id).node().getBoundingClientRect().width
-    var boxHeight = d3.select(id).node().getBoundingClientRect().height
-    var chartWidth = boxWidth - margin.left - margin.right
-    var chartHeight = boxHeight - margin.top - margin.bottom
-
-    box.attr('width', boxWidth).attr('height', boxHeight);
-    svg.selectAll('*').remove();
-
-    // var toPlot = chartData.filter(d => (d['description'] == key));
-
-    var x = d3.scaleBand()
-        .domain(groups.map(d => groupLabels[d]))
-        .range([margin.left, chartWidth])
-        .padding(0.2);
-
+    // Set up the Y axis scale
     var y = d3.scaleLinear()
-        .domain([0, d3.max(scores, d => d.value)])
-        .range([chartHeight, 0])
+        .domain([0, d3.max(data, d => d.value)])
+        .range([chartHeight, chartMargin.top])
 
+    // Set up the inner scale for the groups (gets added to the outer scale)
     var xSub = d3.scaleBand()
         .domain(subgroups)
         .range([0, x.bandwidth()])
-        .padding(0.05)
+        .padding(0.1)
 
+    // Set up the color scale for the subgroups.
     var color = d3.scaleOrdinal()
         .domain(subgroups)
-        .range(['#f58426', 'purple'])
+        .range(colors)
 
+    // Create the bars themselves
     svg.selectAll('bars')
-        .data(scores)
+        .data(data)
         .enter()
         .append('rect')
-        .attr("x", d => x(groupLabels[d.description]) + xSub(d.subgroup))
+        .attr("x", d => x(demoLabels[d.demographic]) + xSub(d.scenario))
         .attr('y', d => y(d.value))
         .attr("width", xSub.bandwidth())
-        .attr("height", d => chartHeight - y(d.value))
-        .attr("fill", d => color(d.subgroup))
-        .attr('opacity', 0.7)
+        .attr("height", d => chartMargin.top + chartHeight - y(d.value))
+        .attr("fill", d => color(d.scenario))
+        .attr('rx', 5)
+        .attr('opacity', 0.6)
 
+    // Add a label to the top of the bars
     svg.selectAll("barLabel")
-        .data(scores)
+        .data(data)
         .enter()
         .append("text")
-        .attr("x", d => x(groupLabels[d.description]) + xSub(d.subgroup) + xSub.bandwidth() / 2)
+        .attr("x", d => x(demoLabels[d.demographic]) + xSub(d.scenario) + xSub.bandwidth() / 2)
         .attr('y', d => y(d.value) - 6)
-        .text(d => styleNumbers(d.value) + " " + unit)
+        .text(d => styleNumbers(d.value))
         .attr('text-anchor', 'middle')
-        .attr("font-size", "0.8em")
+        .attr("font-size", "0.6em")
 
+    // Add the bottom axis for the charts
     svg.append("g")
-        .attr("transform", "translate(0," + chartHeight + ")")
-        .call(d3.axisBottom(x))
+        .attr("transform", "translate(0," + (chartMargin.top + chartHeight) + ")")
+        .call(d3.axisBottom(x).tickSize(0))
+        .call(g => g.select(".domain").remove())  // This removes the domain axis
         .selectAll('text')
-        .style("text-anchor", "middle");
+        .style("text-anchor", "middle")
+        .attr("dy", "1em")
 
+
+    // Adding a title
     svg.append("text")
-        .attr("x", chartWidth)
-        .attr('y', chartHeight + margin.bottom)
-        .attr("dy", "-.75em")
-        .text(note)
-        .attr('text-anchor', 'end')
-        .attr("font-size", "0.7em")
+        .attr("x", chartMargin.left)
+        .attr("y", 20)
+        .text(title)
+        .style("font-weight", "bold")
+        .attr("font-size", "18px")
+
+    // Adding a subtitle
+    svg.append("text")
+        .attr("x", chartMargin.left)
+        .attr("y", 35)
+        .text(subtitle)
+        .attr("font-size", "14px")
 
     // Now a legend
     svg.selectAll('legendText')
         .data(subgroups)
         .enter()
         .append("text")
-        .attr("x", margin.left + 20)
-        .attr('y', d => 35 - margin.top + 15 * subgroups.indexOf(d))
-        .text(d => subgroupLabels[d])
+        .attr("x", chartMargin.left + 15)
+        .attr('y', d => 45 + 15 * subgroups.indexOf(d))
+        .text(d => d)
         .attr('text-anchor', 'start')
-        .attr('dominant-baseline', 'middle')
-        .attr("font-size", "0.8em")
+        .attr('dominant-baseline', 'hanging')
+        .attr("font-size", "12px")
 
+    // And boxes to represent the legend
     svg.selectAll('legendBox')
         .data(subgroups)
         .enter()
         .append('rect')
-        .attr('x', margin.left)
-        .attr('y', d => 30 - margin.top + 15 * (subgroups.indexOf(d)))
+        .attr('x', chartMargin.left)
+        .attr('y', d => 45 + 15 * (subgroups.indexOf(d)))
         .attr('width', 10)
         .attr('height', 10)
         .attr('fill', d => color(d))
-        .attr('opacity', 0.7)
+        .attr('opacity', 0.6)
+        .attr('rx', 2)
+}
 
-    svg.append('text')
-        .attr("x", margin.left)
-        .attr('y', 20 - margin.top)
-        .text(ylabel)
-        .attr('text-anchor', 'start')
-        .attr('font-weight', 'bold')
+/**
+ * This function styles numbers based on their magnitutde. Numbers greater than 1,000
+ * are styled using a 'k' to represent thousands, with an aim of having at least two
+ * significant digits for all numbers.
+ * @param {Number} val The value to style
+ * @returns A styled value string for display.
+ */
+function styleNumbers(val) {
+    val = parseFloat(val)
+    if (Math.abs(val) >= 10000) {
+        return (val / 1000).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "k";
+    }
+    else if (Math.abs(val) >= 1000) {
+        return (val / 1000).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "k";
+    }
+    else if (Math.abs(val) > 10) {
+        return val.toFixed(0)
+    }
+    else if (val == 0.0) {
+        return val.toFixed(0)
+    }
+    else {
+        return val.toFixed(0)
+    }
+}
+
+var demoStyle = {
+    'B03002_001E': {
+        'label': 'Everyone',
+        'sentence': 'everyone',
+        'color': "#7F7F7F"
+    },
+    'B03002_006E': {
+        'label': "Asian",
+        'sentence': 'Asian people, Native Hawaiians, and Pacific Islanders',
+        'color': "#1F77B4"
+    },
+    'B03002_004E': {
+        'label': "Black",
+        'sentence': 'Black people',
+        'color': "#2CA02C"
+    },
+    'B03002_012E': {
+        'label': "Hispanic",
+        'sentence': "Hispanic or Latino people",
+        'color': "#D62728"
+    },
+    'B03002_003E': {
+        'label': "White",
+        'sentence': 'white people',
+        'color': "#9467BD"
+    },
+    'C17002_003E': {
+        'label': "In Poverty",
+        'sentence': 'people in poverty',
+        'color': '#8C564B'
+    }
 }

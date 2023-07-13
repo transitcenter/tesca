@@ -1,9 +1,27 @@
+h4 {
+    padding-bottom: 4px;
+    margin-bottom: 0px;
+}
+
 .container {
-    max-width: 900px;
+    width: 7in;
     margin: auto;
 }
 
-#summary-chart {
-    width: 900px;
-    height: 900px;
+.result-chart {
+    width: 100%;
+    height: 400px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.chart-svg {
+    width: 100%;
+    height: 100%;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
 }

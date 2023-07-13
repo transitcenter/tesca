@@ -1,7 +1,26 @@
+
+
 /**
  * Configuration Page
  * This contains code to render the Leaflet map showing the block group centroids.
  */
+
+// Date picker setup for the scenarios
+var pickerConfig = {
+  initialDate: '',
+  format: 'yyyy-mm-dd hh:ii',
+  disableDblClickSelection: true,
+  pickTime: true
+}
+
+$(function () {
+  $('#scenario0_start').fdatepicker(pickerConfig);
+});
+
+$(function () {
+  $('#scenario1_start').fdatepicker(pickerConfig);
+});
+
 
 // Set the starting location (is updated right away), currently Toronto
 var zoom = 12

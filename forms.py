@@ -26,6 +26,8 @@ class OpportunityMeasureForm(Form):
         choices=[("cumulative", "Cumulative"), ("travel_time", "Travel Time to nth Closest")],
         default="c",
     )
+    details = TextAreaField("Opportunity Description", default="A test")
+    unit = StringField("Unit of Measure (e.g. jobs)", validators=[DataRequired()])
     parameters = StringField("Parameters (comma separated)", validators=[DataRequired()], default="30,45")
     opportunity = HiddenField()
 
@@ -44,13 +46,11 @@ class OpportunitiesUploadForm(FlaskForm):
 
 class ConfigForm(FlaskForm):
     analyst = StringField("Analyst Name", validators=[DataRequired()], default="Your Name Here")
-    project = StringField("Scenario Name", validators=[DataRequired()], default="Test Project")
-    description = TextAreaField("Description", default="")
-    # fetch_demographics = BooleanField("Fetch Demographics", [], default=True)
-    fetch_demographics = SelectField("Fetch Demographics", choices=[("yes", "Yes"), ("no", "No")], default="yes")
+    project = StringField("Analysis Name", validators=[DataRequired()], default="Test Project")
+    description = TextAreaField("Analysis Description", default="")
     infinity = IntegerField("Infinity Value (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=180)
     max_time_walking = IntegerField(
-        "Max Walking Time (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=30
+        "Maximum Walking Time (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=30
     )
 
     # block_groups = FileField("Block Groups", validators=[DataRequired()])
@@ -62,6 +62,7 @@ class ConfigForm(FlaskForm):
     opportunities = FieldList(FormField(OpportunityMeasureForm), min_entries=1)
 
     scenario0_name = StringField("Scenario Name", validators=[DataRequired()], default="Scenario A")
+    scenario0_description = TextAreaField("Scenario Description")
     scenario0_start = DateTimeField(
         "Start Date & Time (YYYY-MM-DD HH:MM)", format="%Y-%m-%d %H:%M", validators=[DataRequired()]
     )
@@ -86,6 +87,7 @@ class ConfigForm(FlaskForm):
     scenario0_gtfs = MultipleFileField("GTFS Files", validators=[DataRequired()])
 
     scenario1_name = StringField("Scenario Name", validators=[DataRequired()], default="Scenario B")
+    scenario1_description = TextAreaField("Scenario Description")
     scenario1_start = DateTimeField(
         "Start Date & Time (YYYY-MM-DD HH:MM)", format="%Y-%m-%d %H:%M", validators=[DataRequired()]
     )

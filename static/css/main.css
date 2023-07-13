@@ -247,6 +247,17 @@ legend {
     width: 100%;
 }
 
+.footer-text {
+    text-transform: none;
+    color: #aaaaaa;
+    text-align: center;
+}
+
+.footer-text a {
+    text-decoration: none;
+    color: rgb(230, 225, 218)
+}
+
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some

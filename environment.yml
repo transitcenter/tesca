@@ -9,6 +9,7 @@ dependencies:
   - geopandas
   - configargparse
   - fiona
+  - yaml
   - openjdk
   - joblib
   - jpype1
@@ -17,9 +18,10 @@ dependencies:
   - psutil
   - requests
   - shapely
-  - jupyterlab
-  - altair
   - numpydoc
+  - flask
+  - flask-wtf
+  - flask-executor
   - pip:
     - gtfs-lite
     - pygris

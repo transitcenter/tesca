@@ -4,7 +4,9 @@ import os
 import pickle
 import sys
 import time
+import traceback
 import yaml
+
 
 from flask import Flask, render_template, redirect, send_from_directory, session, request
 from flask_wtf.csrf import validate_csrf, CSRFProtect
@@ -42,11 +44,11 @@ def run_validation(a):
     return True
 
 
+# Try this again using the object already created?
 @executor.job
-def run_analysis(analysis_id):
+def run_analysis(a):
     print("Analysis run executed")
     try:
-        a = Analysis.from_config_file(os.path.join("cache", analysis_id, "config.yml"))
         update_status(a.uid, "computing travel times", stage="run", value=0)
         a.compute_travel_times()
 
@@ -64,9 +66,12 @@ def run_analysis(analysis_id):
 
         update_status(a.uid, "computing unreachable destinations", value=95)
         a.compute_unreachable()
+
         update_status(a.uid, message="finished running analysis!", stage="results", value=100)
+
     except Exception as e:
         update_status(a.uid, f"broken: {e}", stage="error")
+        traceback.print_exc()
     return True
 
 
@@ -163,8 +168,6 @@ def configure(analysis_id):
     for idx, f in enumerate(form.opportunities):
         f.opportunity.data = opp_keys[idx]
 
-        print(form.errors)
-
     if form.validate_on_submit():
         print("Form Validated")
         upload_folder = os.path.join(CACHE_FOLDER, analysis_id)
@@ -200,6 +203,7 @@ def configure(analysis_id):
             this_opportunity = dict()
             this_opportunity["method"] = opportunity_form.method.data
             this_opportunity["name"] = opportunity_form.prettyname.data
+            # this_opportunity["description"] = opportunity_form.description.data
             this_opportunity["parameters"] = [int(x.strip()) for x in opportunity_form.parameters.data.split(",")]
             a.config["opportunities"][opportunity_form.opportunity.data] = this_opportunity
 
@@ -314,7 +318,9 @@ def validate(analysis_id):
 def run(analysis_id):
     status = get_status(analysis_id)
     if status["stage"] == "validate" and status["value"] == 100:
-        run_analysis.submit(analysis_id)
+        # Load analysis and initiate
+        a = Analysis.from_config_file(os.path.join("cache", analysis_id, "config.yml"))
+        run_analysis.submit(a)
     return render_template("run.jinja2", analysis_id=analysis_id)
 
 
@@ -322,12 +328,17 @@ def run(analysis_id):
 def results(analysis_id):
     # Let's grab the opportunities information
     config = get_config(analysis_id)
-    return render_template("results.jinja2", analysis_id=analysis_id, config_json=config)
+    return render_template("results.jinja2", analysis_id=analysis_id, config=config)
 
 
 @app.route("/status/<analysis_id>")
 def status(analysis_id):
     return get_status(analysis_id)
+
+
+@app.route("/config/<analysis_id>")
+def config(analysis_id):
+    return get_config(analysis_id)
 
 
 @app.route("/info/<analysis_id>")

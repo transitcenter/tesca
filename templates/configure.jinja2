@@ -4,10 +4,11 @@
 
 {% block styles %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
-<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}"
-    media="screen,projection" />
-<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/configure.css') }}"
-    media="screen,projection" />
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}" />
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/foundation-datepicker.min.css') }}" />
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/configure.css') }}" />
+<link href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -45,10 +46,6 @@
                             </div>
                         </div>
                         <div class="pure-u-1 pure-u-md-11-24">
-                            <div class="pure-control-group">
-                                {{ form.fetch_demographics.label }}
-                                {{ form.fetch_demographics }}
-                            </div>
                             <div class="pure-control-group">
                                 {{ form.infinity.label }}
                                 {{ form.infinity }}
@@ -111,8 +108,14 @@
                                 {{ opportunity_form.prettyname.label}}
                                 {{ opportunity_form.prettyname}}
 
+                                {{ opportunity_form.details.label}}
+                                {{ opportunity_form.details}}
+
                                 {{ opportunity_form.method.label}}
                                 {{ opportunity_form.method}}
+
+                                {{ opportunity_form.unit.label}}
+                                {{ opportunity_form.unit}}
 
                                 {{ opportunity_form.parameters.label}}
                                 {{ opportunity_form.parameters}}
@@ -133,6 +136,11 @@
                         <div class="pure-control-group">
                             {{ form.scenario0_name.label }}
                             {{ form.scenario0_name }}
+                        </div>
+
+                        <div class="pure-control-group">
+                            {{ form.scenario0_description.label }}
+                            {{ form.scenario0_description }}
                         </div>
 
                         <div class="pure-control-group">
@@ -168,6 +176,11 @@
                         </div>
 
                         <div class="pure-control-group">
+                            {{ form.scenario1_description.label }}
+                            {{ form.scenario1_description }}
+                        </div>
+
+                        <div class="pure-control-group">
                             {{ form.scenario1_start.label }}
                             {{ form.scenario1_start}}
                         </div>
@@ -198,8 +211,9 @@
 </div>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
 <script src="{{ url_for('static', filename='js/leaflet.ajax.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/foundation-datepicker.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/configure.js') }}"></script>
-
 {% endblock %}

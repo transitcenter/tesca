@@ -30,8 +30,8 @@
 
 <body>
 
-    <div class="header">
-        <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+    <div class="header no-print">
+        <div class="home-menu pure-menu pure-menu-horizontal no-print pure-menu-fixed">
             <a class="pure-menu-heading" href="/">TESCA: Equity Comparison of Transit Scenarios</a>
 
             <ul class="pure-menu-list">
@@ -45,6 +45,12 @@
         <div class="content">
             {% block content %}
             {% endblock %}
+        </div>
+        <div class="footer no-print">
+            <div class="pure-menu-heading footer-text">Built for <a href="https://transitcenter.org/">TransitCenter</a>
+                by <a href="https://www.klumpentown.com/">Klumpentown Consulting</a>. Powered by <a
+                    href="https://github.com/conveyal/r5">R5</a>
+                and <a href="https://r5py.readthedocs.io/en/stable/">R5py</a>.</div>
         </div>
     </div>
 
