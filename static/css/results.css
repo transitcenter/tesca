@@ -10,7 +10,9 @@ h4 {
 
 .result-chart {
     width: 100%;
-    height: 400px;
+    max-width: 6in;
+    margin: auto;
+    height: 300px;
     margin-top: 20px;
     margin-bottom: 20px;
 }

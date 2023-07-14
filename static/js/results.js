@@ -1,12 +1,3 @@
-// loadSummaryData()
-// New plan is:
-/* 
-- Load the data via the summary table
-- Sort it into "grouped bar chart" dataset
-- Iterate through all SVGs created in the page with a certain name
-- Then make it so.
-*/
-
 var chartMargin = {top: 100, right: 20, bottom: 20, left: 30}
 var config = null;
 var colors = ['#f58426', '#264cf5']

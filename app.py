@@ -1,8 +1,11 @@
+#!python
+
 from datetime import datetime
 import json
 import os
 import pickle
 import sys
+import subprocess
 import time
 import traceback
 import yaml
@@ -71,6 +74,15 @@ def run_analysis(a):
 
     except Exception as e:
         update_status(a.uid, f"broken: {e}", stage="error")
+        traceback.print_exc()
+    return True
+
+
+def run_analysis_as_subprocess(analysis_id):
+    try:
+        subprocess.Popen(["python", "do_analysis.py", "--ID", str(analysis_id)])
+    except Exception as e:
+        update_status(analysis_id, f"broken: {e}", stage="error")
         traceback.print_exc()
     return True
 
@@ -320,7 +332,8 @@ def run(analysis_id):
     if status["stage"] == "validate" and status["value"] == 100:
         # Load analysis and initiate
         a = Analysis.from_config_file(os.path.join("cache", analysis_id, "config.yml"))
-        run_analysis.submit(a)
+        # run_analysis.submit(a)
+        executor.submit(run_analysis_as_subprocess, analysis_id=analysis_id)
     return render_template("run.jinja2", analysis_id=analysis_id)
 
 
