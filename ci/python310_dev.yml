@@ -1,4 +1,4 @@
-name: tesca-dev-310
+name: tesca-dev
 channels:
   - conda-forge
 
@@ -8,6 +8,8 @@ dependencies:
   - geopandas
   - configargparse
   - fiona
+  - yaml
+  - openjdk
   - joblib
   - jpype1
   - numpy
@@ -15,12 +17,15 @@ dependencies:
   - psutil
   - requests
   - shapely
+  - numpydoc
+  - flask
+  - flask-wtf
+  - flask-executor
   # Testing, development, and documentation related
   - black
   - flake8
   - jupyterlab
   - altair
-  - numpydoc
   - pytest
   - sphinx
   - sphinx_rtd_theme

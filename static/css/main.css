@@ -5,7 +5,7 @@
 }
 
 html {
-    font-family: "Atkinson Hyperlegible", "Roboto", sans-serif;
+    font-family: "Atkinson Hyperlegible", "Roboto", "Verdana", sans-serif;
 }
 
 /*
@@ -245,6 +245,7 @@ legend {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 1000;
 }
 
 .footer-text {

@@ -27,3 +27,13 @@ h4 {
         display: none !important;
     }
 }
+
+#results-map {
+    height: 600px;
+    width: 100%;
+    border: 2px solid grey;
+}
+
+.page-break-before {
+    page-break-before: always;
+}

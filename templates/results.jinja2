@@ -3,12 +3,13 @@
 {% block title %} Results {% endblock %}
 
 {% block styles %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}" />
 <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}" />
 {% endblock %}
 
 {% block content %}
 <script>
-    var analysis_id = {{analysis_id | safe }};
+    var analysis_id = {{ analysis_id | safe }};
 </script>
 <div class='container'>
     <h1>Analysis Results</h1>
@@ -60,8 +61,20 @@
     </div>
     <div class="pure-g">
         <div class="pure-u-1">
-            <div id="summary-map" class="svg-container"></div>
-            <h2>Scenario Comparisons</h2>
+            <h2 class="page-break-before">Summary Map</h2>
+            <p>Currently Viewing
+                <select id="map-select" class="pure-input-1-2">
+                    <option value="C000_c45">Access to Jobs (45 minutes)</option>
+                    <option>Access to Jobs (30 minutes)</option>
+                    <option>Access to Supermarkets (1 closest)</option>
+                </select>
+            </p>
+            <div id="results-map"></div>
+        </div>
+    </div>
+    <div class="pure-g">
+        <div class="pure-u-1">
+            <h2 class="page-break-before">Scenario Comparisons</h2>
             <p>In this section, we compare the two sencarios analyzed. </p>
             {% for key, value in config['opportunities'].items() %}
             <h3>{{ config['opportunities'][key]['name'] }}</h3>
@@ -100,5 +113,7 @@
 </div>
 <script src="https://d3js.org/d3.v6.js" defer></script>
 <script src="https://d3js.org/d3-array.v2.min.js" defer></script>
+<script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/leaflet.ajax.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/results.js') }}" defer></script>
 {% endblock %}

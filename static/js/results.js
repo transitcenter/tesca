@@ -1,8 +1,53 @@
-var chartMargin = {top: 100, right: 20, bottom: 20, left: 30}
-var config = null;
-var colors = ['#f58426', '#264cf5']
+let chartMargin = { top: 100, right: 20, bottom: 20, left: 30 }
+let config = null;
+let colors = ['#f58426', '#264cf5']
+
+// Map configurations
+const zoom = 12
+const startLat = "43.715877"
+const startLon = "-79.3243027"
+let travelTimeDeltaColors = ["#762a83", "#af8dc3", "#e7d4e8", "#f7f7f7", "#d9f0d3", "#7fbf7b", "#1b7837"]
+
+// Things to be updated later
+let metrics = null;
+let compareData = {};
+
+// Initialize the map
+let map = L.map('results-map',
+    { preferCanvas: true }
+).setView([startLat, startLon], zoom);
+
+// Load the basemap layer - currently using CartoDB Greyscale.
+let cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
+}).addTo(map);
+
+// Create the layer group of place labels, which sits highest
+map.createPane('labels');
+map.getPane('labels').style.zIndex = 650;
+map.getPane('labels').style.pointerEvents = 'none';
+
+// Grab the labels map and add it to the map.
+let cartoLabels = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+    pane: 'labels'
+}).addTo(map);
+
+// Add a scale bar for scale
+let scaleBar = L.control.scale().addTo(map)
+
+// Fetch and render centroids
+let bgLayer = new L.GeoJSON.AJAX("/cache/" + analysis_id + "/analysis_polygons.geojson", {
+    style: blockGroupStyleDefault
+}).addTo(map)
+
+// Recenter the map on the appropriate layer.
+bgLayer.on('data:loaded', function () {
+    map.fitBounds(bgLayer.getBounds());
+}.bind(this));
 
 loadConfigData()
+
 
 /**
  * Load the configuration data into memory and call the appropriate charts
@@ -13,6 +58,10 @@ function loadConfigData() {
         loadSummaryData()
     })
 }
+
+// TODO:
+// 1. Load the baseline map data as an initialization
+// 2. Create a separate function for updating the map style 
 
 /**
  * Load the summary data and plot the summary charts.
@@ -47,7 +96,9 @@ function loadSummaryData() {
                 })
 
             })
-            const metrics = [...new Set(data.map(d => d.metric.slice(0, -2)))]
+            metrics = [...new Set(data.map(d => d.metric.slice(0, -2)))]
+
+            loadCompareData("hospitals_t1")
             metrics.forEach((metric, index) => {
                 // Filter the data appropriately
                 const toPlot = plotData.filter(d => d.metric == metric)
@@ -67,6 +118,38 @@ function loadSummaryData() {
                 renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle)
             })
         })
+}
+
+function loadCompareData(initialMetric) {
+    d3.csv("/cache/" + analysis_id + "/compared.csv")
+        .then(function (data) {
+            data.forEach(d => {
+                compareData[d.bg_id] = d
+            })
+            console.log(compareData)
+            updateMap(initialMetric)
+        })
+}
+
+
+/**
+ * Update the map to show changes in values between scenarios
+ * @param {String} metric The metric to filter and color the map on.
+ */
+function updateMap(metric) {
+    bgLayer.setStyle(function (feature) {
+        delta = compareData[feature.properties.bg_id][metric + "_1-0"]
+        const thisColor = getTravelTimeDeltaColor(delta, travelTimeDeltaColors)
+        return {
+            fillColor: thisColor,
+            color: thisColor
+        }
+    })
+    bgLayer.eachLayer(function (layer) {
+        delta = compareData[layer.feature.properties.bg_id][metric + "_1-0"]
+        layer.bindPopup("<b>Delta</b>: " + styleNumbers(delta))
+    })
+    // travelTimeDeltaColors
 }
 
 /**
@@ -196,6 +279,16 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle) {
         .attr('rx', 2)
 }
 
+function blockGroupStyleDefault(feature) {
+    return {
+        fillColor: 'none',
+        weight: 1,
+        opacity: 0.1,
+        color: 'none',
+        fillOpacity: 0.7
+    };
+}
+
 /**
  * This function styles numbers based on their magnitutde. Numbers greater than 1,000
  * are styled using a 'k' to represent thousands, with an aim of having at least two
@@ -252,5 +345,26 @@ var demoStyle = {
         'label': "In Poverty",
         'sentence': 'people in poverty',
         'color': '#8C564B'
+    }
+}
+
+
+/**
+ * Colour value based on pre-defiend travel time range.
+ * @param {Number} data Data to quintile.
+ * @param {Array} colors Array of 5 colors to use.
+ */
+function getTravelTimeDeltaColor(d, colors) {
+    if (isNaN(d)) {
+        return nan_color;
+    }
+    else {
+        return d >= 4 ? colors[0] :
+            d >= 3 ? colors[1] :
+                d >= 1 ? colors[2] :
+                    d >= -1 ? colors[3] :
+                        d >= -3 ? colors[4] :
+                            d > -5 ? colors[5] :
+                                colors[6];
     }
 }
