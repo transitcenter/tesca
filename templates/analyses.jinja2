@@ -1,0 +1,81 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Existing Analyses {% endblock %}
+
+{% block content %}
+<style>
+    .button-success,
+    .button-error,
+    .button-warning,
+    .button-secondary {
+        color: white;
+        border-radius: 4px;
+        width: 100%;
+    }
+
+    .button-success {
+        background: rgb(28, 184, 65);
+        /* this is a green */
+    }
+
+    .button-error {
+        background: rgb(202, 60, 60);
+        /* this is a maroon */
+    }
+
+    .button-warning {
+        background: rgb(223, 117, 20);
+        /* this is an orange */
+    }
+
+    .button-secondary {
+        background: rgb(66, 184, 221);
+        /* this is a light blue */
+    }
+</style>
+
+
+<div class='container'>
+    <h1>Existing Analyses</h1>
+    <p>View a list of existing analyses on the server. You can visit a project at its current stage by clicking on the
+        corresponding button.</p>
+    <table class="pure-table pure-table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Project</th>
+                <th>Analyst</th>
+                <th>Date Started</th>
+                <th>Message</th>
+                <th>Current Stage</th>
+            </tr>
+        </thead>
+        <tbody id="logtable-body">
+            {% for c in cache %}
+            <tr>
+                <td>{{ c["analysis_id"] }}</td>
+                <td>{{ c["config"]["project"].capitalize() }}</td>
+                <td>{{ c["config"]["analyst"] }}</td>
+                <td>{{ c["date_started"] }}</td>
+                <td>{{ c["message"].capitalize() }}</td>
+                {% if c["stage"] == "error" %}
+                <td>
+                    <a class="pure-button button-error" href="#">Error</a>
+                </td>
+                {% elif c["stage"] == "results" %}
+                <td>
+                    <a class="pure-button button-success" href="/results/{{ c['analysis_id'] }}">View Results</a>
+                </td>
+                {% else %}
+                <td>
+                    <a class="pure-button button-secondary" href="/{{ c['stage'] }}/{{ c['analysis_id'] }}">{{
+                        c['stage'].capitalize() }}</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

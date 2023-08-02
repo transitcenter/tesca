@@ -163,6 +163,32 @@ def home():
     return render_template("home.jinja2", form=form)
 
 
+@app.route("/analyses")
+def analyses():
+    # Take a look at the cache folder
+    cache = []
+    for d in os.listdir("cache"):
+        if os.path.isdir(os.path.join("cache", d)):
+            try:
+                date_started = datetime.strptime(d, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
+                status = get_status(d)
+                config = get_config(d)
+                cache.append(
+                    {
+                        "analysis_id": d,
+                        "date_started": date_started,
+                        "stage": status["stage"],
+                        "message": status["message"],
+                        "config": config,
+                    }
+                )
+            except ValueError:
+                pass
+
+    cache = sorted(cache, key=lambda x: int(x["analysis_id"]), reverse=True)
+    return render_template("analyses.jinja2", cache=cache)
+
+
 @app.route("/configure/<analysis_id>", methods=["GET", "POST"])
 def configure(analysis_id):
     # Unpickle the analysis
