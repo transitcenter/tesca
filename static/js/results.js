@@ -1,12 +1,17 @@
-let chartMargin = { top: 100, right: 20, bottom: 20, left: 30 }
+let chartMargin = {top: 100, right: 20, bottom: 20, left: 30}
 let config = null;
-let colors = ['#f58426', '#264cf5']
+let barColors = ['#f58426', '#264cf5']
 
 // Map configurations
-const zoom = 12
+const zoom = 15
 const startLat = "43.715877"
 const startLon = "-79.3243027"
+let nanColor = "#e0e0e0"
 let travelTimeDeltaColors = ["#762a83", "#af8dc3", "#e7d4e8", "#f7f7f7", "#d9f0d3", "#7fbf7b", "#1b7837"]
+let travelTimeDeltaBins = [10, 6, 2, -2, -6, -10]
+// Note these are reversed from the travel time ones (higher is typically better)
+let percentDeltaColors = ["#2166ac", "#67a9cf", "#d1e5f0", "#f7f7f7", "#fddbc7", "#ef8a62", "#b2182b"]
+let percentDeltaBins = [100, 30, 10, -10, -30, -100]
 
 // Things to be updated later
 let metrics = null;
@@ -14,7 +19,7 @@ let compareData = {};
 
 // Initialize the map
 let map = L.map('results-map',
-    { preferCanvas: true }
+    {preferCanvas: true}
 ).setView([startLat, startLon], zoom);
 
 // Load the basemap layer - currently using CartoDB Greyscale.
@@ -36,8 +41,25 @@ let cartoLabels = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.ne
 // Add a scale bar for scale
 let scaleBar = L.control.scale().addTo(map)
 
+// Add the legend
+// Legend dimensions and margins
+let legendMargin = {top: 10, right: 10, bottom: 10, left: 10}
+let legendBoxHeight = 70
+let legendBoxWidth = 240
+let legendWidth = legendBoxWidth - legendMargin.top - legendMargin.bottom
+let legendHeight = legendBoxHeight - legendMargin.left - legendMargin.right
+let legendBinWidth = 30
+// Initialize legend, create div, and add to the map.
+let legend = L.control({position: 'topright'});
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'legend');
+    div.setAttribute("id", "legend")
+    return div
+}
+legend.addTo(map);
+
 // Fetch and render centroids
-let bgLayer = new L.GeoJSON.AJAX("/cache/" + analysis_id + "/analysis_polygons.geojson", {
+let bgLayer = new L.GeoJSON.AJAX("/cache/" + analysis_id + "/analysis_areas.geojson", {
     style: blockGroupStyleDefault
 }).addTo(map)
 
@@ -91,14 +113,15 @@ function loadSummaryData() {
                         scenario: scenario,
                         metric: metric,
                         demographic: demographic,
-                        value: value
+                        value: +value
                     })
                 })
 
             })
             metrics = [...new Set(data.map(d => d.metric.slice(0, -2)))]
 
-            loadCompareData("hospitals_t1")
+            loadCompareData()
+            loadUnreachableData()
             metrics.forEach((metric, index) => {
                 // Filter the data appropriately
                 const toPlot = plotData.filter(d => d.metric == metric)
@@ -115,20 +138,74 @@ function loadSummaryData() {
                 else {
                     subtitle = "Average minutes of travel time to reach the nearest " + parameter + " " + opportunity.toLowerCase()
                 }
-                renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle)
+                renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle, false)
             })
         })
 }
 
-function loadCompareData(initialMetric) {
+function loadCompareData() {
     d3.csv("/cache/" + analysis_id + "/compared.csv")
         .then(function (data) {
             data.forEach(d => {
                 compareData[d.bg_id] = d
             })
-            console.log(compareData)
+            const mapSelector = document.getElementById('map-select');
+            const initialMetric = mapSelector.options[0].value
             updateMap(initialMetric)
         })
+}
+
+function loadUnreachableData() {
+    d3.csv("/cache/" + analysis_id + "/unreachable.csv")
+        .then(function (data) {
+            const demographics = data.columns.slice(2)
+            console.log(demographics)
+            const scenarios = []
+            config.scenarios.forEach(d => {
+                scenarios.push(d.name)
+            })
+            console.log(data)
+            const plotData = []
+            data.forEach((d, i) => {
+                let scenario = scenarios[parseInt(d.scenario)]
+                let metric = d.metric
+                demographics.forEach((demo, index) => {
+                    let demographic = demo
+                    let value = d[demo]
+                    plotData.push({
+                        scenario: scenario,
+                        metric: metric,
+                        demographic: demographic,
+                        value: +value
+                    })
+                })
+            })
+            metrics = [...new Set(data.map(d => d.metric))]
+            console.log(plotData)
+            metrics.forEach((metric, index) => {
+                // Filter the data appropriately
+                const toPlot = plotData.filter(d => d.metric == metric)
+                const opportunityKey = metric.split("_").slice(0, -1).join("_")
+                const parameter = metric.split("_").at(-1).slice(1)
+                const opportunity = config["opportunities"][opportunityKey]["name"]
+                const title = "People Unable to Reach " + opportunity
+                let subtitle = null;
+
+                subtitle = "Number of individuals in a group who cannot reach at least " + parameter + " " + opportunity.toLowerCase()
+                renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle, true)
+            })
+
+        })
+}
+
+/**
+ * Update the map once the selector has change using the appropraite metric.
+ */
+function mapSelectionChanged() {
+    // Get the appropriate metric selected and update the map
+    const mapSelector = document.getElementById('map-select');
+    const selectedMetric = mapSelector.options[mapSelector.selectedIndex].value
+    updateMap(selectedMetric)
 }
 
 
@@ -137,19 +214,89 @@ function loadCompareData(initialMetric) {
  * @param {String} metric The metric to filter and color the map on.
  */
 function updateMap(metric) {
+    const method = metric.split("_").at(-1).at(0)
+    let thisColor = null;
     bgLayer.setStyle(function (feature) {
-        delta = compareData[feature.properties.bg_id][metric + "_1-0"]
-        const thisColor = getTravelTimeDeltaColor(delta, travelTimeDeltaColors)
+
+        // Figure out if this is cumulative or not
+        if (method == 'c') {
+            let value0 = compareData[feature.properties.bg_id][metric + "_0"]
+            let value1 = compareData[feature.properties.bg_id][metric + "_1"]
+            let percentDelta = 100 * (value1 - value0) / value0
+            thisColor = getPercentDeltaColor(percentDelta, percentDeltaColors)
+        }
+        else {
+            let delta = compareData[feature.properties.bg_id][metric + "_1-0"]
+            thisColor = getTravelTimeDeltaColor(delta, travelTimeDeltaColors);
+        }
+
         return {
             fillColor: thisColor,
-            color: thisColor
+            // color: thisColor
         }
     })
     bgLayer.eachLayer(function (layer) {
         delta = compareData[layer.feature.properties.bg_id][metric + "_1-0"]
-        layer.bindPopup("<b>Delta</b>: " + styleNumbers(delta))
+        layer.bindPopup("<b>Total Change</b>: " + styleNumbers(delta))
     })
-    // travelTimeDeltaColors
+    updateLegend(method)
+}
+
+function updateLegend(method) {
+    // First make sure we are using the right bins and colors for the method
+    let colors = null;
+    let bins = null;
+    let title = null;
+    if (method == 'c') {
+        colors = percentDeltaColors;
+        bins = percentDeltaBins;
+        title = "Percent Change"
+    }
+    else {
+        colors = travelTimeDeltaColors;
+        bins = travelTimeDeltaBins;
+        title = "Difference (minutes)"
+    }
+
+    // Clear the legend
+    d3.select("#legend").selectAll("*").remove()
+    const legendSVG = d3.select("#legend")
+        .append('svg')
+        .attr("width", legendBoxWidth)
+        .attr("height", legendBoxHeight)
+        .append('g')
+        .attr("transform", "translate(" + legendMargin.left + "," + legendMargin.top + ")");
+
+    // Populate the markers
+    legendSVG.selectAll("legendRects")
+        .data(colors)
+        .enter()
+        .append('rect')
+        .attr("y", legendMargin.top + 10)
+        .attr("x", (d, i) => legendMargin.left + i * legendBinWidth)
+        .attr("width", legendBinWidth)
+        .attr("height", 10)
+        .style("fill", d => d)
+        .style("opacity", 0.7)
+        .style("stroke", "none")
+
+    legendSVG.selectAll("legendLabels")
+        .data(bins)
+        .enter()
+        .append('text')
+        .attr('y', legendMargin.top + 35)
+        .attr('x', function (d, i) {return legendMargin.left + legendBinWidth + i * legendBinWidth})
+        .style('fill', 'black')
+        .text(d => d)
+        .attr('text-anchor', 'middle')
+
+    legendSVG.append('text')
+        .attr('x', legendMargin.left)
+        .attr('y', legendMargin.top)
+        .text(title)
+        .attr('text-anchor', 'left')
+        .style('font-size', '1.2em')
+        .style('padding-top', '5px')
 }
 
 /**
@@ -161,9 +308,17 @@ function updateMap(metric) {
  * @param {String} title The title to append to the chart
  * @param {String} subtitle The subtitle to append to the chart
  */
-function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle) {
+function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle, unreachable) {
     // Grab the appropriate SVG and get width and heigh metrics
-    const chartDiv = d3.select("#" + id)
+    let chartDiv = null;
+    if (unreachable == true) {
+        console.log(data)
+        console.log(id + "-unreachable")
+        chartDiv = d3.select("#" + id + "-unreachable")
+    }
+    else {
+        chartDiv = d3.select("#" + id)
+    }
     const boxWidth = chartDiv.node().getBoundingClientRect().width
     const boxHeight = chartDiv.node().getBoundingClientRect().height
     const chartWidth = boxWidth - chartMargin.left - chartMargin.right
@@ -189,6 +344,7 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle) {
         .padding(0.15);
 
     // Set up the Y axis scale
+    console.log(d3.min(data, d => d.value), d3.max(data, d => d.value))
     var y = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.value)])
         .range([chartHeight, chartMargin.top])
@@ -202,7 +358,7 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle) {
     // Set up the color scale for the subgroups.
     var color = d3.scaleOrdinal()
         .domain(subgroups)
-        .range(colors)
+        .range(barColors)
 
     // Create the bars themselves
     svg.selectAll('bars')
@@ -212,7 +368,10 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle) {
         .attr("x", d => x(demoLabels[d.demographic]) + xSub(d.scenario))
         .attr('y', d => y(d.value))
         .attr("width", xSub.bandwidth())
-        .attr("height", d => chartMargin.top + chartHeight - y(d.value))
+        .attr("height", d => {
+            console.log(y(d.value))
+            return chartMargin.top + chartHeight - y(d.value)
+        })
         .attr("fill", d => color(d.scenario))
         .attr('rx', 5)
         .attr('opacity', 0.6)
@@ -284,7 +443,7 @@ function blockGroupStyleDefault(feature) {
         fillColor: 'none',
         weight: 1,
         opacity: 0.1,
-        color: 'none',
+        color: '#f7f7f7',
         fillOpacity: 0.7
     };
 }
@@ -356,15 +515,30 @@ var demoStyle = {
  */
 function getTravelTimeDeltaColor(d, colors) {
     if (isNaN(d)) {
-        return nan_color;
+        return nanColor;
     }
     else {
-        return d >= 4 ? colors[0] :
-            d >= 3 ? colors[1] :
-                d >= 1 ? colors[2] :
-                    d >= -1 ? colors[3] :
-                        d >= -3 ? colors[4] :
-                            d > -5 ? colors[5] :
+        return d > travelTimeDeltaBins[0] ? colors[0] :
+            d > travelTimeDeltaBins[1] ? colors[1] :
+                d > travelTimeDeltaBins[2] ? colors[2] :
+                    d > travelTimeDeltaBins[3] ? colors[3] :
+                        d > travelTimeDeltaBins[4] ? colors[4] :
+                            d > travelTimeDeltaBins[5] ? colors[5] :
+                                colors[6];
+    }
+}
+
+function getPercentDeltaColor(d, colors) {
+    if (isNaN(d)) {
+        return nanColor;
+    }
+    else {
+        return d > percentDeltaBins[0] ? colors[0] :
+            d > percentDeltaBins[1] ? colors[1] :
+                d > percentDeltaBins[2] ? colors[2] :
+                    d > percentDeltaBins[3] ? colors[3] :
+                        d > percentDeltaBins[4] ? colors[4] :
+                            d > percentDeltaBins[5] ? colors[5] :
                                 colors[6];
     }
 }

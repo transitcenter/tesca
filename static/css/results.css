@@ -34,6 +34,37 @@ h4 {
     border: 2px solid grey;
 }
 
+#legend {
+    font-family: "Atkinson Hyperlegible", "Roboto", "Verdana", sans-serif;
+    width: 100%;
+    height: 100%;
+    line-height: 18px;
+    background-color: #fff;
+    border-radius: 5px;
+    opacity: 0.9;
+}
+
+.map-title {
+    font-weight: bold;
+    color: black;
+}
+
+#map-select {
+    appearance: none;
+    outline: 0;
+    background: white;
+    background-image: none;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+    border: 0px;
+}
+
+
 .page-break-before {
     page-break-before: always;
+}
+
+.page-break-after {
+    page-break-after: always;
 }

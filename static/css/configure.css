@@ -3,3 +3,8 @@
     width: 60%;
     border: 2px solid grey;
 }
+
+.pure-form input[type="text"][disabled] {
+    background-color: #FFF;
+    color: #9ba1a2
+}

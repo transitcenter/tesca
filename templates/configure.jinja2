@@ -112,7 +112,7 @@
                                 {{ opportunity_form.details}}
 
                                 {{ opportunity_form.method.label}}
-                                {{ opportunity_form.method}}
+                                {{ opportunity_form.method(onchange="methodChanged(this)")}}
 
                                 {{ opportunity_form.unit.label}}
                                 {{ opportunity_form.unit}}
@@ -145,7 +145,7 @@
 
                         <div class="pure-control-group">
                             {{ form.scenario0_start.label }}
-                            {{ form.scenario0_start}}
+                            {{ form.scenario0_start }}
                         </div>
 
                         <div class="pure-control-group">
