@@ -1,0 +1,28 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Delete Project {% endblock %}
+
+{% block content %}
+<style>
+    .button-warning {
+        color: white;
+        border-radius: 4px;
+        background: rgb(223, 117, 20);
+    }
+</style>
+
+<div class='container'>
+    <h1>Delete Project</h1>
+    <p>Would you like to delete analysis project with ID {{ info["config"]["uid"] }}?</p>
+    <p><b>Project Name: </b> {{ info["config"]["project"] }}</p>
+    <p><b>Project Analyst: </b> {{ info["config"]["analyst"] }}</p>
+    <p><b>Started On: </b> {{ info["date_started"] }}</p>
+    <p><b>Project Description: </b> {{ info["config"]["description"] }}</p>
+    <p><b>Current Stage: </b> {{ info["status"]["stage"].capitalize() }}</p>
+    <p><b>Status Message: </b> {{ info["status"]["message"].capitalize() }}</p>
+    <p>Note that clicking the button below will erase all proeject data and <b>cannot be undone.</b> Are you sure?</p>
+    <p><a class="pure-button button-warning" href="/delete/{{ info['config']['uid'] }}?confirm=yes">Yes, delete this
+            project forever</a></p>
+</div>
+
+{% endblock %}

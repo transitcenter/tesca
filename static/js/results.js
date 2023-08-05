@@ -159,12 +159,10 @@ function loadUnreachableData() {
     d3.csv("/cache/" + analysis_id + "/unreachable.csv")
         .then(function (data) {
             const demographics = data.columns.slice(2)
-            console.log(demographics)
             const scenarios = []
             config.scenarios.forEach(d => {
                 scenarios.push(d.name)
             })
-            console.log(data)
             const plotData = []
             data.forEach((d, i) => {
                 let scenario = scenarios[parseInt(d.scenario)]
@@ -310,10 +308,9 @@ function updateLegend(method) {
  */
 function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle, unreachable) {
     // Grab the appropriate SVG and get width and heigh metrics
+    console.log(data)
     let chartDiv = null;
     if (unreachable == true) {
-        console.log(data)
-        console.log(id + "-unreachable")
         chartDiv = d3.select("#" + id + "-unreachable")
     }
     else {
@@ -344,7 +341,6 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle, unr
         .padding(0.15);
 
     // Set up the Y axis scale
-    console.log(d3.min(data, d => d.value), d3.max(data, d => d.value))
     var y = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.value)])
         .range([chartHeight, chartMargin.top])
@@ -369,7 +365,6 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle, unr
         .attr('y', d => y(d.value))
         .attr("width", xSub.bandwidth())
         .attr("height", d => {
-            console.log(y(d.value))
             return chartMargin.top + chartHeight - y(d.value)
         })
         .attr("fill", d => color(d.scenario))
@@ -504,6 +499,16 @@ var demoStyle = {
         'label': "In Poverty",
         'sentence': 'people in poverty',
         'color': '#8C564B'
+    },
+    'zero_car_hhld': {
+        'label': "No Car",
+        "sentence": "households with no cars",
+        "color": "#8C564B"
+    },
+    'age_65p': {
+        'label': "Age 65+",
+        "sentence": "people age 65 and up",
+        "color": "#FFFFFF"
     }
 }
 

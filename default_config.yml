@@ -15,6 +15,8 @@ demographics:  # Each key correponds with a column in the demographics.csv file 
   B03002_006E: Asian
   B03002_012E: Hispanic or Latino
   C17002_003E: In Poverty
+  zero_car_hhld: Zero-Car Households
+  age_65p: Age 65+
 # Scenarios are defined as an ordered list
 scenarios:
 - duration: 120  # Duration of analysis, in minutes

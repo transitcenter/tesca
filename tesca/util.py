@@ -58,3 +58,21 @@ demographic_categories = {
     "B03002_012E": "Hispanic or Latino",
     "C17002_003E": "In Poverty",
 }
+
+total_hhld = "B11001_001E"
+zero_car_hhld = "B08201_002E"
+
+age_categories = [
+    "B01001_020E",
+    "B01001_021E",
+    "B01001_022E",
+    "B01001_023E",
+    "B01001_024E",
+    "B01001_025E",
+    "B01001_044E",
+    "B01001_045E",
+    "B01001_046E",
+    "B01001_047E",
+    "B01001_048E",
+    "B01001_049E",
+]

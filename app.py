@@ -4,14 +4,13 @@ from datetime import datetime
 import json
 import os
 import pickle
-import sys
+import shutil
 import subprocess
-import time
 import traceback
 import yaml
 
 
-from flask import Flask, render_template, redirect, send_from_directory, session, request
+from flask import Flask, render_template, redirect, send_from_directory, request
 from flask_wtf.csrf import validate_csrf, CSRFProtect
 
 from flask_executor import Executor
@@ -163,7 +162,7 @@ def home():
     return render_template("home.jinja2", form=form)
 
 
-@app.route("/analyses")
+@app.route("/projects")
 def analyses():
     # Take a look at the cache folder
     cache = []
@@ -172,7 +171,10 @@ def analyses():
             try:
                 date_started = datetime.strptime(d, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
                 status = get_status(d)
-                config = get_config(d)
+                try:
+                    config = get_config(d)
+                except FileNotFoundError:
+                    config = None
                 cache.append(
                     {
                         "analysis_id": d,
@@ -186,7 +188,7 @@ def analyses():
                 pass
 
     cache = sorted(cache, key=lambda x: int(x["analysis_id"]), reverse=True)
-    return render_template("analyses.jinja2", cache=cache)
+    return render_template("projects.jinja2", cache=cache)
 
 
 @app.route("/configure/<analysis_id>", methods=["GET", "POST"])
@@ -215,8 +217,6 @@ def configure(analysis_id):
 
         # Store the impact area
         form.impact_area.data.save(os.path.join(upload_folder, "impact_area.csv"))
-
-        # TODO: Handle the demographics file
 
         # Make the GTFS Scenario 0 folder and write the files
         for gtfs0_file in form.scenario0_gtfs.data:
@@ -361,6 +361,19 @@ def run(analysis_id):
         # run_analysis.submit(a)
         executor.submit(run_analysis_as_subprocess, analysis_id=analysis_id)
     return render_template("run.jinja2", analysis_id=analysis_id)
+
+
+@app.route("/delete/<analysis_id>")
+def delete_project(analysis_id):
+    confirm = request.args.get("confirm")
+    if confirm == "yes":
+        shutil.rmtree(os.path.join(CACHE_FOLDER, analysis_id))
+        return redirect("/projects")
+    config = get_config(analysis_id)
+    status = get_status(analysis_id)
+    date_started = datetime.strptime(analysis_id, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
+    info = {"config": config, "status": status, "date_started": date_started}
+    return render_template("delete.jinja2", info=info)
 
 
 @app.route("/results/<analysis_id>")

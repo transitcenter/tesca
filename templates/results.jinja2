@@ -191,7 +191,7 @@
                 </li>
                 <li>
                     <p><b>Demographic Data</b> contains block group level demographic counts for each demographic
-                        groups within the impact area specified. The <i>last</i> column of the dataset
+                        groups within the impact area specified. The first column of the dataset
                         (<code>bg_id</code>) indicates the 12-digit block group ID. Other columns indicate specific
                         demographic groups. You can find a reference for these in the <a href="/guide#demographics">user
                             guide</a>.</p>
@@ -239,9 +239,16 @@
             </p>
         </div>
     </div>
+    <div class="pure-g no-print">
+        <div class="pure-u-1">
+            <h2>Delete Results</h2>
+            <p>Click the button below to delete the results (you will be asked to confirm).</p>
+            <a class="pure-button pure-button-primary" href="/delete/{{ analysis_id }}">Delete these results</a>
+        </div>
+    </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/d3.v6.js') }}" defer></script>
+<script src=" {{ url_for('static', filename='js/d3.v6.js' ) }}" defer></script>
 <script src="{{ url_for('static', filename='js/d3-array.v2.min.js') }}" defer></script>
 <script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
 <script src="{{ url_for('static', filename='js/leaflet.ajax.min.js') }}"></script>

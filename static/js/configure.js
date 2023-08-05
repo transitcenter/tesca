@@ -82,20 +82,20 @@ points.on('data:loaded', function () {
 
 
 function methodChanged(methodSelect) {
-  // Get the ID of the submitted form
-  var selectName = methodSelect.name.slice(0, -7)
-  var selectValue = methodSelect.value
-  var unitField = document.getElementById(selectName + "-unit")
-  // Change that corresponding unit field
-  if (selectValue == "travel_time") {
-    unitField.value = "minutes"
-    unitField.disabled = true;
-  }
-  else {
-    unitField.value = ""
-    unitField.disabled = false;
-  }
+  // // Get the ID of the submitted form
+  // var selectName = methodSelect.name.slice(0, -7)
+  // var selectValue = methodSelect.value
+  // var unitField = document.getElementById(selectName + "-unit")
+  // // Change that corresponding unit field
+  // if (selectValue == "travel_time") {
+  //   unitField.value = "minutes"
+  //   unitField.disabled = true;
+  // }
+  // else {
+  //   unitField.value = ""
+  //   unitField.disabled = false;
+  // }
 
 
-  console.log(selectName)
+  // console.log(selectName)
 }

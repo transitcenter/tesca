@@ -24,7 +24,7 @@ from pygris import block_groups
 from pygris.data import get_census
 from r5py import TransportNetwork, TravelTimeMatrixComputer
 
-from .util import demographic_categories
+from .util import demographic_categories, age_categories, total_hhld, zero_car_hhld
 
 LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
 LOG_CSV_FORMATTER = logging.Formatter("%(asctime)s,%(levelname)s,%(message)s", datefmt="%Y-%m-%d %H:%M")
@@ -450,7 +450,6 @@ class Analysis:
         # Filter out non-impact area and non-used demographic values
         compared = compared[compared.index.isin(impact_area.index)]
         demographics = demographics[demographics.index.isin(impact_area.index)]
-
         # Normalize to get fractional amounts
         demographics = demographics / demographics.sum()
 
@@ -458,6 +457,7 @@ class Analysis:
         weighted = demographics.join(compared)
 
         weighted_dfs = []
+
         for demographic in self.config["demographics"].keys():
             mult = weighted[compared.columns].multiply(weighted[demographic], axis=0)
             mult = mult.sum()
@@ -528,6 +528,7 @@ class Analysis:
         impact_area_bgs["county"] = impact_area_bgs["bg_id"].str[2:5]
         states_and_counties = impact_area_bgs[["state", "county"]].drop_duplicates().sort_values("state")
         all_data = []
+        # First we fetch all the easy ones
         variables = [i for i in demographic_categories.keys()]
         print(variables)
         for idx, area in states_and_counties.iterrows():
@@ -543,12 +544,82 @@ class Analysis:
                 },
                 return_geoid=True,
             )
+
+            # Age data
+            age_data = get_census(
+                dataset="acs/acs5",
+                year="2021",
+                variables=age_categories,
+                params={
+                    "for": "block group:*",
+                    "in": f"state:{area['state']} county:{area['county']}",
+                    "key": api_key,
+                },
+                return_geoid=True,
+            )
+
+            # Make sure they're numbers or summing goes very badly
+            age_data[age_categories] = age_data[age_categories].astype(int)
+            age_data["age_65p"] = age_data[age_categories].sum(axis="columns")
+
+            data = pd.merge(data, age_data[["age_65p", "GEOID"]], on="GEOID")
+
+            all_hhld = get_census(
+                dataset="acs/acs5",
+                year="2021",
+                variables=[total_hhld],
+                params={
+                    "for": "block group:*",
+                    "in": f"state:{area['state']} county:{area['county']}",
+                    "key": api_key,
+                },
+                return_geoid=True,
+            )
+            all_hhld["tract_id"] = all_hhld["GEOID"].str[:-1]
+            all_hhld[total_hhld] = all_hhld[total_hhld].astype(int)
+            all_hhld_gb = all_hhld[["tract_id", total_hhld]].groupby("tract_id", as_index=False).sum()
+            all_hhld = pd.merge(all_hhld, all_hhld_gb, how="left", on="tract_id")
+            # Create a proportion table for assignment
+            all_hhld.columns = ["bg_hhld", "bg_id", "tract_id", "tract_hhld"]
+            all_hhld["proportion"] = all_hhld["bg_hhld"] / all_hhld["tract_hhld"]
+            all_hhld = all_hhld[["bg_id", "tract_id", "proportion"]]
+
+            # Zero-car HHLD data
+            zc_hhld = get_census(
+                dataset="acs/acs5",
+                year="2021",
+                variables=[zero_car_hhld],
+                params={
+                    "for": "tract:*",
+                    "in": f"state:{area['state']} county:{area['county']}",
+                    "key": api_key,
+                },
+                return_geoid=True,
+            )
+
+            zc_hhld[zero_car_hhld] = zc_hhld[zero_car_hhld].astype(int)
+            zc_all = pd.merge(all_hhld, zc_hhld, how="left", left_on="tract_id", right_on="GEOID")
+            zc_all["zero_car_hhld"] = zc_all[zero_car_hhld] * zc_all["proportion"]
+            zc_all["zero_car_hhld"] = zc_all["zero_car_hhld"].fillna(0).round().astype(int)
+
+            # Rename columns back to match the pattern above
+            zc_all = zc_all[["bg_id", "zero_car_hhld"]]
+            zc_all = zc_all.rename(columns={"bg_id": "GEOID"})
+
+            data = pd.merge(data, zc_all[["GEOID", "zero_car_hhld"]], on="GEOID")
+
             all_data.append(data)
 
         result = pd.concat(all_data, axis="index")
+
+        # Now let's do the age one
+
         # Rename our GEOID
         result = result.rename(columns={"GEOID": "bg_id"})
         result = result[result["bg_id"].isin(impact_area_bgs["bg_id"])]
+        # Move the bg_id column to the front
+        bg_column = result.pop("bg_id")
+        result.insert(0, "bg_id", bg_column)
         result.to_csv(os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), index=False)
         self.log.info("Finished downloading demographic data")
         return result
