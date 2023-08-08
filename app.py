@@ -33,8 +33,9 @@ csrf = CSRFProtect(app)
 executor = Executor(app)
 
 
-def run_validation(a):
+def run_validation(analysis_id):
     print("Validation run executed")
+    a = Analysis(config=get_config(analysis_id))
     # Let's run through the validation
     update_status(a.uid, "validating analysis area", stage="validate", value=10)
     a.validate_analysis_area()
@@ -154,8 +155,10 @@ def home():
         config["opportunities"] = opp_dict
 
         # Write the analysis configured file
-        with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
-            pickle.dump(a, outfile)
+        # with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
+        #     pickle.dump(a, outfile)
+
+        a.write_config_file()
 
         return redirect(f"/configure/{analysis_id}")
 
@@ -194,14 +197,13 @@ def analyses():
 @app.route("/configure/<analysis_id>", methods=["GET", "POST"])
 def configure(analysis_id):
     # Unpickle the analysis
-    with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "rb") as infile:
-        a = pickle.load(infile)
+    a = Analysis(config=get_config(analysis_id))
 
     opp_fields = []
     opp_keys = list(a.config["opportunities"].keys())
 
     for o in opp_keys:
-        opp_fields.append({"opportunity": o, "prettyname": o})
+        opp_fields.append({"opportunity": o, "prettyname": o, "unit": ""})
 
     form = ConfigForm(opportunities=opp_fields)
 
@@ -243,6 +245,10 @@ def configure(analysis_id):
             this_opportunity["name"] = opportunity_form.prettyname.data
             # this_opportunity["description"] = opportunity_form.description.data
             this_opportunity["parameters"] = [int(x.strip()) for x in opportunity_form.parameters.data.split(",")]
+            if this_opportunity["method"] == "travel_time":
+                this_opportunity["unit"] = "minutes"
+            else:
+                this_opportunity["unit"] = opportunity_form.unit.data
             a.config["opportunities"][opportunity_form.opportunity.data] = this_opportunity
 
         a.config["scenarios"][0]["duration"] = form.scenario0_duration.data
@@ -263,15 +269,14 @@ def configure(analysis_id):
         else:
             a.config["scenarios"][1]["transit_modes"] = form.scenario1_modes.data
 
-        with open(os.path.join(upload_folder, "config.yml"), "w") as outfile:
-            yaml.dump(a.config, outfile)
+        a.write_config_file()
 
         # Pickle the analysis
-        with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
-            pickle.dump(a, outfile)
+        # with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
+        #     pickle.dump(a, outfile)
 
         # Start the validation process
-        executor.submit(run_validation, a=a)
+        executor.submit(run_validation, analysis_id=analysis_id)
 
         return redirect(f"/validate/{analysis_id}")
     return render_template("configure.jinja2", form=form, config_json={"analysis_id": analysis_id})

@@ -27,7 +27,10 @@ class OpportunityMeasureForm(Form):
         default="c",
     )
     details = TextAreaField("Opportunity Description", default="A test")
-    unit = StringField("Unit of Measure (e.g. jobs)", validators=[DataRequired()])
+    unit = StringField(
+        "Unit of Measure (e.g. jobs)",
+        validators=[DataRequired()],
+    )
     parameters = StringField("Parameters (comma separated)", validators=[DataRequired()], default="30,45")
     opportunity = HiddenField()
 

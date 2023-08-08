@@ -127,24 +127,25 @@ class Analysis:
         """Set up the loggers for the session"""
         # Set up the main logger
         self.log = logging.getLogger(self.config["uid"])
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(LOG_FORMATTER)
-        if self.config["verbosity"] == "DEBUG":
-            stream_handler.setLevel(logging.DEBUG)
-        else:
-            stream_handler.setLevel(logging.INFO)
-        self.log.addHandler(stream_handler)
+        if not self.log.hasHandlers():
+            stream_handler = logging.StreamHandler()
+            stream_handler.setFormatter(LOG_FORMATTER)
+            if self.config["verbosity"] == "DEBUG":
+                stream_handler.setLevel(logging.DEBUG)
+            else:
+                stream_handler.setLevel(logging.INFO)
+            self.log.addHandler(stream_handler)
 
-        handler_info = logging.FileHandler(os.path.join(self.cache_folder, "info.log"))
-        handler_info.setFormatter(LOG_CSV_FORMATTER)
-        handler_info.setLevel(logging.INFO)
-        self.log.addHandler(handler_info)
+            handler_info = logging.FileHandler(os.path.join(self.cache_folder, "info.log"))
+            handler_info.setFormatter(LOG_CSV_FORMATTER)
+            handler_info.setLevel(logging.INFO)
+            self.log.addHandler(handler_info)
 
-        handler_error = logging.FileHandler(os.path.join(self.cache_folder, "error.log"))
-        handler_error.setFormatter(LOG_CSV_FORMATTER)
-        handler_error.setLevel(logging.ERROR)
-        self.log.addHandler(handler_error)
-        self.log.setLevel(STREAM_LOG)
+            handler_error = logging.FileHandler(os.path.join(self.cache_folder, "error.log"))
+            handler_error.setFormatter(LOG_CSV_FORMATTER)
+            handler_error.setLevel(logging.ERROR)
+            self.log.addHandler(handler_error)
+            self.log.setLevel(STREAM_LOG)
 
     def assemble_gtfs_files(self, scenario_idx: int) -> list:
         """Build a list of GTFS files for a given scenario for validation
