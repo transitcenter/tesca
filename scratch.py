@@ -2,6 +2,8 @@ import json
 import os
 import yaml
 
+import pygris
+
 from tesca.analysis import Analysis
 import pandas as pd
 
@@ -20,7 +22,7 @@ import pandas as pd
 # opp = pd.read_csv(os.path.join("cache", "septa-redesign-half-mile", "opportunities.csv"), dtype={"bg_id": str})
 # bg_ids = opp.bg_id.to_list()
 
-a = Analysis.from_config_file(os.path.join("cache", "20230706142739", "config.yml"))
+# a = Analysis.from_config_file(os.path.join("cache", "20230706142739", "config.yml"))
 # a.fetch_demographic_data()
 # a.compute_travel_times()
 # Compute the travel time matrix - this takes a while
@@ -29,8 +31,12 @@ a = Analysis.from_config_file(os.path.join("cache", "20230706142739", "config.ym
 # a.compute_metrics()
 # # Compute the scenario comparison of the metrics
 # a.compare_scenarios()
-a.fetch_demographic_data()
+# a.fetch_demographic_data()
 # # Summarize these metrics (and comparison) across imapct area demographics
-a.compute_summaries()
+# a.compute_summaries()
 # # Compute unreachable destinations
-a.compute_unreachable()
+# a.compute_unreachable()
+
+us_counties = pygris.counties(cb=True, resolution="20m", cache=True, year=2021)
+
+us_counties.drop("geometry", axis=1).to_csv("states_counties.csv", index=False)

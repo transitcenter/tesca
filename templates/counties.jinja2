@@ -1,0 +1,63 @@
+{% extends 'layout.jinja2' %}
+
+{% block title %} Fetch Block Groups {% endblock %}
+
+{% block styles %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/counties.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <h1>Download Block Groups by County</h1>
+    <p>You can choose from a list of counties by state and add them to (or remove them from) the "selected counties" box
+        by clicking the arrows. Once you are ready click "fetch block groups" to download the block group data in the
+        format you've selected. <b>Note: fetching all the block group data may take a few moments, please be
+            patient!</b></p>
+    <div class="pure-g">
+        <div class="pure-g-3-12">
+            <form class="pure-form pure-form-stacked">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <label for="states">Select State</label>
+                        <select id="states" onchange="stateSelectChanged()"></select>
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="counties">Select Counties</label>
+                        <select id="counties" multiple></select>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="pure-g-1-12 select-buttons">
+            <button class="pure-button pure-button-primary" onclick="addSelectedCounties()"> >> </button>
+            <br><br>
+            <button class="pure-button pure-button-primary" onclick="removeSelectedCounties()">
+                << </button>
+
+        </div>
+        <div class="pure-g-3-12">
+            <form class="pure-form pure-form-stacked" id="selected-counties-form" onsubmit="makeAllSelected()"
+                method="POST" action="/counties" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <fieldset>
+                    <label for="data-type">Choose Data Export</label>
+                    <select id="data-type" name="data-type">
+                        <option value="polygons" selected>Spatial polygons (GeoJSON)</option>
+                        {# <option value="employment">Block groups and total employment (CSV)</option> #}
+                        <option value="list">Block group list only (CSV)</option>
+                    </select>
+                    <label for="selected-counties">Selected Counties</label>
+                    <select id="selected-counties" name="selected-counties" multiple></select>
+                    <button type="submit" id="fetch" class="pure-button pure-button-primary" disabled>Fetch Block
+                        Groups</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script src=" {{ url_for('static', filename='js/d3.v6.js' ) }}" defer></script>
+<script src="{{ url_for('static', filename='js/counties.js') }}" defer></script>
+
+{% endblock %}

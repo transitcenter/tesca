@@ -10,12 +10,14 @@ import traceback
 import yaml
 
 
-from flask import Flask, render_template, redirect, send_from_directory, request
+from flask import Flask, render_template, redirect, send_from_directory, send_file, request, Response
 from flask_wtf.csrf import validate_csrf, CSRFProtect
 
 from flask_executor import Executor
 import pandas as pd
+from pygris import block_groups
 from werkzeug.utils import secure_filename
+
 from tesca.analysis import CACHE_FOLDER, Analysis
 
 from config import DevelopmentConfig
@@ -350,6 +352,56 @@ def gtfs(analysis_id):
     gtfs_json["1"] = gtfs1
 
     return render_template("gtfs.jinja2", gtfs=gtfs_json, analysis_id=analysis_id)
+
+
+@app.route("/counties/", methods=["GET", "POST"])
+def counties():
+    context = {"gh": "as"}
+    if request.method == "POST":
+        data_type = request.form.get("data-type")
+        print(data_type)
+        selected_counties = request.form.getlist("selected-counties")
+        counties_by_state = {}
+        bg_dfs = []
+        for county in selected_counties:
+            state_fp = county[:2]
+            county_fp = county[2:]
+            if state_fp not in counties_by_state.keys():
+                counties_by_state[state_fp] = [county_fp]
+            else:
+                counties_by_state[state_fp].append(county_fp)
+
+        with open("settings.yml", "r") as infile:
+            settings = yaml.safe_load(infile)
+
+        for state in counties_by_state.keys():
+            bgs = block_groups(state=state, county=counties_by_state[state], year=settings["census_year"], cb=False)
+            bg_dfs.append(bgs)
+
+        bg_df = pd.concat(bg_dfs, axis="index")
+        bg_df = bg_df.rename(columns={"GEOID": "bg_id"})
+        bg_df = bg_df[["bg_id", "geometry"]]
+
+        if data_type == "polygons":
+            return Response(
+                bg_df.to_json(),
+                mimetype="application/json",
+                headers={"Content-Disposition": "attachment;filename=block_groups.geojson"},
+            )
+        else:
+            return Response(
+                bg_df.to_csv(),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=block_groups.csv"},
+            )
+        # return redirect("/static/data/block_groups.geojson")
+        # bg_centroid = bg_df.copy()
+        # bg_centroid["geometry"] = bg_centroid["geometry"].centroid
+        # bg_centroid = bg_centroid.rename(columns={"GEOID": "id"})
+        # bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
+        # bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
+
+    return render_template("counties.jinja2", **context)
 
 
 @app.route("/validate/<analysis_id>")

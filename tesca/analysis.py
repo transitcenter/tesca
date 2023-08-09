@@ -471,7 +471,7 @@ class Analysis:
         self.log.info("Finished computing scenario summaries")
 
     def download_block_groups(self, state, county):
-        return block_groups(state=state, county=county, year=self.settings["census_year"], cb=True)
+        return block_groups(state=state, county=county, year=self.settings["census_year"], cb=False)
 
     def fetch_block_groups(self, counties_by_state: dict, overwrite=False):
         # Fetch all block groups based on a list of states/counties
