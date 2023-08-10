@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Reference &mdash; TESCA 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="TESCA User Guide" href="guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TESCA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+<ul>
+  <li class='toctree-l1'>
+    <a class="reference-external" href="/"><b>Back to TESCA</b></a>
+  </li>
+</ul>
+
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.html">TESCA User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#basic-workflow">Basic Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#step-1-assemble-and-prepare-data">Step 1: Assemble and Prepare Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#running-an-analysis-without-interface">Running an Analysis Without Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#data-inputs">Data Inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#setting-up-the-analysis">Setting Up The Analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-tesca.analysis">Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.Analysis"><code class="docutils literal notranslate"><span class="pre">Analysis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.assemble_gtfs_files"><code class="docutils literal notranslate"><span class="pre">Analysis.assemble_gtfs_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compare_scenarios"><code class="docutils literal notranslate"><span class="pre">Analysis.compare_scenarios()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_cumulative_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_cumulative_measure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_metrics"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_travel_time_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_time_measure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_travel_times"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_times()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_unreachable"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_unreachable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.from_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.from_config_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.write_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.write_config_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.CACHE_FOLDER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOLDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.CENTROIDS_FILENAME"><code class="docutils literal notranslate"><span class="pre">CENTROIDS_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.COMPARED_FILENAME"><code class="docutils literal notranslate"><span class="pre">COMPARED_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.DEMOGRAPHICS_FILENAME"><code class="docutils literal notranslate"><span class="pre">DEMOGRAPHICS_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.GTFS_VALIDATION_SUBFOLDER"><code class="docutils literal notranslate"><span class="pre">GTFS_VALIDATION_SUBFOLDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.IMPACT_AREA_FILENAME"><code class="docutils literal notranslate"><span class="pre">IMPACT_AREA_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.MOBILITY_DATA_VALIDATOR_JAR"><code class="docutils literal notranslate"><span class="pre">MOBILITY_DATA_VALIDATOR_JAR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.OPPORTUNITIES_FILENAME"><code class="docutils literal notranslate"><span class="pre">OPPORTUNITIES_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.SETTINGS_FILENAME"><code class="docutils literal notranslate"><span class="pre">SETTINGS_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.SUMMARY_FILENAME"><code class="docutils literal notranslate"><span class="pre">SUMMARY_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.VALIDATION_SUBFOLDER"><code class="docutils literal notranslate"><span class="pre">VALIDATION_SUBFOLDER</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TESCA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="developer-reference">
+<h1>Developer Reference<a class="headerlink" href="#developer-reference" title="Permalink to this heading"></a></h1>
+<section id="configuration-files">
+<h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this heading"></a></h2>
+<p>Configuration files</p>
+</section>
+<section id="module-tesca.analysis">
+<span id="analysis"></span><h2>Analysis<a class="headerlink" href="#module-tesca.analysis" title="Permalink to this heading"></a></h2>
+<p>The analysis object is used to initalize and perform a comparative data analysis. 
+It contains a number of validation and helper functions as well as analysis functions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">Analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis" title="Permalink to this definition"></a></dt>
+<dd><p>The analysis object</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.assemble_gtfs_files">
+<span class="sig-name descname"><span class="pre">assemble_gtfs_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.assemble_gtfs_files" title="Permalink to this definition"></a></dt>
+<dd><p>Build a list of GTFS files for a given scenario for validation</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>scenario_idx<span class="classifier">int</span></dt><dd><p>Can be 0 or 1 depending on the scenario</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>list</dt><dd><p>A list of GTFS files to be assessed.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compare_scenarios">
+<span class="sig-name descname"><span class="pre">compare_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.compare_scenarios" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the differences between all scenarios</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_cumulative_measure">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_cumulative_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunity_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunity_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.compute_cumulative_measure" title="Permalink to this definition"></a></dt>
+<dd><p>Calcualte the cumulative number of opportunities for each origin within the destination threshold.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>matrix<span class="classifier">pd.DataFrame</span></dt><dd><p>The travel time matrix</p>
+</dd>
+<dt>opportunity_df<span class="classifier">pd.DataFrame</span></dt><dd><p>The opportunity locations</p>
+</dd>
+<dt>opportunity_name<span class="classifier">str</span></dt><dd><p>The name of the opportunity. This will be appended with _ct, where ‘t’ is the threshold</p>
+</dd>
+<dt>threshold<span class="classifier">int</span></dt><dd><p>The travel time threshold cutoff, in minutes.</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>pd.DataFrame</dt><dd><p>A dataframe containing each origin and a count of reachable opportunities</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_metrics">
+<span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.compute_metrics" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the access to opportunity metrics using the calcualted matrices</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_travel_time_measure">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_travel_time_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunty_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunity_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.compute_travel_time_measure" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate travel time to nth nearest destination</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>matrix<span class="classifier">pd.DataFrame</span></dt><dd><p>A dataframe containing the travel time matrix</p>
+</dd>
+<dt>opportunty_df<span class="classifier">pd.DataFrame</span></dt><dd><p>A dataframe containing the opportunities (1 or greater indicates opportunity is located there)</p>
+</dd>
+<dt>opportunity_name<span class="classifier">str</span></dt><dd><p>The name of the opportunity to be used in the header. This will be appended with a ‘_tn’ where n is as described below.</p>
+</dd>
+<dt>infinity_value<span class="classifier">int</span></dt><dd><p>The value to use for infinite travel times</p>
+</dd>
+<dt>n<span class="classifier">int, optional</span></dt><dd><p>The nth nearest item to use (e.g. 1 is closest, 3 is 3rd closest), by default 1</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Returns<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>pd.DataFrame</dt><dd><p>A dataframe containing the minimum travel time to the nth nearest destination for each origin</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_travel_times">
+<span class="sig-name descname"><span class="pre">compute_travel_times</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.compute_travel_times" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the travel times for the provided scenarios</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_unreachable">
+<span class="sig-name descname"><span class="pre">compute_unreachable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.compute_unreachable" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the number of individuals in the impact area who cannot reach their desired travel time destination</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.from_config_file">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.from_config_file" title="Permalink to this definition"></a></dt>
+<dd><p>Create an analysis object from a yaml configuration file.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>config_file<span class="classifier">str</span></dt><dd><p>Path to the yaml configuration file</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>Returns<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>Analysis</dt><dd><p>The instantiated analysis object</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.write_config_file">
+<span class="sig-name descname"><span class="pre">write_config_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.write_config_file" title="Permalink to this definition"></a></dt>
+<dd><p>Write the current configuration state to the configuration file</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.CACHE_FOLDER">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOLDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cache'</span></em><a class="headerlink" href="#tesca.analysis.CACHE_FOLDER" title="Permalink to this definition"></a></dt>
+<dd><p>Cache folder for project storage</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.CENTROIDS_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">CENTROIDS_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'analysis_centroids.geojson'</span></em><a class="headerlink" href="#tesca.analysis.CENTROIDS_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Expected filename of the centroids for matrix generation</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.COMPARED_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">COMPARED_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'compared.csv'</span></em><a class="headerlink" href="#tesca.analysis.COMPARED_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Output filename of compared access metrics</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.DEMOGRAPHICS_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">DEMOGRAPHICS_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'demographics.csv'</span></em><a class="headerlink" href="#tesca.analysis.DEMOGRAPHICS_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Expected input filename for demographic data</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.GTFS_VALIDATION_SUBFOLDER">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">GTFS_VALIDATION_SUBFOLDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gtfs_validation'</span></em><a class="headerlink" href="#tesca.analysis.GTFS_VALIDATION_SUBFOLDER" title="Permalink to this definition"></a></dt>
+<dd><p>Validation subsubfolder for GTFS validation outputs</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.IMPACT_AREA_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">IMPACT_AREA_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'impact_area.csv'</span></em><a class="headerlink" href="#tesca.analysis.IMPACT_AREA_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Expected input file name for impact area zone list</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.MOBILITY_DATA_VALIDATOR_JAR">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">MOBILITY_DATA_VALIDATOR_JAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gtfs-validator-4.0.0-cli.jar'</span></em><a class="headerlink" href="#tesca.analysis.MOBILITY_DATA_VALIDATOR_JAR" title="Permalink to this definition"></a></dt>
+<dd><p>Expected file name for the JAR file for MobilityData validation</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.OPPORTUNITIES_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">OPPORTUNITIES_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'opportunities.csv'</span></em><a class="headerlink" href="#tesca.analysis.OPPORTUNITIES_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Expected input filename for opportunities data</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.SETTINGS_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">SETTINGS_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'settings.yml'</span></em><a class="headerlink" href="#tesca.analysis.SETTINGS_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Settings location</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.SUMMARY_FILENAME">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">SUMMARY_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'summary.csv'</span></em><a class="headerlink" href="#tesca.analysis.SUMMARY_FILENAME" title="Permalink to this definition"></a></dt>
+<dd><p>Output filename of summary data</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="tesca.analysis.VALIDATION_SUBFOLDER">
+<span class="sig-prename descclassname"><span class="pre">tesca.analysis.</span></span><span class="sig-name descname"><span class="pre">VALIDATION_SUBFOLDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'validation'</span></em><a class="headerlink" href="#tesca.analysis.VALIDATION_SUBFOLDER" title="Permalink to this definition"></a></dt>
+<dd><p>Validation subfolder name for validation outputs</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="guide.html" class="btn btn-neutral float-left" title="TESCA User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, TransitCenter.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

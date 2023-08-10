@@ -1,0 +1,183 @@
+Running an Analysis
+===================
+
+In this guide, we'll walk through how to set up a basic analysis, configure it
+to your liking, run and understand the validation outputs, run the analysis, and
+view and understand the results.
+
+
+Basic Workflow
+--------------
+Performing a successful analysis requires completing the following five to six
+steps:
+
+1. Download, prepare, and assemble the appropriate datasets
+2. Upload an opportunities dataset
+3. Configure the analysis
+4. Run the data validation and interpret the results
+5. Run the analysis and interpret the results
+6. (Optional) Create your own additional visualizations and plots
+
+Step 1: Assemble and Prepare Data
+---------------------------------
+
+While TESCA is designed to automatically fetch as much data as possible, there
+are a few datasets that you will need to define, assemble, and prepare yourself
+for the analysis to succeed. These are:
+
+* A list of :term:`block group` IDs that define the :term:`analysis area`.
+* A list of :term:`block group` IDs that define the :term:`impact area`.
+* A set of one or more :term:`opportunities` for each of the block groups defined in the :term:`analysis area`
+* A PBF extract of OpenStreetMap that covers the :term:`analysis area`.
+* Two sets of one or more :term:`GTFS` files. These "sets" could be identical
+  (e.g. if two time periods for the same dataset is being studied)
+
+Analysis Area Block Groups
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Often, :term:`analysis areas<analysis area>` are defined at the county level.
+For example, a study that includes the `Metropolitan Statistical Area (MSA) of
+Baltimore <https://en.wikipedia.org/wiki/Baltimore_metropolitan_area>`_ would need to include block groups in:
+
+* Anne Arundel County
+* Baltimore City
+* Baltimore County
+* Carroll County
+* Harford County
+* Howard County
+* Queen Anne's County
+
+TESCA provides a specific helper function to download block group data county by
+county. The `Get Block Groups </counties>`_ page provides a tool to select a
+list of counties (in multiple states if needed) and generate block group level
+data for those regions.
+
+Analysis areas don't have to include all block groups in a county.
+
+Impact Areas
+^^^^^^^^^^^^
+Deciding on an appropriate :term:`impact area` is dependent on the desired scope
+of the study, and is very context dependent. For example, you may be interested
+in the impact across a very small area of the larger city, or want to
+specifically look at areas nearby a transit network that has changed. If your
+impact area is purely county-based, you can download a list of block groups for
+the counties you'd like using the `Get Block Groups </counties>`_ page.
+Remember, the list of block groups in the impact area must be a subset of the
+analysis area, meaning that there can be no block groups in the impact area that
+do not appear in the analysis area.
+
+Some potential impact area approaches are:
+
+* A subset of counties representing a more urban (or rural, or suburban) portion
+  of the analysis area
+* A set of block groups near a transit stop (e.g. within 1/2 mile). Computing
+  this requires GIS software such as QGIS.
+* A set of block groups representing communities specifically impacted by the
+  change or comparison. For example, if a schedule or route change is planned
+  specificaly to improve access for select neighborhoods.
+
+Opportunity Data
+^^^^^^^^^^^^^^^^
+
+Opportunities come in many forms, and TESCA allows you to analyze access to
+basically any opportunity you can find data on. Common opportunities include the
+ones used in the `TransitCenter Equity Dashboard
+<https://dashboard.transitcenter.org/>`_, such as jobs, supermarkets, and
+hospitals. Good places to look for opportunity data include:
+
+* The US Census (e.g. for job counts).
+* A city's Open Data portal (e.g. for city amenities such as parks or libraries)
+* OpenStreetMap.
+
+Often, you will need to spatially join your opportunities dataset with the
+:term:`analysis area` you are using. This can be done using GIS software such as
+QGIS. Your final opportunities dataset must include the following:
+
+* A ``bg_id`` column containing block groups for **all** analysis area zones, 
+* A column for each opportunity type (these don't have to be pretty, you will
+  have a chance to give them a title later).
+
+.. note::
+    Your opportunities file must have a row for each block group in the 
+    :term:`analysis area`, even if there are no opportunities there. This can be 
+    accomplished by filling in empty block groups with zeroes.
+
+OpenStreetMap Data
+^^^^^^^^^^^^^^^^^^
+
+OpenStreetMap (the Wikipedia of Maps) is an open-source mapping dataset
+that provides the underlying street network needed to compute how long it takes
+to walk to transit stops, transfer, and reach a destination. While there are
+some places that provide up-to-date extracts of major US cities, the best way to
+ensure you are getting the appropriate data coverage is to produce a custom
+extract from the website `BBBike <https://extract.bbbike.org/>`_.
+
+Here's how it works:
+
+1. Visit `<https://extract.bbbike.org/>`_.
+2. Choose ``Protocolbuffer (PBF)`` from the 'Format' drop-down.
+3. Type the name you'd like to give to the area you're extracting.
+4. Enter your e-mail address to receive a notification when the data is ready.
+5. Move the map on the right to your desired location, and click the ``here``
+   button to create a box
+6. Roughly adjust the box to cover most of the area you need. Clicking on the
+   box will make it blue, and you can drag the orange circles around to adjust
+   the shape.
+7. Choose the "add points to the polygon" radio button on the left and adjust
+   the shape of the rectangle to encompass the boundary of your :term:`analysis
+   area`.
+8. When you are ready, click the big **extract** button. You will be taken to a status page where you can watch as your file is queued for extraction. You will receive an email when the extraction is done, and you can follow that email's instructiosn to download your ``.pbf`` file.
+9. Rename the file you just downloaded to ``osm.pbf``.
+
+GTFS Data
+^^^^^^^^^
+
+
+
+Step 2: Starting an Analysis
+----------------------------
+
+Running an Analysis Without Interface
+-------------------------------------
+
+
+
+Data Inputs
+^^^^^^^^^^^
+
+In order to run an analysis without the user interface, you will need to assemble much of the data sources yourself. A folder needs to be created in the `cache` directory which represents an individual project. Here's what your initial folder structure should look like::
+
+    cache
+    ├── example-analysis
+    │    ├── analysis_centroids.geojson
+    │    ├── analysis_polygons.geojson
+    │    ├── config.yml
+    │    ├── demographics.csv
+    │    ├── gtfs0
+    │    │    ├── cta.zip
+    │    │    └── metra.zip
+    │    ├── gtfs1
+    │    │    ├── cta.zip
+    │    │    └── metra.zip
+    │    ├── impact_area.csv
+    │    ├── opportunities.csv
+    │    ├── osm.pbf
+
+
+Here's a description of each file:
+
+- ``analysis_centroids.geojson`` contains geospatial point data of the representative centers or centroids of the block group zone. 
+- ``analysis_polygons.geojson`` contains geospatial area data of the block group zones. This file should contain an ``id`` column with block group IDs.
+- ``config.yml`` is the configuration file which contains all of the parameters of the analysis. You can read more about that ``INSERT_LINK_TO_FILE``
+- ``demographics.csv`` (optional) contain the demographic counts of the population groups used in the analysis. These should correspond to the demogrpahic keys listed in the configuration file, and should span all impact area zones. This file should contain a ``bg_id`` column along with a column for each demographic group matching the keys provided in the configuration file. The data for this file can be fetched automatically from the Census API.
+- ``gtfs0`` is a folder containing all of the ``.zip`` files of all GTFS data used for Scenario A analysis.
+- ``gtfs1`` is a folder containing all of the ``.zip`` files of all GTFS data used for Scenario B analysis.
+- ``impact_area.csv`` is a file containing a single column (``bg_id``) with block group defintions for the impact area
+- ``opportunities.csv`` is a file containing a ``bg_id`` column containing block groups for all analysis area zones, and a column for each opportunity type matching the opportunity keys in the configuration file.
+- ``osm.pbf`` is the OpenStreetMap PBF file spanning the analysis area.
+
+Setting Up The Analysis
+^^^^^^^^^^^^^^^^^^^^^^^
+You will need to set up the ``config.yml`` file with the appropriate parameters. Here's an example file you can work from.
+
+.. literalinclude:: example_config.yml
+    :language: yaml

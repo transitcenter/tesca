@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "tesca"
+project = "TESCA"
 copyright = "2023, TransitCenter"
-author = "TransitCenter"
+author = "TransitCenter, Willem Klumpenhouwer"
 release = "0.0.1"
 
 # -- General configuration ---------------------------------------------------

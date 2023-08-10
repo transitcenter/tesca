@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running an Analysis &mdash; TESCA 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer Reference" href="reference.html" />
+    <link rel="prev" title="TransitCenter Equity Scenario Comparison Application" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TESCA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+<ul>
+  <li class='toctree-l1'>
+    <a class="reference-external" href="/"><b>Back to TESCA</b></a>
+  </li>
+</ul>
+
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Running an Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-workflow">Basic Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-assemble-and-prepare-data">Step 1: Assemble and Prepare Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#analysis-area-block-groups">Analysis Area Block Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#impact-areas">Impact Areas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#opportunity-data">Opportunity Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openstreetmap-data">OpenStreetMap Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-starting-an-analysis">Step 2: Starting an Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-an-analysis-without-interface">Running an Analysis Without Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-inputs">Data Inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-the-analysis">Setting Up The Analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-files">Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-tesca.analysis">Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.Analysis"><code class="docutils literal notranslate"><span class="pre">Analysis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.assemble_gtfs_files"><code class="docutils literal notranslate"><span class="pre">Analysis.assemble_gtfs_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compare_scenarios"><code class="docutils literal notranslate"><span class="pre">Analysis.compare_scenarios()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_cumulative_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_cumulative_measure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_metrics"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_travel_time_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_time_measure()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_travel_times"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_times()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_unreachable"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_unreachable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.from_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.from_config_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.write_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.write_config_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.CACHE_FOLDER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOLDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.CENTROIDS_FILENAME"><code class="docutils literal notranslate"><span class="pre">CENTROIDS_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.COMPARED_FILENAME"><code class="docutils literal notranslate"><span class="pre">COMPARED_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.DEMOGRAPHICS_FILENAME"><code class="docutils literal notranslate"><span class="pre">DEMOGRAPHICS_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.GTFS_VALIDATION_SUBFOLDER"><code class="docutils literal notranslate"><span class="pre">GTFS_VALIDATION_SUBFOLDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.IMPACT_AREA_FILENAME"><code class="docutils literal notranslate"><span class="pre">IMPACT_AREA_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.MOBILITY_DATA_VALIDATOR_JAR"><code class="docutils literal notranslate"><span class="pre">MOBILITY_DATA_VALIDATOR_JAR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.OPPORTUNITIES_FILENAME"><code class="docutils literal notranslate"><span class="pre">OPPORTUNITIES_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.SETTINGS_FILENAME"><code class="docutils literal notranslate"><span class="pre">SETTINGS_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.SUMMARY_FILENAME"><code class="docutils literal notranslate"><span class="pre">SUMMARY_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.VALIDATION_SUBFOLDER"><code class="docutils literal notranslate"><span class="pre">VALIDATION_SUBFOLDER</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TESCA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Running an Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="running-an-analysis">
+<h1>Running an Analysis<a class="headerlink" href="#running-an-analysis" title="Permalink to this heading"></a></h1>
+<p>In this guide, we’ll walk through how to set up a basic analysis, configure it
+to your liking, run and understand the validation outputs, run the analysis, and
+view and understand the results.</p>
+<section id="basic-workflow">
+<h2>Basic Workflow<a class="headerlink" href="#basic-workflow" title="Permalink to this heading"></a></h2>
+<p>Performing a successful analysis requires completing the following five to six
+steps:</p>
+<ol class="arabic simple">
+<li><p>Download, prepare, and assemble the appropriate datasets</p></li>
+<li><p>Upload an opportunities dataset</p></li>
+<li><p>Configure the analysis</p></li>
+<li><p>Run the data validation and interpret the results</p></li>
+<li><p>Run the analysis and interpret the results</p></li>
+<li><p>(Optional) Create your own additional visualizations and plots</p></li>
+</ol>
+</section>
+<section id="step-1-assemble-and-prepare-data">
+<h2>Step 1: Assemble and Prepare Data<a class="headerlink" href="#step-1-assemble-and-prepare-data" title="Permalink to this heading"></a></h2>
+<p>While TESCA is designed to automatically fetch as much data as possible, there
+are a few datasets that you will need to define, assemble, and prepare yourself
+for the analysis to succeed. These are:</p>
+<ul class="simple">
+<li><p>A list of <a class="reference internal" href="glossary.html#term-block-group"><span class="xref std std-term">block group</span></a> IDs that define the <a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis area</span></a>.</p></li>
+<li><p>A list of <a class="reference internal" href="glossary.html#term-block-group"><span class="xref std std-term">block group</span></a> IDs that define the <a class="reference internal" href="glossary.html#term-impact-area"><span class="xref std std-term">impact area</span></a>.</p></li>
+<li><p>A set of one or more <a class="reference internal" href="glossary.html#term-opportunities"><span class="xref std std-term">opportunities</span></a> for each of the block groups defined in the <a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis area</span></a></p></li>
+<li><p>A PBF extract of OpenStreetMap that covers the <a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis area</span></a>.</p></li>
+<li><p>Two sets of one or more <a class="reference internal" href="glossary.html#term-GTFS"><span class="xref std std-term">GTFS</span></a> files. These “sets” could be identical
+(e.g. if two time periods for the same dataset is being studied)</p></li>
+</ul>
+<section id="analysis-area-block-groups">
+<h3>Analysis Area Block Groups<a class="headerlink" href="#analysis-area-block-groups" title="Permalink to this heading"></a></h3>
+<p>Often, <a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis areas</span></a> are defined at the county level.
+For example, a study that includes the <a class="reference external" href="https://en.wikipedia.org/wiki/Baltimore_metropolitan_area">Metropolitan Statistical Area (MSA) of
+Baltimore</a> would need to include block groups in:</p>
+<ul class="simple">
+<li><p>Anne Arundel County</p></li>
+<li><p>Baltimore City</p></li>
+<li><p>Baltimore County</p></li>
+<li><p>Carroll County</p></li>
+<li><p>Harford County</p></li>
+<li><p>Howard County</p></li>
+<li><p>Queen Anne’s County</p></li>
+</ul>
+<p>TESCA provides a specific helper function to download block group data county by
+county. The <a class="reference external" href="/counties">Get Block Groups</a> page provides a tool to select a
+list of counties (in multiple states if needed) and generate block group level
+data for those regions.</p>
+<p>Analysis areas don’t have to include all block groups in a county.</p>
+</section>
+<section id="impact-areas">
+<h3>Impact Areas<a class="headerlink" href="#impact-areas" title="Permalink to this heading"></a></h3>
+<p>Deciding on an appropriate <a class="reference internal" href="glossary.html#term-impact-area"><span class="xref std std-term">impact area</span></a> is dependent on the desired scope
+of the study, and is very context dependent. For example, you may be interested
+in the impact across a very small area of the larger city, or want to
+specifically look at areas nearby a transit network that has changed. If your
+impact area is purely county-based, you can download a list of block groups for
+the counties you’d like using the <a class="reference external" href="/counties">Get Block Groups</a> page.
+Remember, the list of block groups in the impact area must be a subset of the
+analysis area, meaning that there can be no block groups in the impact area that
+do not appear in the analysis area.</p>
+<p>Some potential impact area approaches are:</p>
+<ul class="simple">
+<li><p>A subset of counties representing a more urban (or rural, or suburban) portion
+of the analysis area</p></li>
+<li><p>A set of block groups near a transit stop (e.g. within 1/2 mile). Computing
+this requires GIS software such as QGIS.</p></li>
+<li><p>A set of block groups representing communities specifically impacted by the
+change or comparison. For example, if a schedule or route change is planned
+specificaly to improve access for select neighborhoods.</p></li>
+</ul>
+</section>
+<section id="opportunity-data">
+<h3>Opportunity Data<a class="headerlink" href="#opportunity-data" title="Permalink to this heading"></a></h3>
+<p>Opportunities come in many forms, and TESCA allows you to analyze access to
+basically any opportunity you can find data on. Common opportunities include the
+ones used in the <a class="reference external" href="https://dashboard.transitcenter.org/">TransitCenter Equity Dashboard</a>, such as jobs, supermarkets, and
+hospitals. Good places to look for opportunity data include:</p>
+<ul class="simple">
+<li><p>The US Census (e.g. for job counts).</p></li>
+<li><p>A city’s Open Data portal (e.g. for city amenities such as parks or libraries)</p></li>
+<li><p>OpenStreetMap.</p></li>
+</ul>
+<p>Often, you will need to spatially join your opportunities dataset with the
+<a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis area</span></a> you are using. This can be done using GIS software such as
+QGIS. Your final opportunities dataset must include the following:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">bg_id</span></code> column containing block groups for <strong>all</strong> analysis area zones,</p></li>
+<li><p>A column for each opportunity type (these don’t have to be pretty, you will
+have a chance to give them a title later).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Your opportunities file must have a row for each block group in the
+<a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis area</span></a>, even if there are no opportunities there. This can be
+accomplished by filling in empty block groups with zeroes.</p>
+</div>
+</section>
+<section id="openstreetmap-data">
+<h3>OpenStreetMap Data<a class="headerlink" href="#openstreetmap-data" title="Permalink to this heading"></a></h3>
+<p>OpenStreetMap (the Wikipedia of Maps) is an open-source mapping dataset
+that provides the underlying street network needed to compute how long it takes
+to walk to transit stops, transfer, and reach a destination. While there are
+some places that provide up-to-date extracts of major US cities, the best way to
+ensure you are getting the appropriate data coverage is to produce a custom
+extract from the website <a class="reference external" href="https://extract.bbbike.org/">BBBike</a>.</p>
+<p>Here’s how it works:</p>
+<ol class="arabic simple">
+<li><p>Visit <a class="reference external" href="https://extract.bbbike.org/">https://extract.bbbike.org/</a>.</p></li>
+<li><p>Choose <code class="docutils literal notranslate"><span class="pre">Protocolbuffer</span> <span class="pre">(PBF)</span></code> from the ‘Format’ drop-down.</p></li>
+<li><p>Type the name you’d like to give to the area you’re extracting.</p></li>
+<li><p>Enter your e-mail address to receive a notification when the data is ready.</p></li>
+<li><p>Move the map on the right to your desired location, and click the <code class="docutils literal notranslate"><span class="pre">here</span></code>
+button to create a box</p></li>
+<li><p>Roughly adjust the box to cover most of the area you need. Clicking on the
+box will make it blue, and you can drag the orange circles around to adjust
+the shape.</p></li>
+<li><p>Choose the “add points to the polygon” radio button on the left and adjust
+the shape of the rectangle to encompass the boundary of your <a class="reference internal" href="glossary.html#term-analysis-area"><span class="xref std std-term">analysis
+area</span></a>.</p></li>
+<li><p>When you are ready, click the big <strong>extract</strong> button. You will be taken to a status page where you can watch as your file is queued for extraction. You will receive an email when the extraction is done, and you can follow that email’s instructiosn to download your <code class="docutils literal notranslate"><span class="pre">.pbf</span></code> file.</p></li>
+<li><p>Rename the file you just downloaded to <code class="docutils literal notranslate"><span class="pre">osm.pbf</span></code>.</p></li>
+</ol>
+</section>
+</section>
+<section id="step-2-starting-an-analysis">
+<h2>Step 2: Starting an Analysis<a class="headerlink" href="#step-2-starting-an-analysis" title="Permalink to this heading"></a></h2>
+</section>
+<section id="running-an-analysis-without-interface">
+<h2>Running an Analysis Without Interface<a class="headerlink" href="#running-an-analysis-without-interface" title="Permalink to this heading"></a></h2>
+<section id="data-inputs">
+<h3>Data Inputs<a class="headerlink" href="#data-inputs" title="Permalink to this heading"></a></h3>
+<p>In order to run an analysis without the user interface, you will need to assemble much of the data sources yourself. A folder needs to be created in the <cite>cache</cite> directory which represents an individual project. Here’s what your initial folder structure should look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cache
+├── example-analysis
+│    ├── analysis_centroids.geojson
+│    ├── analysis_polygons.geojson
+│    ├── config.yml
+│    ├── demographics.csv
+│    ├── gtfs0
+│    │    ├── cta.zip
+│    │    └── metra.zip
+│    ├── gtfs1
+│    │    ├── cta.zip
+│    │    └── metra.zip
+│    ├── impact_area.csv
+│    ├── opportunities.csv
+│    ├── osm.pbf
+</pre></div>
+</div>
+<p>Here’s a description of each file:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">analysis_centroids.geojson</span></code> contains geospatial point data of the representative centers or centroids of the block group zone.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">analysis_polygons.geojson</span></code> contains geospatial area data of the block group zones. This file should contain an <code class="docutils literal notranslate"><span class="pre">id</span></code> column with block group IDs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the configuration file which contains all of the parameters of the analysis. You can read more about that <code class="docutils literal notranslate"><span class="pre">INSERT_LINK_TO_FILE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">demographics.csv</span></code> (optional) contain the demographic counts of the population groups used in the analysis. These should correspond to the demogrpahic keys listed in the configuration file, and should span all impact area zones. This file should contain a <code class="docutils literal notranslate"><span class="pre">bg_id</span></code> column along with a column for each demographic group matching the keys provided in the configuration file. The data for this file can be fetched automatically from the Census API.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gtfs0</span></code> is a folder containing all of the <code class="docutils literal notranslate"><span class="pre">.zip</span></code> files of all GTFS data used for Scenario A analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gtfs1</span></code> is a folder containing all of the <code class="docutils literal notranslate"><span class="pre">.zip</span></code> files of all GTFS data used for Scenario B analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impact_area.csv</span></code> is a file containing a single column (<code class="docutils literal notranslate"><span class="pre">bg_id</span></code>) with block group defintions for the impact area</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opportunities.csv</span></code> is a file containing a <code class="docutils literal notranslate"><span class="pre">bg_id</span></code> column containing block groups for all analysis area zones, and a column for each opportunity type matching the opportunity keys in the configuration file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">osm.pbf</span></code> is the OpenStreetMap PBF file spanning the analysis area.</p></li>
+</ul>
+</section>
+<section id="setting-up-the-analysis">
+<h3>Setting Up The Analysis<a class="headerlink" href="#setting-up-the-analysis" title="Permalink to this heading"></a></h3>
+<p>You will need to set up the <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> file with the appropriate parameters. Here’s an example file you can work from.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a configuration file for a TESCA analysis</span>
+<span class="c1"># The parameters provided in this file can be changed</span>
+<span class="c1">#</span>
+<span class="nt">analyst</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Willem</span><span class="w">  </span><span class="c1"># The analysis name appears on the reporting output</span>
+<span class="nt">project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Morning Peak and Evening Service Comparisons</span><span class="w">  </span><span class="c1"># The project title is used for plot titles</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Comparing weekday peak and weekend service in Chicago.</span><span class="w">  </span><span class="c1"># Longer title for reporting outputs</span>
+<span class="c1"># TODO: Allow scenario-specific infinity values, or use an infinity factor</span>
+<span class="nt">fetch_demographics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Whether or not to fetch demographics</span>
+<span class="nt">infinity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span><span class="w">  </span><span class="c1"># You can restrict the maximum walking time</span>
+<span class="nt">max_time_walking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">  </span><span class="c1"># We now define the opportunities as they are coded in the opportunities file</span>
+<span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chicago-test</span><span class="w"> </span><span class="c1"># A unique ID which is used for logging (should match the cache folder)</span>
+<span class="nt">verbosity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span><span class="w"> </span><span class="c1"># A flag to set the verbosity of the output</span>
+<span class="nt">opportunities</span><span class="p">:</span><span class="w">  </span><span class="c1"># Each item in the list of opportunities corresponds with a column in opportunities.csv</span>
+<span class="w">  </span><span class="nt">emp_all</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cumulative</span><span class="w">  </span><span class="c1"># Method can be either &quot;cumulative&quot; or &quot;travel_time&quot;</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Total Employment</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w">  </span><span class="c1"># Cumulative parameters are travel time thresholds, travel_time parameters are nth closest</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span>
+<span class="w">  </span><span class="nt">emp_low</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cumulative</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Low-Income Employment</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span>
+<span class="w">  </span><span class="nt">hospitals</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">travel_time</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hospitals</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">pharmacies</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">travel_time</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pharmacies</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">urgent_care_facilities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">travel_time</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Urgent Care</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="c1"># Demographics are defined here</span>
+<span class="nt">demographics</span><span class="p">:</span><span class="w">  </span><span class="c1"># Each key correponds with a column in the demogrpahics.csv file and is given a name</span>
+<span class="w">  </span><span class="nt">B03002_003E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">White People</span>
+<span class="w">  </span><span class="nt">B03002_004E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Black People</span>
+<span class="w">  </span><span class="nt">B03002_006E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AAPI</span>
+<span class="w">  </span><span class="nt">B03002_012E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hispanic or Latino</span>
+<span class="c1"># Scenarios are defined as an ordered list</span>
+<span class="nt">scenarios</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span><span class="w">  </span><span class="c1"># Duration of analysis, in minutes</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Morning Peak</span><span class="w">  </span><span class="c1"># A pretty name for the analysis</span>
+<span class="w">  </span><span class="nt">start_datetime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2023-03-07 07:00</span><span class="w">  </span><span class="c1"># Should be in YYYY-MM-DD HH:MM</span>
+<span class="w">  </span><span class="nt">transit_modes</span><span class="p">:</span><span class="w">  </span><span class="c1"># A list of transit modes to use, in capitalized string form</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRANSIT</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Evening</span>
+<span class="w">  </span><span class="nt">start_datetime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2023-03-07 21:00</span>
+<span class="w">  </span><span class="nt">transit_modes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRANSIT</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="TransitCenter Equity Scenario Comparison Application" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="Developer Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, TransitCenter.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

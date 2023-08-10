@@ -34,6 +34,10 @@ app.config["EXECUTOR_PROPAGATE_EXCEPTIONS"] = True
 csrf = CSRFProtect(app)
 executor = Executor(app)
 
+# ---------------------#
+## UTILITY FUNCTIONS ##
+# ---------------------#
+
 
 def run_validation(analysis_id):
     print("Validation run executed")
@@ -118,6 +122,11 @@ def get_config(analysis_id):
         return yaml.safe_load(infile)
 
 
+# ----------#
+## ROUTES ##
+# ----------#
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = OpportunitiesUploadForm()
@@ -167,38 +176,22 @@ def home():
     return render_template("home.jinja2", form=form)
 
 
-@app.route("/projects")
-def analyses():
-    # Take a look at the cache folder
-    cache = []
-    for d in os.listdir("cache"):
-        if os.path.isdir(os.path.join("cache", d)):
-            try:
-                date_started = datetime.strptime(d, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
-                status = get_status(d)
-                try:
-                    config = get_config(d)
-                except FileNotFoundError:
-                    config = None
-                cache.append(
-                    {
-                        "analysis_id": d,
-                        "date_started": date_started,
-                        "stage": status["stage"],
-                        "message": status["message"],
-                        "config": config,
-                    }
-                )
-            except ValueError:
-                pass
+@app.route("/cache/<path:path>")
+def send_cache(path):
+    # Get the full path:
+    fullpath = os.path.join("cache", path)
+    file = os.path.basename(fullpath)
+    dir = os.path.dirname(fullpath)
+    return send_from_directory(dir, file)
 
-    cache = sorted(cache, key=lambda x: int(x["analysis_id"]), reverse=True)
-    return render_template("projects.jinja2", cache=cache)
+
+@app.route("/config/<analysis_id>")
+def config(analysis_id):
+    return get_config(analysis_id)
 
 
 @app.route("/configure/<analysis_id>", methods=["GET", "POST"])
 def configure(analysis_id):
-    # Unpickle the analysis
     a = Analysis(config=get_config(analysis_id))
 
     opp_fields = []
@@ -273,15 +266,84 @@ def configure(analysis_id):
 
         a.write_config_file()
 
-        # Pickle the analysis
-        # with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
-        #     pickle.dump(a, outfile)
-
         # Start the validation process
         executor.submit(run_validation, analysis_id=analysis_id)
 
         return redirect(f"/validate/{analysis_id}")
     return render_template("configure.jinja2", form=form, config_json={"analysis_id": analysis_id})
+
+
+@app.route("/counties/", methods=["GET", "POST"])
+def counties():
+    context = {"gh": "as"}
+    if request.method == "POST":
+        data_type = request.form.get("data-type")
+        print(data_type)
+        selected_counties = request.form.getlist("selected-counties")
+        counties_by_state = {}
+        bg_dfs = []
+        for county in selected_counties:
+            state_fp = county[:2]
+            county_fp = county[2:]
+            if state_fp not in counties_by_state.keys():
+                counties_by_state[state_fp] = [county_fp]
+            else:
+                counties_by_state[state_fp].append(county_fp)
+
+        with open("settings.yml", "r") as infile:
+            settings = yaml.safe_load(infile)
+
+        for state in counties_by_state.keys():
+            bgs = block_groups(state=state, county=counties_by_state[state], year=settings["census_year"], cb=False)
+            bg_dfs.append(bgs)
+
+        bg_df = pd.concat(bg_dfs, axis="index")
+        bg_df = bg_df.rename(columns={"GEOID": "bg_id"})
+        bg_df = bg_df[["bg_id", "geometry"]]
+
+        if data_type == "polygons":
+            return Response(
+                bg_df.to_json(),
+                mimetype="application/json",
+                headers={"Content-Disposition": "attachment;filename=block_groups.geojson"},
+            )
+        else:
+            return Response(
+                bg_df.to_csv(),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=block_groups.csv"},
+            )
+
+    return render_template("counties.jinja2", **context)
+
+
+@app.route("/delete/<analysis_id>")
+def delete_project(analysis_id):
+    confirm = request.args.get("confirm")
+    if confirm == "yes":
+        shutil.rmtree(os.path.join(CACHE_FOLDER, analysis_id))
+        return redirect("/projects")
+    config = get_config(analysis_id)
+    status = get_status(analysis_id)
+    date_started = datetime.strptime(analysis_id, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
+    info = {"config": config, "status": status, "date_started": date_started}
+    return render_template("delete.jinja2", info=info)
+
+
+@app.route("/info/<analysis_id>")
+def log_info(analysis_id):
+    info = pd.read_csv(os.path.join(CACHE_FOLDER, analysis_id, "info.log"), header=None)
+    info.columns = ["timestamp", "level", "message"]
+    info["timestamp"] = pd.to_datetime(info["timestamp"])
+    info = info.sort_values("timestamp", ascending=True)
+    return info.to_dict(orient="records")
+
+@app.route("/guide/", defaults={"filename": "index.html"})
+@app.route("/guide/<path:filename>")
+def guide(filename):
+    print(filename)
+    path = os.path.join("docs/build/html", filename)
+    return send_from_directory(os.path.join(os.path.dirname(__file__), "docs", "build", "html"), filename)
 
 
 @app.route("/gtfs/<analysis_id>")
@@ -354,59 +416,40 @@ def gtfs(analysis_id):
     return render_template("gtfs.jinja2", gtfs=gtfs_json, analysis_id=analysis_id)
 
 
-@app.route("/counties/", methods=["GET", "POST"])
-def counties():
-    context = {"gh": "as"}
-    if request.method == "POST":
-        data_type = request.form.get("data-type")
-        print(data_type)
-        selected_counties = request.form.getlist("selected-counties")
-        counties_by_state = {}
-        bg_dfs = []
-        for county in selected_counties:
-            state_fp = county[:2]
-            county_fp = county[2:]
-            if state_fp not in counties_by_state.keys():
-                counties_by_state[state_fp] = [county_fp]
-            else:
-                counties_by_state[state_fp].append(county_fp)
+@app.route("/projects")
+def analyses():
+    # Take a look at the cache folder
+    cache = []
+    for d in os.listdir("cache"):
+        if os.path.isdir(os.path.join("cache", d)):
+            try:
+                date_started = datetime.strptime(d, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
+                status = get_status(d)
+                try:
+                    config = get_config(d)
+                except FileNotFoundError:
+                    config = None
+                cache.append(
+                    {
+                        "analysis_id": d,
+                        "date_started": date_started,
+                        "stage": status["stage"],
+                        "message": status["message"],
+                        "config": config,
+                    }
+                )
+            except ValueError:
+                pass
 
-        with open("settings.yml", "r") as infile:
-            settings = yaml.safe_load(infile)
-
-        for state in counties_by_state.keys():
-            bgs = block_groups(state=state, county=counties_by_state[state], year=settings["census_year"], cb=False)
-            bg_dfs.append(bgs)
-
-        bg_df = pd.concat(bg_dfs, axis="index")
-        bg_df = bg_df.rename(columns={"GEOID": "bg_id"})
-        bg_df = bg_df[["bg_id", "geometry"]]
-
-        if data_type == "polygons":
-            return Response(
-                bg_df.to_json(),
-                mimetype="application/json",
-                headers={"Content-Disposition": "attachment;filename=block_groups.geojson"},
-            )
-        else:
-            return Response(
-                bg_df.to_csv(),
-                mimetype="text/csv",
-                headers={"Content-disposition": "attachment; filename=block_groups.csv"},
-            )
-        # return redirect("/static/data/block_groups.geojson")
-        # bg_centroid = bg_df.copy()
-        # bg_centroid["geometry"] = bg_centroid["geometry"].centroid
-        # bg_centroid = bg_centroid.rename(columns={"GEOID": "id"})
-        # bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
-        # bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
-
-    return render_template("counties.jinja2", **context)
+    cache = sorted(cache, key=lambda x: int(x["analysis_id"]), reverse=True)
+    return render_template("projects.jinja2", cache=cache)
 
 
-@app.route("/validate/<analysis_id>")
-def validate(analysis_id):
-    return render_template("validate.jinja2", analysis_id=analysis_id)
+@app.route("/results/<analysis_id>")
+def results(analysis_id):
+    # Let's grab the opportunities information
+    config = get_config(analysis_id)
+    return render_template("results.jinja2", analysis_id=analysis_id, config=config)
 
 
 @app.route("/run/<analysis_id>")
@@ -420,52 +463,14 @@ def run(analysis_id):
     return render_template("run.jinja2", analysis_id=analysis_id)
 
 
-@app.route("/delete/<analysis_id>")
-def delete_project(analysis_id):
-    confirm = request.args.get("confirm")
-    if confirm == "yes":
-        shutil.rmtree(os.path.join(CACHE_FOLDER, analysis_id))
-        return redirect("/projects")
-    config = get_config(analysis_id)
-    status = get_status(analysis_id)
-    date_started = datetime.strptime(analysis_id, "%Y%m%d%H%M%S").strftime("%B %d, %Y at %H:%M")
-    info = {"config": config, "status": status, "date_started": date_started}
-    return render_template("delete.jinja2", info=info)
-
-
-@app.route("/results/<analysis_id>")
-def results(analysis_id):
-    # Let's grab the opportunities information
-    config = get_config(analysis_id)
-    return render_template("results.jinja2", analysis_id=analysis_id, config=config)
-
-
 @app.route("/status/<analysis_id>")
 def status(analysis_id):
     return get_status(analysis_id)
 
 
-@app.route("/config/<analysis_id>")
-def config(analysis_id):
-    return get_config(analysis_id)
-
-
-@app.route("/info/<analysis_id>")
-def log_info(analysis_id):
-    info = pd.read_csv(os.path.join(CACHE_FOLDER, analysis_id, "info.log"), header=None)
-    info.columns = ["timestamp", "level", "message"]
-    info["timestamp"] = pd.to_datetime(info["timestamp"])
-    info = info.sort_values("timestamp", ascending=True)
-    return info.to_dict(orient="records")
-
-
-@app.route("/cache/<path:path>")
-def send_cache(path):
-    # Get the full path:
-    fullpath = os.path.join("cache", path)
-    file = os.path.basename(fullpath)
-    dir = os.path.dirname(fullpath)
-    return send_from_directory(dir, file)
+@app.route("/validate/<analysis_id>")
+def validate(analysis_id):
+    return render_template("validate.jinja2", analysis_id=analysis_id)
 
 
 if __name__ == "__main__":
