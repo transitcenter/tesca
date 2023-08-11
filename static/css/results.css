@@ -1,3 +1,7 @@
+h1 {
+    line-height: 1.1em;
+}
+
 h4 {
     padding-bottom: 4px;
     margin-bottom: 0px;
@@ -22,11 +26,7 @@ h4 {
     height: 100%;
 }
 
-@media print {
-    .no-print {
-        display: none !important;
-    }
-}
+
 
 #results-map {
     height: 600px;
@@ -67,4 +67,31 @@ h4 {
 
 .page-break-after {
     page-break-after: always;
+}
+
+textarea {
+    width: 100%;
+    font-family: 'Atkinson Hyperlegible';
+    font-size: 16px;
+    line-height: 1.7em;
+    color: #464848;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .text-area textarea {
+        padding: 0px;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        resize: none;
+        width: 100%;
+        font-family: 'Atkinson Hyperlegible';
+        /* font-size: 12px; */
+        line-height: 1.7em;
+        color: #464848;
+    }
 }

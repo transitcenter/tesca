@@ -22,6 +22,9 @@ let map = L.map('results-map',
     {preferCanvas: true}
 ).setView([startLat, startLon], zoom);
 
+// Resize all the textarea boxes
+resizeTextAreas()
+
 // Load the basemap layer - currently using CartoDB Greyscale.
 let cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
@@ -546,4 +549,13 @@ function getPercentDeltaColor(d, colors) {
                             d > percentDeltaBins[5] ? colors[5] :
                                 colors[6];
     }
+}
+
+
+function resizeTextAreas() {
+    var textareas = document.querySelectorAll("textarea")
+    textareas = [...textareas]
+    textareas.forEach(ta => {
+        ta.style.height = ta.scrollHeight + "px"
+    })
 }
