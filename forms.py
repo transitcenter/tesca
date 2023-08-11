@@ -49,8 +49,8 @@ class OpportunitiesUploadForm(FlaskForm):
 
 class ConfigForm(FlaskForm):
     analyst = StringField("Analyst Name", validators=[DataRequired()], default="Your Name Here")
-    project = StringField("Analysis Name", validators=[DataRequired()], default="Test Project")
-    description = TextAreaField("Analysis Description", default="")
+    project = StringField("Project Title", validators=[DataRequired()], default="Project Name Here")
+    description = TextAreaField("Project Description", default="")
     infinity = IntegerField("Infinity Value (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=180)
     max_time_walking = IntegerField(
         "Maximum Walking Time (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=30

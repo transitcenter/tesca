@@ -29,6 +29,12 @@ Glossary
         populaiton groups between the two scenarios. Impact areas must be a subset
         of the analysis area (it could be the entire analysis area).
 
+    OpenStreetMap
+        A community-editable, open-source map of the world (i.e. the Wikipedia
+        of maps). Contains detailed information about the street network and
+        infrastructure. It is used to determine walking distances to transit
+        stops in TESCA's analysis.
+
     opportunities
         Destinations that individuals may travel to in their day-to-day. They
         can be abstract such as "jobs", or can be concrete and specific such as

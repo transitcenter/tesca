@@ -4,6 +4,7 @@
 analyst: Willem  # The analysis name appears on the reporting output
 project: Morning Peak and Evening Service Comparisons  # The project title is used for plot titles
 description: Comparing weekday peak and weekend service in Chicago.  # Longer title for reporting outputs
+location: Philadelphia Metropolitan Statisical Area
 # TODO: Allow scenario-specific infinity values, or use an infinity factor
 fetch_demographics: true  # Whether or not to fetch demographics
 infinity_value: 180  # You can restrict the maximum walking time
