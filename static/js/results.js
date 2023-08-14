@@ -1,11 +1,13 @@
 let chartMargin = {top: 100, right: 20, bottom: 20, left: 30}
 let config = null;
 let barColors = ['#f58426', '#264cf5']
+let editMode = false;
 
 // Map configurations
 const zoom = 15
 const startLat = "43.715877"
 const startLon = "-79.3243027"
+
 let nanColor = "#e0e0e0"
 let travelTimeDeltaColors = ["#762a83", "#af8dc3", "#e7d4e8", "#f7f7f7", "#d9f0d3", "#7fbf7b", "#1b7837"]
 let travelTimeDeltaBins = [10, 6, 2, -2, -6, -10]
@@ -22,18 +24,28 @@ let map = L.map('results-map',
     {preferCanvas: true}
 ).setView([startLat, startLon], zoom);
 
-// Resize all the textarea boxes
-resizeTextAreas()
+// Initialize the impact area map
+let impactMap = L.map('impact-map',
+    {preferCanvas: true}
+).setView([startLat, startLon], zoom);
 
 // Load the basemap layer - currently using CartoDB Greyscale.
 let cartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
 }).addTo(map);
 
+let impactCartoLight = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>'
+}).addTo(impactMap);
+
 // Create the layer group of place labels, which sits highest
 map.createPane('labels');
 map.getPane('labels').style.zIndex = 650;
 map.getPane('labels').style.pointerEvents = 'none';
+
+impactMap.createPane('labels');
+impactMap.getPane('labels').style.zIndex = 650;
+impactMap.getPane('labels').style.pointerEvents = 'none';
 
 // Grab the labels map and add it to the map.
 let cartoLabels = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png", {
@@ -41,8 +53,14 @@ let cartoLabels = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.ne
     pane: 'labels'
 }).addTo(map);
 
+let impactCartoLabels = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+    pane: 'labels'
+}).addTo(impactMap);
+
 // Add a scale bar for scale
-let scaleBar = L.control.scale().addTo(map)
+let scaleBar = L.control.scale().addTo(map);
+let impactScaleBar = L.control.scale().addTo(impactMap);
 
 // Add the legend
 // Legend dimensions and margins
@@ -61,17 +79,28 @@ legend.onAdd = function (map) {
 }
 legend.addTo(map);
 
-// Fetch and render centroids
+// Fetch and render areas
 let bgLayer = new L.GeoJSON.AJAX("/cache/" + analysis_id + "/analysis_areas.geojson", {
     style: blockGroupStyleDefault
 }).addTo(map)
+
+let impactLayer = new L.GeoJSON.AJAX("/cache/" + analysis_id + "/analysis_areas.geojson", {
+    style: impactBlockGroupDefault
+}).addTo(impactMap)
+
 
 // Recenter the map on the appropriate layer.
 bgLayer.on('data:loaded', function () {
     map.fitBounds(bgLayer.getBounds());
 }.bind(this));
 
+// Recenter the map on the appropriate layer.
+impactLayer.on('data:loaded', function () {
+    impactMap.fitBounds(impactLayer.getBounds());
+}.bind(this));
+
 loadConfigData()
+loadImpactData()
 
 
 /**
@@ -84,9 +113,26 @@ function loadConfigData() {
     })
 }
 
-// TODO:
-// 1. Load the baseline map data as an initialization
-// 2. Create a separate function for updating the map style 
+function loadImpactData() {
+    d3.csv("/cache/" + analysis_id + "/impact_area.csv")
+        .then(function (data) {
+            impactBGs = data.map(d => String(d.bg_id))
+            let thisColor = "black";
+            impactLayer.setStyle(function (feature) {
+                if (impactBGs.includes(feature.properties.bg_id)) {
+                    thisColor = "#264cf5";
+                }
+                else {
+                    thisColor = "white";
+                }
+                return {
+                    fillColor: thisColor,
+                    color: thisColor
+                }
+            })
+
+        })
+}
 
 /**
  * Load the summary data and plot the summary charts.
@@ -182,7 +228,6 @@ function loadUnreachableData() {
                 })
             })
             metrics = [...new Set(data.map(d => d.metric))]
-            console.log(plotData)
             metrics.forEach((metric, index) => {
                 // Filter the data appropriately
                 const toPlot = plotData.filter(d => d.metric == metric)
@@ -311,7 +356,6 @@ function updateLegend(method) {
  */
 function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle, unreachable) {
     // Grab the appropriate SVG and get width and heigh metrics
-    console.log(data)
     let chartDiv = null;
     if (unreachable == true) {
         chartDiv = d3.select("#" + id + "-unreachable")
@@ -446,6 +490,16 @@ function blockGroupStyleDefault(feature) {
     };
 }
 
+function impactBlockGroupDefault(feature) {
+    return {
+        fillColor: 'white',
+        weight: 0.5,
+        opacity: 1,
+        color: '#f7f7f7',
+        fillOpacity: 0.5
+    };
+}
+
 /**
  * This function styles numbers based on their magnitutde. Numbers greater than 1,000
  * are styled using a 'k' to represent thousands, with an aim of having at least two
@@ -558,4 +612,39 @@ function resizeTextAreas() {
     textareas.forEach(ta => {
         ta.style.height = ta.scrollHeight + "px"
     })
+}
+
+function toggleEditMode() {
+    // Get all the editable divs
+    var editableDIVS = document.getElementsByClassName("editable");
+    var button = document.getElementById("edit-mode-button")
+
+    for (div of editableDIVS) {
+        var textarea = div.getElementsByTagName("textarea")[0];
+        var paragraph = div.getElementsByTagName("p")[0];
+        if (editMode == false) {
+            textarea.hidden = false;
+            textarea.disabled = false;
+            paragraph.hidden = true;
+            textarea.value = paragraph.innerHTML.replace(/(\r\n|\n|\r)/gm, "");
+        }
+        else {
+            paragraph.innerHTML = textarea.value
+            paragraph.hidden = false;
+            textarea.hidden = true;
+            textarea.disabled = true;
+        }
+    }
+
+    if (editMode == false) {
+        // Change the button
+        button.innerHTML = "Turn <b>off</b> edit mode";
+        resizeTextAreas()
+        editMode = true;
+    }
+    else {
+        button.innerHTML = "Turn <b>on</b> edit mode";
+        editMode = false;
+    }
+
 }

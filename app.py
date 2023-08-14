@@ -1,6 +1,6 @@
 #!python
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import pickle
@@ -91,6 +91,16 @@ def run_analysis_as_subprocess(analysis_id):
         update_status(analysis_id, f"broken: {e}", stage="error")
         traceback.print_exc()
     return True
+
+
+SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
+
+
+def get_ordinal(i):
+    if 10 <= i % 100 <= 20:
+        return "th"
+    else:
+        return SUFFIXES.get(i % 10, "th")
 
 
 def update_status(analysis_id, message, stage=None, value=None):
@@ -338,6 +348,7 @@ def log_info(analysis_id):
     info = info.sort_values("timestamp", ascending=True)
     return info.to_dict(orient="records")
 
+
 @app.route("/guide/", defaults={"filename": "index.html"})
 @app.route("/guide/<path:filename>")
 def guide(filename):
@@ -449,7 +460,36 @@ def analyses():
 def results(analysis_id):
     # Let's grab the opportunities information
     config = get_config(analysis_id)
-    return render_template("results.jinja2", analysis_id=analysis_id, config=config)
+    date_started = datetime.strptime(config["uid"], "%Y%m%d%H%M%S").strftime("%B %d, %Y")
+    # Let's pre-format the dates here
+    start_datetime0 = config["scenarios"][0]["start_datetime"]
+    end_datetime0 = start_datetime0 + timedelta(minutes=config["scenarios"][1]["duration"])
+    start_datetime1 = config["scenarios"][0]["start_datetime"]
+    end_datetime1 = start_datetime1 + timedelta(minutes=config["scenarios"][1]["duration"])
+    window0 = (
+        f"{start_datetime0.strftime('%A, %B %-d at %-H:%M%p')} to {end_datetime0.strftime('%A, %B %-d at %-H:%M%p')}"
+    )
+    window1 = (
+        f"{start_datetime1.strftime('%A, %B %-d at %-H:%M%p')} to {end_datetime1.strftime('%A, %B %-d at %-H:%M%p')}"
+    )
+
+    opp_params = {}
+    for opp_key in config["opportunities"].keys():
+        if config["opportunities"][opp_key]["method"] == "cumulative":
+            opp_params[opp_key] = [str(s) for s in config["opportunities"][opp_key]["parameters"]]
+        else:
+            opp_params[opp_key] = [f"{s}{get_ordinal(s)}" for s in config["opportunities"][opp_key]["parameters"]]
+
+    print(opp_params)
+
+    return render_template(
+        "results.jinja2",
+        analysis_id=analysis_id,
+        config=config,
+        date_started=date_started,
+        windows=[window0, window1],
+        opp_params=opp_params,
+    )
 
 
 @app.route("/run/<analysis_id>")

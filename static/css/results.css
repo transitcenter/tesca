@@ -1,3 +1,8 @@
+body {
+    font-size: 0.9em;
+}
+
+
 h1 {
     line-height: 1.1em;
 }
@@ -7,9 +12,17 @@ h4 {
     margin-bottom: 0px;
 }
 
+td {
+    line-height: 1.4em;
+}
+
 .container {
     width: 7in;
     margin: auto;
+}
+
+.editable {
+    display: block;
 }
 
 .result-chart {
@@ -29,6 +42,12 @@ h4 {
 
 
 #results-map {
+    height: 600px;
+    width: 100%;
+    border: 2px solid grey;
+}
+
+#impact-map {
     height: 600px;
     width: 100%;
     border: 2px solid grey;
@@ -61,13 +80,7 @@ h4 {
 }
 
 
-.page-break-before {
-    page-break-before: always;
-}
 
-.page-break-after {
-    page-break-after: always;
-}
 
 textarea {
     width: 100%;
@@ -82,7 +95,19 @@ textarea {
         display: none !important;
     }
 
-    .text-area textarea {
+    body {
+        line-height: 1.3em;
+    }
+
+    .page-break-before {
+        page-break-before: always !important;
+    }
+
+    .page-break-after {
+        page-break-after: always;
+    }
+
+    /* .text-area textarea {
         padding: 0px;
         border: none;
         outline: none;
@@ -90,8 +115,7 @@ textarea {
         resize: none;
         width: 100%;
         font-family: 'Atkinson Hyperlegible';
-        /* font-size: 12px; */
         line-height: 1.7em;
         color: #464848;
-    }
+    } */
 }
