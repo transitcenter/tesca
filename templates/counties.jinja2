@@ -43,7 +43,7 @@
                     <label for="data-type">Choose Data Export</label>
                     <select id="data-type" name="data-type">
                         <option value="polygons" selected>Spatial polygons (GeoJSON)</option>
-                        {# <option value="employment">Block groups and total employment (CSV)</option> #}
+                        <option value="jobs">Block groups and total employment (CSV)</option>
                         <option value="list">Block group list only (CSV)</option>
                     </select>
                     <label for="selected-counties">Selected Counties</label>
@@ -52,6 +52,10 @@
                         Groups</button>
                 </fieldset>
             </form>
+        </div>
+
+        <div class="pure-u-1">
+            <p>Note that jobs data for different states come from different years. More details in the <a href="/guide">guide</a>.</p>
         </div>
     </div>
 

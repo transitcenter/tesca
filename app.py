@@ -237,10 +237,9 @@ def configure(analysis_id):
 
         a.config["analyst"] = form.analyst.data
         a.config["project"] = form.project.data
+        a.config["organization"] = form.organization.data
         a.config["description"] = form.description.data
         a.config["uid"] = analysis_id
-        a.config["infinity_value"] = form.infinity.data
-        a.config["max_time_walking"] = form.max_time_walking.data
 
         # Opportunity configuration
         a.config["opportunities"] = dict()
@@ -317,9 +316,18 @@ def counties():
                 mimetype="application/json",
                 headers={"Content-Disposition": "attachment;filename=block_groups.geojson"},
             )
+        if data_type == "jobs":
+            jobs = pd.read_csv(os.path.join("static", "data", "jobs.csv.gz"), dtype={"bg_id": str, "C000": int})
+            bg_df = pd.merge(bg_df, jobs, on="bg_id", how="left")
+            bg_df["C000"] = bg_df["C000"].fillna(0).astype(int)
+            return Response(
+                bg_df[["bg_id", "C000"]].to_csv(index=False),
+                mimetype="text/csv",
+                headers={"Content-disposition": "attachment; filename=block_groups.csv"},
+            )
         else:
             return Response(
-                bg_df.to_csv(),
+                bg_df[["bg_id"]].to_csv(index=False),
                 mimetype="text/csv",
                 headers={"Content-disposition": "attachment; filename=block_groups.csv"},
             )

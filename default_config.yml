@@ -6,6 +6,7 @@ fetch_demographics: true  # Whether or not to fetch demographics
 infinity_value: 180
 max_time_walking: 30
 verbosity: DEBUG # A flag to set the verbosity of the output
+organization: No Organization Specified
 opportunities:  # Each item in the list of opportunities corresponds with a column in opportunities.csv
 # Demographics are defined here
 demographics:  # Each key correponds with a column in the demographics.csv file and is given a name

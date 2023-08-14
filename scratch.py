@@ -37,6 +37,9 @@ import pandas as pd
 # # Compute unreachable destinations
 # a.compute_unreachable()
 
-us_counties = pygris.counties(cb=True, resolution="20m", cache=True, year=2021)
+# us_counties = pygris.counties(cb=True, resolution="20m", cache=True, year=2021)
 
-us_counties.drop("geometry", axis=1).to_csv("states_counties.csv", index=False)
+# us_counties.drop("geometry", axis=1).to_csv("states_counties.csv", index=False)
+
+lodes = pd.read_csv("https://lehd.ces.census.gov/data/lodes/LODES7/pa/wac/pa_wac_S000_JT00_2019.csv.gz")
+print(lodes.head())

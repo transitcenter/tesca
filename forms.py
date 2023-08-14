@@ -35,10 +35,6 @@ class OpportunityMeasureForm(Form):
     opportunity = HiddenField()
 
 
-# class OpportunityConfigForm(Form):
-#     opportunities = FieldList(FormField(OpportunityMeasureForm), min_entries=1)
-
-
 class OpportunitiesUploadForm(FlaskForm):
     file = FileField(
         "Opportunities File",
@@ -51,14 +47,12 @@ class ConfigForm(FlaskForm):
     analyst = StringField("Analyst Name", validators=[DataRequired()], default="Your Name Here")
     project = StringField("Project Title", validators=[DataRequired()], default="Project Name Here")
     description = TextAreaField("Project Description", default="")
-    infinity = IntegerField("Infinity Value (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=180)
-    max_time_walking = IntegerField(
-        "Maximum Walking Time (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=30
-    )
+    organization = StringField("Organization", validators=[DataRequired()], default="Your Organization Here")
+    # infinity = IntegerField("Infinity Value (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=180)
+    # max_time_walking = IntegerField(
+    #     "Maximum Walking Time (minutes)", validators=[DataRequired(), NumberRange(min=0)], default=30
+    # )
 
-    # block_groups = FileField("Block Groups", validators=[DataRequired()])
-    # demographics = FileField("Demographics File")
-    # opportunities = FileField("Opportunities File")
     osm = FileField("OpenStreetMap Data (PBF)", validators=[FileRequired(), FileAllowed(["pbf"])])
     impact_area = FileField("Impact Area (CSV)", validators=[FileRequired(), FileAllowed(["csv"])])
 

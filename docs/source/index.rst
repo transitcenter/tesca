@@ -40,6 +40,7 @@ The data and analysis flow of TESCA follows the diagram below:
    :caption: Contents:
 
    guide
+   methods
    reference
    glossary
 
