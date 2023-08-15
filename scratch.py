@@ -22,7 +22,7 @@ import pandas as pd
 # opp = pd.read_csv(os.path.join("cache", "septa-redesign-half-mile", "opportunities.csv"), dtype={"bg_id": str})
 # bg_ids = opp.bg_id.to_list()
 
-# a = Analysis.from_config_file(os.path.join("cache", "20230706142739", "config.yml"))
+a = Analysis.from_config_file(os.path.join("cache", "20230815134213", "config.yml"))
 # a.fetch_demographic_data()
 # a.compute_travel_times()
 # Compute the travel time matrix - this takes a while
@@ -35,11 +35,11 @@ import pandas as pd
 # # Summarize these metrics (and comparison) across imapct area demographics
 # a.compute_summaries()
 # # Compute unreachable destinations
-# a.compute_unreachable()
+a.compute_unreachable()
 
 # us_counties = pygris.counties(cb=True, resolution="20m", cache=True, year=2021)
 
 # us_counties.drop("geometry", axis=1).to_csv("states_counties.csv", index=False)
 
-lodes = pd.read_csv("https://lehd.ces.census.gov/data/lodes/LODES7/pa/wac/pa_wac_S000_JT00_2019.csv.gz")
-print(lodes.head())
+# lodes = pd.read_csv("https://lehd.ces.census.gov/data/lodes/LODES7/pa/wac/pa_wac_S000_JT00_2019.csv.gz")
+# print(lodes.head())

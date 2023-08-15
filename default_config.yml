@@ -22,11 +22,13 @@ demographics:  # Each key correponds with a column in the demographics.csv file 
 scenarios:
 - duration: 120  # Duration of analysis, in minutes
   name: Scenario A  # A pretty name for the analysis
+  description: ''
   start_datetime: 2023-03-29 07:00  # Should be in YYYY-MM-DD HH:MM
   transit_modes:  # A list of transit modes to use, in capitalized string form
   - TRANSIT
 - duration: 120
   name: Scenario B
+  description: ''
   start_datetime: 2023-03-29 07:00
   transit_modes:
   - TRANSIT

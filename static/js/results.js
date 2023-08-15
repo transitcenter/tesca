@@ -237,7 +237,7 @@ function loadUnreachableData() {
                 const title = "People Unable to Reach " + opportunity
                 let subtitle = null;
 
-                subtitle = "Number of individuals in a group who cannot reach at least " + parameter + " " + opportunity.toLowerCase()
+                subtitle = "Number of individuals in a group who cannot reach at least " + parameter + " " + opportunity.toLowerCase() + " in 2 hours"
                 renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle, true)
             })
 

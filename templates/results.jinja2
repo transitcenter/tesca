@@ -126,21 +126,11 @@
         <div id="results-map"></div>
     </div>
     <div class="pure-u-1">
-        <h2>Scenario Comparisons</h2>
-        <p>In this section, we compare the two sencarios analyzed. </p>
+        <h2>Access to Opportunities</h2>
+        <p>This section examines differences in access to opportunity by public transit between the {{ config["scenarios"][0]["name"] }} and {{ config["scenarios"][1]["name"] }} scenarios. We compare measures of transit access to {{ opp_sentence }}.</p>
         {% for key, value in config['opportunities'].items() %}
         <h3>{{ config['opportunities'][key]['name'] }}</h3>
         <p>{{ config['opportunities'][key]['description'] }}</p>
-        {% if config['opportunities'][key]['method'] == 'cumulative' %}
-        <p>Here are the weighted average results of access to {{ config['opportunities'][key]['name'].lower() }}
-            compared across various demographic groups. Keep in mind that this is a cumulative measure, where
-            <b>higher</b> values are typically better.
-        </p>
-        {% else %}
-        <p>Here are the results of access to {{ config['opportunities'][key]['name'].lower() }} compared across
-            various demographic groups. Keep in mind that this is a travel time measure, where <b>lower</b> values
-            are typically better.</p>
-        {% endif %}
         {% for parameter in config['opportunities'][key]['parameters'] %}
         <div class="pure-u-1">
             {% if config['opportunities'][key]['method'] == 'cumulative' %}

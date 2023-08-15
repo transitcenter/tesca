@@ -50,6 +50,9 @@ try:
     update_status(a.uid, "computing demographic summaries", value=90)
     a.compute_summaries()
 
+    update_status(a.uid, "computing unreachable populations", value=90)
+    a.compute_unreachable()
+
     update_status(a.uid, message="finished running analysis!", stage="results", value=100)
 
 except Exception as e:

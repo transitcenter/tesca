@@ -26,7 +26,7 @@ class OpportunityMeasureForm(Form):
         choices=[("cumulative", "Cumulative"), ("travel_time", "Travel Time to nth Closest")],
         default="c",
     )
-    details = TextAreaField("Opportunity Description", default="A test")
+    details = TextAreaField("Opportunity Description", default="Enter your description of the opportunity")
     unit = StringField(
         "Unit of Measure (e.g. jobs)",
         validators=[DataRequired()],

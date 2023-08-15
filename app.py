@@ -216,7 +216,6 @@ def configure(analysis_id):
         f.opportunity.data = opp_keys[idx]
 
     if form.validate_on_submit():
-        print("Form Validated")
         upload_folder = os.path.join(CACHE_FOLDER, analysis_id)
 
         # Store the OSM Data
@@ -247,7 +246,7 @@ def configure(analysis_id):
             this_opportunity = dict()
             this_opportunity["method"] = opportunity_form.method.data
             this_opportunity["name"] = opportunity_form.prettyname.data
-            # this_opportunity["description"] = opportunity_form.description.data
+            this_opportunity["description"] = opportunity_form.details.data
             this_opportunity["parameters"] = [int(x.strip()) for x in opportunity_form.parameters.data.split(",")]
             if this_opportunity["method"] == "travel_time":
                 this_opportunity["unit"] = "minutes"
@@ -257,6 +256,7 @@ def configure(analysis_id):
 
         a.config["scenarios"][0]["duration"] = form.scenario0_duration.data
         a.config["scenarios"][0]["name"] = form.scenario0_name.data
+        a.config["scenarios"][0]["description"] = form.scenario0_description.data
         a.config["scenarios"][0]["start_datetime"] = form.scenario0_start.data
 
         if "TRANSIT" in form.scenario0_modes.data:
@@ -266,6 +266,7 @@ def configure(analysis_id):
 
         a.config["scenarios"][1]["duration"] = form.scenario1_duration.data
         a.config["scenarios"][1]["name"] = form.scenario1_name.data
+        a.config["scenarios"][1]["description"] = form.scenario1_description.data
         a.config["scenarios"][1]["start_datetime"] = form.scenario1_start.data
 
         if "TRANSIT" in form.scenario1_modes.data:
@@ -488,7 +489,8 @@ def results(analysis_id):
         else:
             opp_params[opp_key] = [f"{s}{get_ordinal(s)}" for s in config["opportunities"][opp_key]["parameters"]]
 
-    print(opp_params)
+    opp_list = [config["opportunities"][k]["name"] for k in config["opportunities"].keys()]
+    opp_sentence = ", ".join(opp_list[:-2] + [" and ".join(opp_list[-2:])])
 
     return render_template(
         "results.jinja2",
@@ -497,6 +499,7 @@ def results(analysis_id):
         date_started=date_started,
         windows=[window0, window1],
         opp_params=opp_params,
+        opp_sentence=opp_sentence,
     )
 
 
