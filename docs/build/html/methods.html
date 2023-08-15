@@ -71,7 +71,12 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.html#step-4-analysis-run-and-results">Step 4: Analysis Run and Results</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Methods</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-accessibility">What is Accessibility?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-does-tesca-compute-accessibility">How Does TESCA Compute Accessibility?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-files">Configuration Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference.html#running-an-analysis-without-interface">Running an Analysis Without Interface</a><ul>
@@ -140,6 +145,76 @@
              
   <section id="methods">
 <h1>Methods<a class="headerlink" href="#methods" title="Permalink to this heading"></a></h1>
+<p>The TransitCenter Equity Scenario Comparison Application (TESCA) compares public
+transit accessibility to important destinations —like employment, healthcare,
+supermarkets, and more — for people of different demographics, given a change in
+public transit service in a specific region.</p>
+<p>Specifically, TESCA is designed to allow for the comparison of the distributive
+accessibility to opportunities between two transit network scenarios. Examples of the
+types of scenario comparisons include:</p>
+<ul class="simple">
+<li><p>A current and proposed transit network</p></li>
+<li><p>Two times of day or days of the week for the same transit network</p></li>
+<li><p>Two different sets of available modes (e.g. to model disruptions)</p></li>
+</ul>
+<section id="what-is-accessibility">
+<h2>What is Accessibility?<a class="headerlink" href="#what-is-accessibility" title="Permalink to this heading"></a></h2>
+<p><strong>Accessibility</strong> represents the ease with which people can reach the places
+they want and need to go. Accessibility is a function of transportation and land
+use (where essential destinations are located). Access to opportunities
+measures, which represent the ease of reaching a specific type of destination,
+are a commonly used measure of accessibility. TESCA evaluates access to
+opportunity on public transit based on the supplied set of opportunities. Common
+examples of opportunities are jobs, supermarkets, and healthcare services.</p>
+<p>Measures of public transit accessibility can capture many characteristics of
+transit systems that affect people’s ability to reach their destinations,
+including the location of stops and routes, what kinds of destinations can be
+reached on those routes, the speed or directness of routes, the frequency of
+service, fares, and time spent walking to and from a transit stop or
+transferring between routes. TESCA estimates transit accessibility by
+calculating transit travel times to the locations of destinations across each
+region.</p>
+</section>
+<section id="how-does-tesca-compute-accessibility">
+<h2>How Does TESCA Compute Accessibility?<a class="headerlink" href="#how-does-tesca-compute-accessibility" title="Permalink to this heading"></a></h2>
+<p>Transit travel times between census block groups in each region are estimated
+using the <a class="reference external" href="https://github.com/conveyal/r5">R5 engine built by Conveyal</a>. R5
+uses a detailed pedestrian network from <a class="reference external" href="https://www.openstreetmap.org/">OpenStreetMap</a> (OSM). Transit schedules are represented by
+<a class="reference external" href="https://gtfs.org/">General Transit Feed Specification</a> (GTFS) data for transit operators in each
+region. These GTFS data are obtained from TransitLand and OpenMobilityData.
+Transit travel times are capped at 120 minutes and include all parts of a
+door-to-door trip, including time walking to and from a transit stop, time spent
+waiting for a transit vehicle, time spent traveling in vehicle(s), and time
+spent transferring between transit vehicles.</p>
+<p>TESCA combines transit travel times and the location of these destinations to
+estimate how many destinations can be reached in a certain amount of time, e.g.
+jobs reachable within 30 minutes. These types of accessibility measures are
+estimated for the provided destination types. TESCA also allows a user to
+retrieve job counts by block group as a starting point for destinations.</p>
+<p>TESCA also allows an analyst to estimate travel times to reach a certain number
+of opportunities, e.g. travel time in minutes to one hospital or to three
+hospitals. The travel time to one hospital reflects the minimum possible time to
+reach a hospital. The travel time to three hospitals measures travel time to the
+third-closest hospital, capturing people’s need for options, where the closest
+hospital may not match someone’s needs in terms of the cost or type of care
+provided. Users can specify which method to use (cumulative or travel time) when
+running an analysis.</p>
+<p><strong>Equity indicators</strong> are computed for a defined area in the study region, and
+summarize population-weighted access for groups of people, weighting these
+outcomes based on where group members live across the chosen impact area. Data
+on race and ethnicity, income level, and zero-car households are obtained from
+the 2021 five-year American Community Survey data from the US Census.</p>
+<p>TESCA follows an approach similar to that of the <a class="reference external" href="https://dasboard.transitcenter.org">TransitCenter Equity Dashboard</a>, and you can read a detailed methodology
+of the dashboard’s construction in <a class="reference external" href="https://transitcenter.org/wp-content/uploads/2021/07/TransitCenterEquityDashboardTechDocumentation_062421.pdf">this document</a>
+(PDF). More detail on the code and structure of the applicaiton can be found in
+the <a class="reference internal" href="reference.html#developer-reference"><span class="std std-ref">Developer Reference</span></a> section.</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading"></a></h2>
+<p>TESCA was built by <a class="reference external" href="https://www.klumpentown.com/">Klumpentown Consulting</a> and
+relies on a number of open-source libraries and datasets, including
+OpenStreetMap, US Census data, and avaialble public transit feeds.</p>
+</section>
 </section>
 
 

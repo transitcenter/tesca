@@ -131,6 +131,13 @@ Here's how it works:
    email's instructiosn to download your ``.pbf`` file.
 9. Rename the file you just downloaded to ``osm.pbf``.
 
+.. image:: _static/bbbike.png
+  :width: 900
+  :alt: A polygonal extract of OpenStreetMap around Indanapolis, Indiana using BBBike.org
+  
+*A polygonal extract of OpenStreetMap data for Indianapolis, Indiana.*
+
+
 GTFS Data
 ^^^^^^^^^
 Transit scheduled data can typically be obtained directly from the website of

@@ -29,12 +29,6 @@ between weekday morning and weekend morning access to opportunities by
 specifying these two travel times in the configuration, or between to different
 networks (an existing and proposed) at the same travel times.
 
-The data and analysis flow of TESCA follows the diagram below:
-
-.. image:: path/filename.png
-  :width: 400
-  :alt: Alternative text
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
