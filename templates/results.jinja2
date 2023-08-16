@@ -101,7 +101,7 @@
     </div>
     <div class="pure-u-1">
         <h3>Region Map</h3>
-        <p class="no-print">Click on the title to select a different map to display.</p>
+        <p class="no-print instruction">Click on the title to select a different map to display.</p>
         <p class="map-title">
             <select id="map-select" onchange="mapSelectionChanged()" class="pure-input-2-3">
                 {% for opportunity in config['opportunities'].keys() %}
@@ -140,6 +140,11 @@
             {% endif %}
         </div>
         {% endfor %}
+        <div class="pure-u-1 pure-form editable">
+            <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden
+                disabled></textarea>
+            <p class="editable-text"></p>
+        </div>
         {% endfor %}
     </div>
     <div class="pure-u-1">

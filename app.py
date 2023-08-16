@@ -492,6 +492,9 @@ def results(analysis_id):
     opp_list = [config["opportunities"][k]["name"] for k in config["opportunities"].keys()]
     opp_sentence = ", ".join(opp_list[:-2] + [" and ".join(opp_list[-2:])])
 
+    # Get unreachable results
+    pd.read_csv(os.path.join(CACHE_FOLDER, analysis_id, "unreachable.csv"))
+
     return render_template(
         "results.jinja2",
         analysis_id=analysis_id,
