@@ -147,26 +147,13 @@
         </div>
         {% endfor %}
     </div>
-    <div class="pure-u-1">
+    <div class="pure-u-1" id="unreachable-results">
         <h2>Unreachable Destinations</h2>
-        <p>Uncreachable destinations are those which cannot be reached in the specified maximum travel time of 2
-            hours. For
-            travel time measures, a value of {{ config["infinity_value"] }} minutes was used for locations with
-            excessive
-            travel times. Here we plot for each destination the number of people in each demographic group who
-            cannot reach
-            any of a specified destination.</p>
-        {% for key, value in config['opportunities'].items() %}
-        {% if config['opportunities'][key]['method'] == 'travel_time' %}
-        <h3>{{ config['opportunities'][key]['name'] }}</h3>
-        {% for parameter in config['opportunities'][key]['parameters'] %}
-        <div class="pure-u-1">
-
-            <div id="{{ key }}_t{{ parameter }}-unreachable" class="result-chart"></div>
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endfor %}
+        <p>Uncreachable destinations are those that cannot be reached by individuals living in a certain location within 2 hours of transit travel time.</p>
+        <table class="pure-table" id="unreachable-table">
+        </table>
+    </div>
+    <div class="pure-u-1">
         <h2 id="about">About This Report</h2>
         <p>This TransitCenter Equity Comparison Analysis (TESCA) report was generated on behalf of {{
             config["organization"] }} on {{ date_started }}. TESCA was developed by <a

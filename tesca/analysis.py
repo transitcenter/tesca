@@ -385,9 +385,12 @@ class Analysis:
                         na_metrics_sum["scenario"] = idx
                         na_metrics_sum["metric"] = f"{opportunity}_t{parameter}"
                         unreachable_dfs.append(na_metrics_sum)
-
-        result = pd.concat(unreachable_dfs, axis="index").reset_index(drop=True)
-        result[result.columns[::-1]].to_csv(os.path.join(self.cache_folder, "unreachable.csv"), index=False)
+        if len(unreachable_dfs) > 0:
+            result = pd.concat(unreachable_dfs, axis="index").reset_index(drop=True)
+            result[result.columns[::-1]].to_csv(os.path.join(self.cache_folder, "unreachable.csv"), index=False)
+            
+        else:
+            self.log.info("No travel time destinations")
         self.log.info("Finished computing unreachable destinations")
 
     def compare_scenarios(self):

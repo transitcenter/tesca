@@ -205,43 +205,62 @@ function loadCompareData() {
 }
 
 function loadUnreachableData() {
-    d3.csv("/cache/" + analysis_id + "/unreachable.csv")
-        .then(function (data) {
-            const demographics = data.columns.slice(2)
-            const scenarios = []
-            config.scenarios.forEach(d => {
-                scenarios.push(d.name)
-            })
-            const plotData = []
-            data.forEach((d, i) => {
-                let scenario = scenarios[parseInt(d.scenario)]
-                let metric = d.metric
-                demographics.forEach((demo, index) => {
-                    let demographic = demo
-                    let value = d[demo]
-                    plotData.push({
-                        scenario: scenario,
-                        metric: metric,
-                        demographic: demographic,
-                        value: +value
+    let methods = []
+    for (let key in config.opportunities) {
+        methods.push(config.opportunities[key].method)
+    }
+    if (methods.includes("travel_time")) {
+        d3.csv("/cache/" + analysis_id + "/unreachable.csv")
+            .then(function (data) {
+                const demographics = data.columns.slice(2)
+                let columns = ["Metric (parameter)", "Demographic"]
+                let metrics = [... new Set(data.map(d => d.metric))]
+                let tableData = []
+                console.log(metrics)
+                config.scenarios.forEach(d => {
+                    columns.push(d.name)
+                })
+
+                metrics.forEach(m => {
+                    let zero = data.filter(x => (x.metric == m) & (x.scenario == "0"))[0];
+                    let one = data.filter(x => (x.metric == m) & (x.scenario == "1"))[0];
+                    console.log()
+                    let param = m.split("_").at(-1).split("t").at(-1)
+                    param = param + getOrdinal(parseInt(param))
+                    let metricName = config.opportunities[m.split("_").slice(0, -1).join("_")].name + " (" + param + ")"
+                    console.log(zero, one)
+                    demographics.forEach(d => {
+                        tableData.push([metricName, config.demographics[d], styleNumbers(zero[d]), styleNumbers(one[d])])
                     })
                 })
-            })
-            metrics = [...new Set(data.map(d => d.metric))]
-            metrics.forEach((metric, index) => {
-                // Filter the data appropriately
-                const toPlot = plotData.filter(d => d.metric == metric)
-                const opportunityKey = metric.split("_").slice(0, -1).join("_")
-                const parameter = metric.split("_").at(-1).slice(1)
-                const opportunity = config["opportunities"][opportunityKey]["name"]
-                const title = "People Unable to Reach " + opportunity
-                let subtitle = null;
 
-                subtitle = "Number of individuals in a group who cannot reach at least " + parameter + " " + opportunity.toLowerCase() + " in 2 hours"
-                renderGroupedBarChart(toPlot, String(metric), demographics, scenarios, title, subtitle, true)
-            })
+                console.log(tableData)
 
-        })
+                var table = d3.select("#unreachable-table")
+                var thead = table.append("thead")
+                var tbody = table.append("tbody")
+
+                // Do the  header
+                thead.append("tr")
+                    .selectAll("th")
+                    .data(columns)
+                    .enter()
+                    .append("th")
+                    .text(d => d)
+
+                tbody.selectAll("tr")
+                    .data(tableData)
+                    .enter()
+                    .append("tr")
+                    .selectAll("td")
+                    .data(d => d)
+                    .enter()
+                    .append("td")
+                    .text(d => d)
+
+
+            })
+    }
 }
 
 /**
@@ -647,4 +666,14 @@ function toggleEditMode() {
         editMode = false;
     }
 
+}
+
+function getOrdinal(i) {
+    const SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
+    if ((i % 100 >= 10) & (i % 100 <= 20)) {
+        return "th"
+    }
+    else {
+        return SUFFIXES[i % 10]
+    }
 }

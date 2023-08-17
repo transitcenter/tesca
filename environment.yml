@@ -9,7 +9,7 @@ dependencies:
   - geopandas
   - configargparse
   - fiona
-  - yaml
+  - pyyaml
   - openjdk
   - joblib
   - jpype1
