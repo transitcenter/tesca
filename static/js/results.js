@@ -213,10 +213,9 @@ function loadUnreachableData() {
         d3.csv("/cache/" + analysis_id + "/unreachable.csv")
             .then(function (data) {
                 const demographics = data.columns.slice(2)
-                let columns = ["Metric (parameter)", "Demographic"]
+                let columns = ["Metric (nth)", "Demographic"]
                 let metrics = [... new Set(data.map(d => d.metric))]
                 let tableData = []
-                console.log(metrics)
                 config.scenarios.forEach(d => {
                     columns.push(d.name)
                 })
@@ -224,17 +223,13 @@ function loadUnreachableData() {
                 metrics.forEach(m => {
                     let zero = data.filter(x => (x.metric == m) & (x.scenario == "0"))[0];
                     let one = data.filter(x => (x.metric == m) & (x.scenario == "1"))[0];
-                    console.log()
                     let param = m.split("_").at(-1).split("t").at(-1)
                     param = param + getOrdinal(parseInt(param))
                     let metricName = config.opportunities[m.split("_").slice(0, -1).join("_")].name + " (" + param + ")"
-                    console.log(zero, one)
                     demographics.forEach(d => {
                         tableData.push([metricName, config.demographics[d], styleNumbers(zero[d]), styleNumbers(one[d])])
                     })
                 })
-
-                console.log(tableData)
 
                 var table = d3.select("#unreachable-table")
                 var thead = table.append("thead")
@@ -669,7 +664,17 @@ function toggleEditMode() {
 }
 
 function getOrdinal(i) {
-    const SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
+    const SUFFIXES = {
+        1: "st",
+        2: "nd",
+        3: "rd",
+        4: "th",
+        5: "th",
+        6: "th",
+        7: "th",
+        8: "th",
+        9: "th",
+    }
     if ((i % 100 >= 10) & (i % 100 <= 20)) {
         return "th"
     }

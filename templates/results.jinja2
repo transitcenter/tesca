@@ -123,10 +123,7 @@
                 {% endfor %}
             </select>
         </p>
-        <div id="results-map"></div>
-    </div>
-    <div class="pure-u-1">
-        <h2>Access to Opportunities</h2>
+        <div id="results-map"></div>100
         <p>This section examines differences in access to opportunity by public transit between the {{ config["scenarios"][0]["name"] }} and {{ config["scenarios"][1]["name"] }} scenarios. We compare measures of transit access to {{ opp_sentence }}.</p>
         {% for key, value in config['opportunities'].items() %}
         <h3>{{ config['opportunities'][key]['name'] }}</h3>
@@ -147,12 +144,14 @@
         </div>
         {% endfor %}
     </div>
+    {% if unreachable %}
     <div class="pure-u-1" id="unreachable-results">
         <h2>Unreachable Destinations</h2>
-        <p>Uncreachable destinations are those that cannot be reached by individuals living in a certain location within 2 hours of transit travel time.</p>
-        <table class="pure-table" id="unreachable-table">
+        <p>We also measure how many total individuals in various demographic groups cannot reach the closest (or nth closest) destination within the maximum travel time of two hours. The table below summarizes the totals.</p>
+        <table class="pure-table pure-table-striped" id="unreachable-table">
         </table>
     </div>
+    {% endif %}
     <div class="pure-u-1">
         <h2 id="about">About This Report</h2>
         <p>This TransitCenter Equity Comparison Analysis (TESCA) report was generated on behalf of {{
@@ -223,15 +222,14 @@
             </li>
             <li>
                 <p><b>Demographic Data</b> contains block group level demographic counts for each demographic
-                    groups within the impact a
-                <p><a class="pure-button pure-button-primary" href="/cache/{{analysis_id}}/unreachable.csv">Download
-                        Unreachable Data</a></p>rea specified. The first column of the dataset
+                    groups within the impact area specified. The first column of the dataset
                 (<code>bg_id</code>) indicates the 12-digit block group ID. Other columns indicate specific
                 demographic groups. You can find a reference for these in the <a href="/guide#demographics">user
                     guide</a>.</p>
                 <p><a class="pure-button pure-button-primary"
                         href="/cache/{{analysis_id}}/demographics.csv">Download Demographic Data</a></p>
             </li>
+            {% if unreachable %}
             <li>
                 <p><b>Unreachable Data</b> contains a count of the number of people in each demographic group who
                     cannot reach the specified nth closest travel time measure. The <code>metric</code> column
@@ -242,6 +240,7 @@
                 <p><a class="pure-button pure-button-primary" href="/cache/{{analysis_id}}/unreachable.csv">Download
                         Unreachable Data</a></p>
             </li>
+            {% endif %}
             <li>
                 <p><b>Analysis Areas</b> contain the spatial areas for each block group in the study area. They are
                     in GeoJSON format, which can be easily read by GIS applications including QGIS.</p>
