@@ -68,7 +68,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#step-3-data-validation">Step 3: Data Validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-4-analysis-run-and-results">Step 4: Analysis Run and Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-analysis-run-and-results">Step 4: Analysis Run and Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#editing-results">Editing Results</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="methods.html">Methods</a><ul>
@@ -368,11 +371,13 @@ but should be changed.</p></li>
 destination or opportunity in more detail.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>Some potential things to include here are the specific reasons for including the opportunity, or any caveats in the data (e.g. data coverage liminations).</p>
+<p>Some potential things to include here are the specific reasons for including
+the opportunity, or any caveats in the data (e.g. data coverage liminations).</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Employment columns labelled with <code class="docutils literal notranslate"><span class="pre">C000</span></code> are auto-populated with a description provided by TESCA. You can edit this description if you like.</p>
+<p>Employment columns labelled with <code class="docutils literal notranslate"><span class="pre">C000</span></code> are auto-populated with a description
+provided by TESCA. You can edit this description if you like.</p>
 </div>
 </li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Computation</span> <span class="pre">Method</span></code> drop-down field lets you choose between
@@ -397,24 +402,46 @@ either for price or food selection reasons. However, computing the total
 number of supermarkets reachable in 30 minutes is not as useful a measure.</p>
 </div>
 </li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">Unit</span> <span class="pre">of</span> <span class="pre">Measure</span></code> (required) is the name of the unit for what you are measuring. For example, access to employment would have a unit of “jobs”, while access to acres of park space might have a unit of “acres”</p>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Unit</span> <span class="pre">of</span> <span class="pre">Measure</span></code> (required) is the name of the unit for what you are
+measuring. For example, access to employment would have a unit of “jobs”,
+while access to acres of park space might have a unit of “acres”</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you select a travel time measure in the previous column, you should specify minutes, as travel time will always have a unit of minutes in TESCA. If you provide a different unit, it will be overwritten with “minutes” once you finish the configuration step. Due to a quirk in the software, you will have to specify <em>something</em> here as it cannot be left blank.</p>
+<p>If you select a travel time measure in the previous column, you should specify
+minutes, as travel time will always have a unit of minutes in TESCA. If you
+provide a different unit, it will be overwritten with “minutes” once you finish
+the configuration step. Due to a quirk in the software, you will have to specify
+<em>something</em> here as it cannot be left blank.</p>
 </div>
 </li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> (required) field should contain a comma-separated list of parameters for the corresponding method. For cumulative measures, specify the travel time cutoffs you want to use (e.g. 30 and 45 minutes would be <code class="docutils literal notranslate"><span class="pre">30,45</span></code>), and for travel time measures specified the <em>n</em> in “nth closest” (e.g. <code class="docutils literal notranslate"><span class="pre">1,3</span></code> will compute travel times to the closest and 3rd closest opportunity).</p>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> (required) field should contain a comma-separated list of
+parameters for the corresponding method. For cumulative measures, specify the
+travel time cutoffs you want to use (e.g. 30 and 45 minutes would be
+<code class="docutils literal notranslate"><span class="pre">30,45</span></code>), and for travel time measures specified the <em>n</em> in “nth closest”
+(e.g. <code class="docutils literal notranslate"><span class="pre">1,3</span></code> will compute travel times to the closest and 3rd closest
+opportunity).</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>While the choice of parameter is entirely up to you, it is common practice to use multiples of 15 minutes (e.g 15, 30, 45, 60 minutes) for cumulative measures. When choosing these parameters, consider how far someone might be willing to travel for that particular opportunity. For example, it is likely that an individual will travel farther for job opportunities than for park space, so employment may want to have higher parameters than park space in that particular instance.</p>
-<p>For travel time measures, you can specifiy any <em>n</em> you would like, but keep in mind that the intention of the travel time measure is to provide an alternative to the “how many can I reach?” question that is asked by the cumulative measure. Higher values will therefore provide diminishing returns on clarity and interpretability.</p>
+<p>While the choice of parameter is entirely up to you, it is common practice
+to use multiples of 15 minutes (e.g 15, 30, 45, 60 minutes) for cumulative
+measures. When choosing these parameters, consider how far someone might be
+willing to travel for that particular opportunity. For example, it is likely
+that an individual will travel farther for job opportunities than for park
+space, so employment may want to have higher parameters than park space in
+that particular instance.</p>
+<p>For travel time measures, you can specifiy any <em>n</em> you would like, but keep
+in mind that the intention of the travel time measure is to provide an
+alternative to the “how many can I reach?” question that is asked by the
+cumulative measure. Higher values will therefore provide diminishing returns
+on clarity and interpretability.</p>
 </div>
 </li>
 </ul>
 </section>
 <section id="scenario-definitions">
 <h3>Scenario Definitions<a class="headerlink" href="#scenario-definitions" title="Permalink to this heading"></a></h3>
-<p>In this section you will be presented with two sub-forms, one for each scenario. They are labelled “Scenario 0” and “Scenario 1”.</p>
+<p>In this section you will be presented with two sub-forms, one for each scenario.
+They are labelled “Scenario 0” and “Scenario 1”.</p>
 <ul>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Scenario</span> <span class="pre">Name</span></code> (required) field should contain the name of the scenario
 (e.g. “Business as Usual” or “Proposed Redesign”). These are used to label the
@@ -460,12 +487,24 @@ column of the <code class="docutils literal notranslate"><span class="pre">route
 datasets that make up the transit network representing the particular
 scenario.</p></li>
 </ul>
-<p>Once you have completed the form and provided the appropriate input data you can click the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Up</span> <span class="pre">Analysis</span> <span class="pre">and</span> <span class="pre">Validate</span></code> button to proceed to the validation stage.</p>
+<p>Once you have completed the form and provided the appropriate input data you can
+click the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Up</span> <span class="pre">Analysis</span> <span class="pre">and</span> <span class="pre">Validate</span></code> button to proceed to the validation
+stage.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>After completing this step you will be uploading large files (GTFS files and
+OpenStreetMap data). Depending on the speed of your internet connection and
+the size of the study area this may take upwards of 10+ minutes to upload.
+Please be patient as the files upload (you will see a busy icon in the browser
+tab).</p>
+</div>
 </section>
 </section>
 <section id="step-3-data-validation">
 <h2>Step 3: Data Validation<a class="headerlink" href="#step-3-data-validation" title="Permalink to this heading"></a></h2>
-<p>After the configuration page is submitted, you will be presented with a running log of the actions that TESCA is taking. Specifically, TESCA will do the following:</p>
+<p>After the configuration page is submitted, you will be presented with a running
+log of the actions that TESCA is taking. Specifically, TESCA will do the
+following:</p>
 <ol class="arabic simple">
 <li><p>Perform data validation checks on the opportunities, analysis areas, and impact areas provided.</p></li>
 <li><p>For each GTFS feed:</p></li>
@@ -481,14 +520,24 @@ validator before saving the results.</p></li>
 <p>Once the validation checks are complete two buttons will appear:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Analysis</span></code> will start the analysis run and take you to the run tracking page.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">GTFS</span> <span class="pre">Validation</span> <span class="pre">Reports</span></code> will bring you to a summary page showing the number of infos, warnings, and errors for each of the provided GTFS feeds for both scenarios. From here you can view the report generated by the MobilityData GTFS Validator.</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">GTFS</span> <span class="pre">Validation</span> <span class="pre">Reports</span></code> will bring you to a summary page showing the
+number of infos, warnings, and errors for each of the provided GTFS feeds for
+both scenarios. From here you can view the report generated by the
+MobilityData GTFS Validator.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>You can see a list of the rules that are checked and what they mean on the <a class="reference external" href="https://gtfs-validator.mobilitydata.org/rules.html">MobilityData website</a>. Note that not all errors and warnings are relevant to the ability of TESCA to generate useful results. Errors and warnings specifically around network elements (impossible travel times, missing route or schedule data) are the main issues to look out for. If the generated results have potential issues, this is a good place to diagnose things.</p>
+<p>You can see a list of the rules that are checked and what they mean on the
+<a class="reference external" href="https://gtfs-validator.mobilitydata.org/rules.html">MobilityData website</a>. Note that not all
+errors and warnings are relevant to the ability of TESCA to generate useful
+results. Errors and warnings specifically around network elements
+(impossible travel times, missing route or schedule data) are the main
+issues to look out for. If the generated results have potential issues, this
+is a good place to diagnose things.</p>
 </div>
 </li>
 </ul>
-<p>One you have examined the validation log and are happy with the validation reports you can click <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Analysis</span></code> to start the main analysis portion.</p>
+<p>One you have examined the validation log and are happy with the validation
+reports you can click <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">Analysis</span></code> to start the main analysis portion.</p>
 </section>
 <section id="step-4-analysis-run-and-results">
 <h2>Step 4: Analysis Run and Results<a class="headerlink" href="#step-4-analysis-run-and-results" title="Permalink to this heading"></a></h2>
@@ -508,6 +557,19 @@ opportunity metric. These are the scores reported in the charts in the final rep
 <p>TESCA will also compute, for each travel time measure and parameter, the number
 of individuals in each population group who cannot reach the specified number of
 destinations at all (e.g. cannot reach 3 hospitals).</p>
+<section id="editing-results">
+<h3>Editing Results<a class="headerlink" href="#editing-results" title="Permalink to this heading"></a></h3>
+<p>There are a number of spaces in the report that you can use to add context or
+adjust the langauge you provided in the configuration page. Use the blue button
+at near the top of the report to toggle “edit mode” on and off. Places where
+text boxes appear can be edited. Once you are ready to create a PDF/print the report you can toggle edit mode “off” and see your changes reflected.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At this time, only a single “line” of text is possible (i.e. no paragraph breaks
+will be captured) in any of the editable boxes. Also, when you refresh the page
+<strong>any changes you made will be reverted</strong>.</p>
+</div>
+</section>
 </section>
 </section>
 

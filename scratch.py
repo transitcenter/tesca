@@ -22,11 +22,11 @@ import pandas as pd
 # opp = pd.read_csv(os.path.join("cache", "septa-redesign-half-mile", "opportunities.csv"), dtype={"bg_id": str})
 # bg_ids = opp.bg_id.to_list()
 
-a = Analysis.from_config_file(os.path.join("cache", "20230815134213", "config.yml"))
+a = Analysis.from_config_file(os.path.join("cache", "20230822091044", "config.yml"))
 # a.fetch_demographic_data()
 # a.compute_travel_times()
 # Compute the travel time matrix - this takes a while
-# a.compute_travel_times()
+a.compute_travel_times()
 # Compute the access metrics as configured in the config.yml file
 # a.compute_metrics()
 # # Compute the scenario comparison of the metrics
@@ -35,7 +35,7 @@ a = Analysis.from_config_file(os.path.join("cache", "20230815134213", "config.ym
 # # Summarize these metrics (and comparison) across imapct area demographics
 # a.compute_summaries()
 # # Compute unreachable destinations
-a.compute_unreachable()
+# a.compute_unreachable()
 
 # us_counties = pygris.counties(cb=True, resolution="20m", cache=True, year=2021)
 

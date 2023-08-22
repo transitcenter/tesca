@@ -234,10 +234,14 @@ of each opportunity form matches the column titles provided in the uploaded CSV.
   destination or opportunity in more detail.
 
   .. hint::
-    Some potential things to include here are the specific reasons for including the opportunity, or any caveats in the data (e.g. data coverage liminations).
+    
+    Some potential things to include here are the specific reasons for including
+    the opportunity, or any caveats in the data (e.g. data coverage liminations).
 
   .. note::
-    Employment columns labelled with ``C000`` are auto-populated with a description provided by TESCA. You can edit this description if you like.
+    
+    Employment columns labelled with ``C000`` are auto-populated with a description
+    provided by TESCA. You can edit this description if you like.
 
 * The ``Computation Method`` drop-down field lets you choose between
   cumulative and travel time methods of calculating access to that specific
@@ -262,22 +266,45 @@ of each opportunity form matches the column titles provided in the uploaded CSV.
     either for price or food selection reasons. However, computing the total
     number of supermarkets reachable in 30 minutes is not as useful a measure.
 
-* The ``Unit of Measure`` (required) is the name of the unit for what you are measuring. For example, access to employment would have a unit of "jobs", while access to acres of park space might have a unit of "acres"
+* The ``Unit of Measure`` (required) is the name of the unit for what you are
+  measuring. For example, access to employment would have a unit of "jobs",
+  while access to acres of park space might have a unit of "acres"
 
   .. note::
-    If you select a travel time measure in the previous column, you should specify minutes, as travel time will always have a unit of minutes in TESCA. If you provide a different unit, it will be overwritten with "minutes" once you finish the configuration step. Due to a quirk in the software, you will have to specify *something* here as it cannot be left blank.
+    
+    If you select a travel time measure in the previous column, you should specify
+    minutes, as travel time will always have a unit of minutes in TESCA. If you
+    provide a different unit, it will be overwritten with "minutes" once you finish
+    the configuration step. Due to a quirk in the software, you will have to specify
+    *something* here as it cannot be left blank.
 
-* The ``Parameters`` (required) field should contain a comma-separated list of parameters for the corresponding method. For cumulative measures, specify the travel time cutoffs you want to use (e.g. 30 and 45 minutes would be ``30,45``), and for travel time measures specified the *n* in "nth closest" (e.g. ``1,3`` will compute travel times to the closest and 3rd closest opportunity).
+* The ``Parameters`` (required) field should contain a comma-separated list of
+  parameters for the corresponding method. For cumulative measures, specify the
+  travel time cutoffs you want to use (e.g. 30 and 45 minutes would be
+  ``30,45``), and for travel time measures specified the *n* in "nth closest"
+  (e.g. ``1,3`` will compute travel times to the closest and 3rd closest
+  opportunity).
 
   .. hint::
 
-    While the choice of parameter is entirely up to you, it is common practice to use multiples of 15 minutes (e.g 15, 30, 45, 60 minutes) for cumulative measures. When choosing these parameters, consider how far someone might be willing to travel for that particular opportunity. For example, it is likely that an individual will travel farther for job opportunities than for park space, so employment may want to have higher parameters than park space in that particular instance.
+    While the choice of parameter is entirely up to you, it is common practice
+    to use multiples of 15 minutes (e.g 15, 30, 45, 60 minutes) for cumulative
+    measures. When choosing these parameters, consider how far someone might be
+    willing to travel for that particular opportunity. For example, it is likely
+    that an individual will travel farther for job opportunities than for park
+    space, so employment may want to have higher parameters than park space in
+    that particular instance.
 
-    For travel time measures, you can specifiy any *n* you would like, but keep in mind that the intention of the travel time measure is to provide an alternative to the "how many can I reach?" question that is asked by the cumulative measure. Higher values will therefore provide diminishing returns on clarity and interpretability.
+    For travel time measures, you can specifiy any *n* you would like, but keep
+    in mind that the intention of the travel time measure is to provide an
+    alternative to the "how many can I reach?" question that is asked by the
+    cumulative measure. Higher values will therefore provide diminishing returns
+    on clarity and interpretability.
 
 Scenario Definitions
 ^^^^^^^^^^^^^^^^^^^^
-In this section you will be presented with two sub-forms, one for each scenario. They are labelled "Scenario 0" and "Scenario 1".
+In this section you will be presented with two sub-forms, one for each scenario.
+They are labelled "Scenario 0" and "Scenario 1".
 
 * The ``Scenario Name`` (required) field should contain the name of the scenario
   (e.g. "Business as Usual" or "Proposed Redesign"). These are used to label the
@@ -325,12 +352,24 @@ In this section you will be presented with two sub-forms, one for each scenario.
   datasets that make up the transit network representing the particular
   scenario.
 
-Once you have completed the form and provided the appropriate input data you can click the ``Set Up Analysis and Validate`` button to proceed to the validation stage.
+Once you have completed the form and provided the appropriate input data you can
+click the ``Set Up Analysis and Validate`` button to proceed to the validation
+stage.
+
+.. important:: 
+
+  After completing this step you will be uploading large files (GTFS files and
+  OpenStreetMap data). Depending on the speed of your internet connection and
+  the size of the study area this may take upwards of 10+ minutes to upload.
+  Please be patient as the files upload (you will see a busy icon in the browser
+  tab).
 
 Step 3: Data Validation
 -----------------------
 
-After the configuration page is submitted, you will be presented with a running log of the actions that TESCA is taking. Specifically, TESCA will do the following:
+After the configuration page is submitted, you will be presented with a running
+log of the actions that TESCA is taking. Specifically, TESCA will do the
+following:
 
 1. Perform data validation checks on the opportunities, analysis areas, and impact areas provided.
 2. For each GTFS feed:
@@ -344,13 +383,24 @@ After the configuration page is submitted, you will be presented with a running 
 Once the validation checks are complete two buttons will appear:
 
 * ``Run Analysis`` will start the analysis run and take you to the run tracking page.
-* ``View GTFS Validation Reports`` will bring you to a summary page showing the number of infos, warnings, and errors for each of the provided GTFS feeds for both scenarios. From here you can view the report generated by the MobilityData GTFS Validator.
+* ``View GTFS Validation Reports`` will bring you to a summary page showing the
+  number of infos, warnings, and errors for each of the provided GTFS feeds for
+  both scenarios. From here you can view the report generated by the
+  MobilityData GTFS Validator.
   
   .. hint::
 
-    You can see a list of the rules that are checked and what they mean on the `MobilityData website <https://gtfs-validator.mobilitydata.org/rules.html>`_. Note that not all errors and warnings are relevant to the ability of TESCA to generate useful results. Errors and warnings specifically around network elements (impossible travel times, missing route or schedule data) are the main issues to look out for. If the generated results have potential issues, this is a good place to diagnose things.
+    You can see a list of the rules that are checked and what they mean on the
+    `MobilityData website
+    <https://gtfs-validator.mobilitydata.org/rules.html>`_. Note that not all
+    errors and warnings are relevant to the ability of TESCA to generate useful
+    results. Errors and warnings specifically around network elements
+    (impossible travel times, missing route or schedule data) are the main
+    issues to look out for. If the generated results have potential issues, this
+    is a good place to diagnose things.
 
-One you have examined the validation log and are happy with the validation reports you can click ``Run Analysis`` to start the main analysis portion.
+One you have examined the validation log and are happy with the validation
+reports you can click ``Run Analysis`` to start the main analysis portion.
 
 
 Step 4: Analysis Run and Results
@@ -373,3 +423,18 @@ opportunity metric. These are the scores reported in the charts in the final rep
 TESCA will also compute, for each travel time measure and parameter, the number
 of individuals in each population group who cannot reach the specified number of
 destinations at all (e.g. cannot reach 3 hospitals).
+
+Editing Results
+^^^^^^^^^^^^^^^
+
+There are a number of spaces in the report that you can use to add context or
+adjust the langauge you provided in the configuration page. Use the blue button
+at near the top of the report to toggle "edit mode" on and off. Places where
+text boxes appear can be edited. Once you are ready to create a PDF/print the
+report you can toggle edit mode "off" and see your changes reflected.
+
+.. note:: 
+
+  At this time, only a single "line" of text is possible (i.e. no paragraph breaks
+  will be captured) in any of the editable boxes. Also, when you refresh the page
+  **any changes you made will be reverted**.
