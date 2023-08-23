@@ -2,6 +2,11 @@
     font-size: 1.0em;
 }
 
+.pure-table {
+    width: 95%;
+    margin: auto;
+}
+
 
 h1 {
     line-height: 1.1em;
@@ -21,13 +26,13 @@ td {
 }
 
 .container {
-    width: 7in;
+    width: 8.5in;
     margin: auto;
 }
 
-.editable {
+/* .editable {
     display: block;
-}
+} */
 
 .instruction {
     font-style: italic;
@@ -56,8 +61,9 @@ td {
 }
 
 #impact-map {
-    height: 600px;
-    width: 100%;
+    height: 400px;
+    width: 80%;
+    margin: auto;
     border: 2px solid grey;
 }
 
@@ -87,9 +93,6 @@ td {
     border: 0px;
 }
 
-
-
-
 textarea {
     width: 100%;
     font-family: 'Atkinson Hyperlegible';
@@ -98,21 +101,41 @@ textarea {
     color: #464848;
 }
 
+
 @media print {
+    @page {
+        size: letter;
+        margin: 0 0.75in, 0.25in, 0.75in;
+    }
+
+    .content {
+        padding-top: 0px;
+        font-size: 12pt;
+    }
+
     .no-print {
         display: none !important;
     }
 
+    html,
     body {
         line-height: 1.3em;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        width: 8.5in;
+        height: 11in;
+        overflow: visible;
     }
 
-    .page-break-before {
-        page-break-before: always !important;
+    .pure-table {
+        width: 95%;
+        margin: auto;
     }
 
-    .page-break-after {
+    .page-break {
         page-break-after: always;
+        height: 0;
+        display: block;
     }
 
     /* .text-area textarea {

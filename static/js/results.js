@@ -97,10 +97,11 @@ bgLayer.on('data:loaded', function () {
 // Recenter the map on the appropriate layer.
 impactLayer.on('data:loaded', function () {
     impactMap.fitBounds(impactLayer.getBounds());
+    loadImpactData();
 }.bind(this));
 
 loadConfigData()
-loadImpactData()
+
 
 
 /**

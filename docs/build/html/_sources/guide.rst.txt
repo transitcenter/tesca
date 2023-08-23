@@ -430,7 +430,8 @@ Editing Results
 There are a number of spaces in the report that you can use to add context or
 adjust the langauge you provided in the configuration page. Use the blue button
 at near the top of the report to toggle "edit mode" on and off. Places where
-text boxes appear can be edited. Once you are ready to create a PDF/print the report you can toggle edit mode "off" and see your changes reflected.
+text boxes appear can be edited. Once you are ready to create a PDF/print the
+report you can toggle edit mode "off" and see your changes reflected.
 
 .. note:: 
 

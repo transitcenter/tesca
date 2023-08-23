@@ -13,173 +13,174 @@
 </script>
 <div class='container'>
 <div class='pure-g'>
-    <div class="pure-u-1">
-        <h1>{{ config["project"] }}</h1>
-        <p class="no-print"><button id="edit-mode-button" class="pure-button pure-button-primary"
-                onclick="toggleEditMode()">Turn <b>on</b> edit
-                mode</button></p>
+<div class="pure-u-1">
+    <h1>{{ config["project"] }}</h1>
+    <p class="no-print"><button id="edit-mode-button" class="pure-button pure-button-primary"
+            onclick="toggleEditMode()">Turn <b>on</b> edit
+            mode</button></p>
 
-        <p>Public transit can provide us all with affordable, clean, and convenient connections to the essentials of daily life. Equitable public transit should provide the best access to people who've been excluded from accessing opportunities by discriminatory transportation planning in the past.</p>
+    <p>Public transit can provide us all with affordable, clean, and convenient connections to the essentials of daily life. Equitable public transit should provide the best access to people who've been excluded from accessing opportunities by discriminatory transportation planning in the past.</p>
 
-        <p>Transit planners must understand and account for how routine or revolutionary service adjustments impact transit equity by tracking transit outcomes for Black and brown people, working-class people, and other marginalized groups.</p>
+    <p>Transit planners must understand and account for how routine or revolutionary service adjustments impact transit equity by tracking transit outcomes for Black and brown people, working-class people, and other marginalized groups.</p>
 
-        <p>The TransitCenter Equity Scenario Comparison Application (TESCA) compares public transit access to important destinations —like employment, healthcare, supermarkets, and more — for people of different demographics, given a change in public transit service in a specific region.</p>
+    <p>The TransitCenter Equity Scenario Comparison Application (TESCA) compares public transit access to important destinations —like employment, healthcare, supermarkets, and more — for people of different demographics, given a change in public transit service in a specific region.</p>
 
-        <div class="pure-form editable">
-            <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden
-                disabled>{{ config["description"] }}</textarea>
-            <p class="editable-text">{{ config["description"] }}</p>
-        </div>
-
-        <p>See the <a href="#impactArea">about</a> section for a map of the impact area.</p>
-        <p>
-            This report generates two types of access measures:
-        <ul>
-            <li>
-                Cumulative measures count the total number of a type of destination that someone can access in a specified number of minutes. For example, how many jobs can someone reach by public transit, from their home, within 45 minutes? <b>With this metric, higher is typically better</b>. 
-
-            </li>
-            <li>
-                Travel time measures assess how long (in minutes) it takes to reach a specified number of locations of a type of destination. For example, how long does it take to travel to the 3rd closest grocery store? <b>With this metric, lower is typically better</b>.
-            </li>
-        </ul>
-
-        TESCA's summary access measures represent the population-weighted average compared across various demographic groups.
-        </p>
+    <div class="pure-form editable">
+        <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden
+            disabled>{{ config["description"] }}</textarea>
+        <p class="editable-text">{{ config["description"] }}</p>
     </div>
-    <div class="pure-u-1">
-        <h2>Scenario Details</h2>
-        <p>This analysis compares two scenarios across various access to opportunities and demographic groups. Details of the scenarios are found in the table below:</p>
-        <table class="pure-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>{{ config["scenarios"][0]["name"] }}</th>
-                    <th>{{ config["scenarios"][1]["name"] }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="text-align:right;"><b>Description</b></td>
-                    <td>{{ config["scenarios"][0]["description"] }}</td>
-                    <td>{{ config["scenarios"][1]["description"] }}</td>
-                </tr>
-                <tr>
-                    <td style="text-align:right;"><b>Time</b></td>
-                    <td>{{ windows[0] }}</td>
-                    <td>{{ windows[1] }}</td>
-                </tr>
-                <tr>
-                    <td style="text-align:right;"><b>Modes</b></td>
-                    <td>{{
-                    ", ".join(config["scenarios"][0]["transit_modes"])| lower}}</td>
-                    <td>{{
-                    ", ".join(config["scenarios"][1]["transit_modes"])| lower}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <p>The following access to opportunity measures were calculated:
-        <ul>
+
+    <p>See the <a href="#impactArea">about</a> section for a map of the impact area.</p>
+    <p>
+        This report generates two types of access measures:
+    <ul>
+        <li>
+            Cumulative measures count the total number of a type of destination that someone can access in a specified number of minutes. For example, how many jobs can someone reach by public transit, from their home, within 45 minutes? <b>With this metric, higher is typically better</b>. 
+
+        </li>
+        <li>
+            Travel time measures assess how long (in minutes) it takes to reach a specified number of locations of a type of destination. For example, how long does it take to travel to the 3rd closest grocery store? <b>With this metric, lower is typically better</b>.
+        </li>
+    </ul>
+
+    TESCA's summary access measures represent the population-weighted average compared across various demographic groups.
+    </p>
+    <h2>Scenario Details</h2>
+    <p>This analysis compares two scenarios across various access to opportunities and demographic groups. Details of the scenarios are found in the table below:</p>
+    <table class="pure-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>{{ config["scenarios"][0]["name"] }}</th>
+                <th>{{ config["scenarios"][1]["name"] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align:right;"><b>Description</b></td>
+                <td>{{ config["scenarios"][0]["description"] }}</td>
+                <td>{{ config["scenarios"][1]["description"] }}</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><b>Time</b></td>
+                <td>{{ windows[0] }}</td>
+                <td>{{ windows[1] }}</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><b>Modes</b></td>
+                <td>{{
+                ", ".join(config["scenarios"][0]["transit_modes"])| lower}}</td>
+                <td>{{
+                ", ".join(config["scenarios"][1]["transit_modes"])| lower}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>The following access to opportunity measures were calculated:
+    <ul>
+        {% for opportunity in config['opportunities'].keys() %}
+            {% if config['opportunities'][opportunity]['method'] == 'cumulative' %}
+                <li>Access to {{ config['opportunities'][opportunity]['name'] }} ({{ config['opportunities'][opportunity]['unit'] }}) in {{", ".join(opp_params[opportunity][:-2] + [" and ".join(opp_params[opportunity][-2:])]) }} minutes.</li>
+            {% else %}
+                <li>Travel time in minutes to the {{", ".join(opp_params[opportunity][:-2] + [" and ".join(opp_params[opportunity][-2:])]) }} closest {{ config['opportunities'][opportunity]['name'] }}.</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    </p>
+    <p>Access measures were calculated for the following demographic groups living in the impact area: all residents, white people, Black people, Asian people, Hispanic or Latino people, and people living in poverty.</p>
+
+    <div class="page-break">&nbsp;</div>
+
+    <h2>Results</h2>
+    <p>This section examines differences in access to opportunity by public transit between the {{ config["scenarios"][0]["name"] }} and {{ config["scenarios"][1]["name"] }} scenarios. We compare measures of transit access to {{ opp_sentence }}.</p>
+
+    <div class="pure-form editable">
+        <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden
+            disabled></textarea>
+        <p class="editable-text"></p>
+    </div>
+
+    <h3>Region Map</h3>
+    <p class="no-print instruction">Click on the title to select a different map to display.</p>
+    <p class="map-title">
+        <select id="map-select" onchange="mapSelectionChanged()" class="pure-input-2-3">
             {% for opportunity in config['opportunities'].keys() %}
-                {% if config['opportunities'][opportunity]['method'] == 'cumulative' %}
-                    <li>Access to {{ config['opportunities'][opportunity]['name'] }} ({{ config['opportunities'][opportunity]['unit'] }}) in {{", ".join(opp_params[opportunity][:-2] + [" and ".join(opp_params[opportunity][-2:])]) }} minutes.</li>
-                {% else %}
-                    <li>Travel time in minutes to the {{", ".join(opp_params[opportunity][:-2] + [" and ".join(opp_params[opportunity][-2:])]) }} closest {{ config['opportunities'][opportunity]['name'] }}.</li>
-                {% endif %}
+            {% if config['opportunities'][opportunity]['method'] == 'cumulative' %}
+            {% for parameter in config['opportunities'][opportunity]['parameters'] %}
+            <option value="{{ opportunity }}_c{{ parameter }}">Access to {{
+                config['opportunities'][opportunity]['name']
+                }} ({{
+                parameter }} minutes)</option>
             {% endfor %}
-        </ul>
-        </p>
-        <p>Access measures were calculated for the following demographic groups living in the impact area: all residents, white people, Black people, Asian people, Hispanic or Latino people, and people living in poverty.</p>
-    </div>
-    <div class="pure-u-1">
-        <h2>Results</h2>
-        <div class="pure-u-1 pure-form editable">
-            <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden
-                disabled></textarea>
-            <p class="editable-text"></p>
-        </div>
-    </div>
-    <div class="pure-u-1">
-        <h3>Region Map</h3>
-        <p class="no-print instruction">Click on the title to select a different map to display.</p>
-        <p class="map-title">
-            <select id="map-select" onchange="mapSelectionChanged()" class="pure-input-2-3">
-                {% for opportunity in config['opportunities'].keys() %}
-                {% if config['opportunities'][opportunity]['method'] == 'cumulative' %}
-                {% for parameter in config['opportunities'][opportunity]['parameters'] %}
-                <option value="{{ opportunity }}_c{{ parameter }}">Access to {{
-                    config['opportunities'][opportunity]['name']
-                    }} ({{
-                    parameter }} minutes)</option>
-                {% endfor %}
-                {% else %}
-                {% for parameter in config['opportunities'][opportunity]['parameters'] %}
-                <option value="{{ opportunity }}_t{{ parameter }}">Access to {{
-                    config['opportunities'][opportunity]['name']
-                    }} (Nearest {{
-                    parameter }})</option>
-                {% endfor %}
-                {% endif %}
-                {% endfor %}
-            </select>
-        </p>
-        <div id="results-map"></div>100
-        <p>This section examines differences in access to opportunity by public transit between the {{ config["scenarios"][0]["name"] }} and {{ config["scenarios"][1]["name"] }} scenarios. We compare measures of transit access to {{ opp_sentence }}.</p>
-        {% for key, value in config['opportunities'].items() %}
+            {% else %}
+            {% for parameter in config['opportunities'][opportunity]['parameters'] %}
+            <option value="{{ opportunity }}_t{{ parameter }}">Access to {{
+                config['opportunities'][opportunity]['name']
+                }} (Nearest {{
+                parameter }})</option>
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+        </select>
+    </p>
+
+    <div id="results-map"></div>
+
+    {% for key, value in config['opportunities'].items() %}
+        <div class="page-break">&nbsp;</div>
         <h3>{{ config['opportunities'][key]['name'] }}</h3>
         <p>{{ config['opportunities'][key]['description'] }}</p>
         {% for parameter in config['opportunities'][key]['parameters'] %}
-        <div class="pure-u-1">
             {% if config['opportunities'][key]['method'] == 'cumulative' %}
             <div id="{{ key }}_c{{ parameter }}" class="result-chart"></div>
             {% else %}
             <div id="{{ key }}_t{{ parameter }}" class="result-chart"></div>
             {% endif %}
-        </div>
         {% endfor %}
-        <div class="pure-u-1 pure-form editable">
+        <div class="pure-form editable">
             <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden
                 disabled></textarea>
             <p class="editable-text"></p>
         </div>
-        {% endfor %}
-    </div>
-    {% if unreachable %}
-    <div class="pure-u-1" id="unreachable-results">
-        <h2>Unreachable Destinations</h2>
-        <p>We also measure how many total individuals in various demographic groups cannot reach the closest (or nth closest) destination within the maximum travel time of two hours. The table below summarizes the totals.</p>
-        <table class="pure-table pure-table-striped" id="unreachable-table">
-        </table>
-    </div>
-    {% endif %}
-    <div class="pure-u-1">
-        <h2 id="about">About This Report</h2>
-        <p>This TransitCenter Equity Comparison Analysis (TESCA) report was generated on behalf of {{
-            config["organization"] }} on {{ date_started }}. TESCA was developed by <a
-                href="https://www.klumpentown.com/">Klumpentown Consulting</a>, with travel time matrix generation
-            powered by <a href="https://github.com/conveyal/r5">Conveyal's R5</a> and implemented with <a
-                href="https://r5py.readthedocs.io/en/stable/">R5py</a>.</p>
+    {% endfor %}
 
-        <p>TESCA's methodology follows a similar approach to the TransitCenter Equity Dashboard, for more
-            information on methods see the dashboard's <a href="https://dashboard.transitcenter.org/methodology">how
-                it works</a> page or read <a
-                href="https://findingspress.org/article/25224-a-comprehensive-transit-accessibility-and-equity-dashboard">this
-                short paper</a>. If you have
-            questions about this analysis, please feel free to contact dashboard@transitcenter.org.
-        </p>
-        <div class="pure-form editable">
-            <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden disabled>TESCA relies primarily on open-source data, including population demographics
-                and employment data from the US Census, and walking network courtesty of the OpenStreetMap
-                contributors.</textarea>
-            <p class="editable-text">TESCA relies primarily on open-source data, including population demographics and employment data from the US Census, and walking network courtesy of the OpenStreetMap contributors.</p>
+    {% if unreachable %}
+        <div class="page-break">&nbsp;</div>
+        <div id="unreachable-results">
+            <h2>Unreachable Destinations</h2>
+            <p>We also measure how many total individuals in various demographic groups cannot reach the closest (or nth closest) destination within the maximum travel time of two hours. The table below summarizes the totals.</p>
+            <table class="pure-table pure-table-striped" id="unreachable-table">
+            </table>
         </div>
-        <h3 id="impactArea">Impact Area</h3>
-        <p>The impact area of the analysis is the area over which demographic summaries are computer. This is
-            typically a subset of the larger analysis area, which itself is used to compute travel time matrices and
-            access metrics. A map of the impact area is shown in blue:</p>
-        <div id="impact-map"></div>
+    {% endif %}
+
+    <div class="page-break">&nbsp;</div>
+    <h2 id="about">About This Report</h2>
+    <p>This TransitCenter Equity Comparison Analysis (TESCA) report was generated on behalf of {{
+        config["organization"] }} on {{ date_started }}. TESCA was developed by <a
+            href="https://www.klumpentown.com/">Klumpentown Consulting</a>, with travel time matrix generation
+        powered by <a href="https://github.com/conveyal/r5">Conveyal's R5</a> and implemented with <a
+            href="https://r5py.readthedocs.io/en/stable/">R5py</a>.</p>
+
+    <p>TESCA's methodology follows a similar approach to the TransitCenter Equity Dashboard, for more
+        information on methods see the dashboard's <a href="https://dashboard.transitcenter.org/methodology">how
+            it works</a> page or read <a
+            href="https://findingspress.org/article/25224-a-comprehensive-transit-accessibility-and-equity-dashboard">this
+            short paper</a>. If you have
+        questions about this analysis, please feel free to contact dashboard@transitcenter.org.
+    </p>
+    <div class="pure-form editable">
+        <textarea oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' hidden disabled>TESCA relies primarily on open-source data, including population demographics
+            and employment data from the US Census, and walking network courtesty of the OpenStreetMap
+            contributors.</textarea>
+        <p class="editable-text">TESCA relies primarily on open-source data, including population demographics and employment data from the US Census, and walking network courtesy of the OpenStreetMap contributors.</p>
     </div>
-    <div class="pure-u-1 no-print">
+    <h3 id="impactArea">Impact Area</h3>
+    <p>The impact area of the analysis is the area over which demographic summaries are computer. This is
+        typically a subset of the larger analysis area, which itself is used to compute travel time matrices and
+        access metrics. A map of the impact area is shown in blue:</p>
+    <div id="impact-map"></div>
+    <div class="no-print">
         <h2>Data Downloads</h2>
         <p>For additional analysis using the computed metrics, you can download the various datasets generated by
             the analysis in tabular and spatial format. They are described and linked below.</p>
@@ -270,8 +271,6 @@
             </li>
         </ul>
         </p>
-    </div>
-    <div class="pure-u-1 no-print">
         <h2>Delete Results</h2>
         <p>Click the button below to delete the results (you will be asked to confirm).</p>
         <a class="pure-button pure-button-primary" href="/delete/{{ analysis_id }}">Delete these results</a>

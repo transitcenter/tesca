@@ -476,10 +476,10 @@ def results(analysis_id):
     start_datetime1 = config["scenarios"][0]["start_datetime"]
     end_datetime1 = start_datetime1 + timedelta(minutes=config["scenarios"][1]["duration"])
     window0 = (
-        f"{start_datetime0.strftime('%A, %B %-d at %-H:%M%p')} to {end_datetime0.strftime('%A, %B %-d at %-H:%M%p')}"
+        f"{start_datetime0.strftime('%a, %b %-d at %-H:%M%p')} to {end_datetime0.strftime('%a, %b %-d at %-H:%M%p')}"
     )
     window1 = (
-        f"{start_datetime1.strftime('%A, %B %-d at %-H:%M%p')} to {end_datetime1.strftime('%A, %B %-d at %-H:%M%p')}"
+        f"{start_datetime1.strftime('%a, %b %-d at %-H:%M%p')} to {end_datetime1.strftime('%a, %b %-d at %-H:%M%p')}"
     )
 
     opp_params = {}
