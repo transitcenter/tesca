@@ -14,11 +14,12 @@ release = "0.0.1"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.autosectionlabel"]
+extensions = ["sphinx.ext.autodoc", "sphinxcontrib.httpdomain", "sphinx_js"]
 
 templates_path = ["_templates"]
 exclude_patterns = []
 
+js_source_path = "../../static/js"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

@@ -102,10 +102,26 @@ impactLayer.on('data:loaded', function () {
 
 loadConfigData()
 
+/**
+ * Load the comparison CSV data and update the map based on selection. This
+ * function calls ``updateMap`` on completion.
+ */
+function loadCompareData() {
+    d3.csv("/cache/" + analysis_id + "/compared.csv")
+        .then(function (data) {
+            data.forEach(d => {
+                compareData[d.bg_id] = d
+            })
+            const mapSelector = document.getElementById('map-select');
+            const initialMetric = mapSelector.options[0].value
+            updateMap(initialMetric)
+        })
+}
 
 
 /**
- * Load the configuration data into memory and call the appropriate charts
+ * Load the configuration data into memory and call the appropriate charts. This
+ * function calls ``loadSummaryData`` on completion.
  */
 function loadConfigData() {
     d3.json("/config/" + analysis_id).then(function (data) {
@@ -114,6 +130,9 @@ function loadConfigData() {
     })
 }
 
+/**
+ * Load the impact zone data and style the map accordingly
+ */
 function loadImpactData() {
     d3.csv("/cache/" + analysis_id + "/impact_area.csv")
         .then(function (data) {
@@ -141,6 +160,8 @@ function loadImpactData() {
  * This method fetches the CSV file containing the summary data for the results, compiles it into
  * a useful format for D3, and then iteratively goes through all of the summary div elements in the page
  * and creates a chart for each of them.
+ * 
+ * This method calls ``loadCompareData`` and ``loadUnreachableData`` at certain stages.
  */
 function loadSummaryData() {
     d3.csv("/cache/" + analysis_id + "/summary.csv")
@@ -193,18 +214,9 @@ function loadSummaryData() {
         })
 }
 
-function loadCompareData() {
-    d3.csv("/cache/" + analysis_id + "/compared.csv")
-        .then(function (data) {
-            data.forEach(d => {
-                compareData[d.bg_id] = d
-            })
-            const mapSelector = document.getElementById('map-select');
-            const initialMetric = mapSelector.options[0].value
-            updateMap(initialMetric)
-        })
-}
-
+/**
+ * Load the unreachable destinations and populate the tables
+ */
 function loadUnreachableData() {
     let methods = []
     for (let key in config.opportunities) {
@@ -269,40 +281,10 @@ function mapSelectionChanged() {
     updateMap(selectedMetric)
 }
 
-
 /**
- * Update the map to show changes in values between scenarios
- * @param {String} metric The metric to filter and color the map on.
+ * Update the legend with the appropriate color styles
+ * @param {string} method either `travel_time` or `cumulative`
  */
-function updateMap(metric) {
-    const method = metric.split("_").at(-1).at(0)
-    let thisColor = null;
-    bgLayer.setStyle(function (feature) {
-
-        // Figure out if this is cumulative or not
-        if (method == 'c') {
-            let value0 = compareData[feature.properties.bg_id][metric + "_0"]
-            let value1 = compareData[feature.properties.bg_id][metric + "_1"]
-            let percentDelta = 100 * (value1 - value0) / value0
-            thisColor = getPercentDeltaColor(percentDelta, percentDeltaColors)
-        }
-        else {
-            let delta = compareData[feature.properties.bg_id][metric + "_1-0"]
-            thisColor = getTravelTimeDeltaColor(delta, travelTimeDeltaColors);
-        }
-
-        return {
-            fillColor: thisColor,
-            // color: thisColor
-        }
-    })
-    bgLayer.eachLayer(function (layer) {
-        delta = compareData[layer.feature.properties.bg_id][metric + "_1-0"]
-        layer.bindPopup("<b>Total Change</b>: " + styleNumbers(delta))
-    })
-    updateLegend(method)
-}
-
 function updateLegend(method) {
     // First make sure we are using the right bins and colors for the method
     let colors = null;
@@ -336,7 +318,7 @@ function updateLegend(method) {
         .attr("y", legendMargin.top + 10)
         .attr("x", (d, i) => legendMargin.left + i * legendBinWidth)
         .attr("width", legendBinWidth)
-        .attr("height", 10)
+        .attrenderGroupedBarChartr("height", 10)
         .style("fill", d => d)
         .style("opacity", 0.7)
         .style("stroke", "none")
@@ -358,6 +340,40 @@ function updateLegend(method) {
         .attr('text-anchor', 'left')
         .style('font-size', '1.2em')
         .style('padding-top', '5px')
+}
+
+
+/**
+ * Update the map to show changes in values between scenarios
+ * @param {String} metric The metric to filter and color the map on.
+ */
+function updateMap(metric) {
+    const method = metric.split("_").at(-1).at(0)
+    let thisColor = null;
+    bgLayer.setStyle(function (feature) {
+
+        // Figure out if this is cumulative or not
+        if (method == 'c') {
+            let value0 = compareData[feature.properties.bg_id][metric + "_0"]
+            let value1 = compareData[feature.properties.bg_id][metric + "_1"]
+            let percentDelta = 100 * (value1 - value0) / value0
+            thisColor = getPercentDeltaColor(percentDelta, percentDeltaColors)
+        }
+        else {
+            let delta = compareData[feature.properties.bg_id][metric + "_1-0"]
+            thisColor = getTravelTimeDeltaColor(delta, travelTimeDeltaColors);
+        }
+
+        return {
+            fillColor: thisColor,
+            // color: thisColor
+        }
+    })
+    bgLayer.eachLayer(function (layer) {
+        delta = compareData[layer.feature.properties.bg_id][metric + "_1-0"]
+        layer.bindPopup("<b>Total Change</b>: " + styleNumbers(delta))
+    })
+    updateLegend(method)
 }
 
 /**
@@ -495,6 +511,11 @@ function renderGroupedBarChart(data, id, groups, subgroups, title, subtitle, unr
         .attr('rx', 2)
 }
 
+/**
+ * 
+ * @param {geojson.feature} feature The feature to style from.
+ * @returns {object} a dictionary of style attributes
+ */
 function blockGroupStyleDefault(feature) {
     return {
         fillColor: 'none',
@@ -505,6 +526,11 @@ function blockGroupStyleDefault(feature) {
     };
 }
 
+/**
+ * Style the impact block group by default
+ * @param {geojson.feature} feature the feature to style
+ * @returns {object} a dictionary of style attributes
+ */
 function impactBlockGroupDefault(feature) {
     return {
         fillColor: 'white',
@@ -520,7 +546,7 @@ function impactBlockGroupDefault(feature) {
  * are styled using a 'k' to represent thousands, with an aim of having at least two
  * significant digits for all numbers.
  * @param {Number} val The value to style
- * @returns A styled value string for display.
+ * @returns {string} A styled value string for display.
  */
 function styleNumbers(val) {
     val = parseFloat(val)
@@ -589,6 +615,7 @@ var demoStyle = {
  * Colour value based on pre-defiend travel time range.
  * @param {Number} data Data to quintile.
  * @param {Array} colors Array of 5 colors to use.
+ * @returns {string} A hexidecimal colour to style with
  */
 function getTravelTimeDeltaColor(d, colors) {
     if (isNaN(d)) {
@@ -605,6 +632,12 @@ function getTravelTimeDeltaColor(d, colors) {
     }
 }
 
+/**
+ * Style a number baced on a percentage change
+ * @param {Number} d the value to style
+ * @param {Array} colors a list of hexidecimal color values to reference
+ * @returns {string} A hexidecimal color code to style with
+ */
 function getPercentDeltaColor(d, colors) {
     if (isNaN(d)) {
         return nanColor;
@@ -620,7 +653,9 @@ function getPercentDeltaColor(d, colors) {
     }
 }
 
-
+/**
+ * Automatically resize text areas on inputs
+ */
 function resizeTextAreas() {
     var textareas = document.querySelectorAll("textarea")
     textareas = [...textareas]
@@ -629,6 +664,9 @@ function resizeTextAreas() {
     })
 }
 
+/**
+ * Toggle the edit mode on and off by enabling/showing editable fields
+ */
 function toggleEditMode() {
     // Get all the editable divs
     var editableDIVS = document.getElementsByClassName("editable");
@@ -664,6 +702,11 @@ function toggleEditMode() {
 
 }
 
+/**
+ * Generate a suffix for any ordinal number
+ * @param {Number} i the ordinal number to generate a suffix for
+ * @returns {string} the suffix for the ordinal number.
+ */
 function getOrdinal(i) {
     const SUFFIXES = {
         1: "st",

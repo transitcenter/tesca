@@ -20,11 +20,11 @@ from werkzeug.utils import secure_filename
 
 from tesca.analysis import CACHE_FOLDER, Analysis
 
-from config import DevelopmentConfig
+from config import DevelopmentConfig, ProductionConfig
 from forms import ConfigForm, OpportunitiesUploadForm
 
 app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
+app.config.from_object(ProductionConfig)
 
 SECRET_KEY = os.urandom(32)
 app.config["SECRET_KEY"] = SECRET_KEY
@@ -39,7 +39,14 @@ executor = Executor(app)
 # ---------------------#
 
 
-def run_validation(analysis_id):
+def run_validation(analysis_id: str):
+    """Execute the validation process for a given analysis
+
+    Parameters
+    ----------
+    analysis_id : str
+        The analysis ID to validate
+    """
     print("Validation run executed")
     a = Analysis(config=get_config(analysis_id))
     # Let's run through the validation
@@ -55,7 +62,7 @@ def run_validation(analysis_id):
 
 # Try this again using the object already created?
 @executor.job
-def run_analysis(a):
+def run_analysis(a: Analysis):
     print("Analysis run executed")
     try:
         update_status(a.uid, "computing travel times", stage="run", value=0)
@@ -84,7 +91,17 @@ def run_analysis(a):
     return True
 
 
-def run_analysis_as_subprocess(analysis_id):
+def run_analysis_as_subprocess(analysis_id: str):
+    """Start an analysis by executing ``do_analysis.py`` as a subprocess.
+
+    Note: This method seems to avoid underlying multiprocessing issues resulting
+    from executing the analysis directly.
+
+    Parameters
+    ----------
+    analysis_id : str
+        The ID of the analysis to execute
+    """
     try:
         subprocess.Popen(["python", "do_analysis.py", "--ID", str(analysis_id)])
     except Exception as e:
@@ -104,6 +121,19 @@ def get_ordinal(i):
 
 
 def update_status(analysis_id, message, stage=None, value=None):
+    """Update the status.yml file for a given analysis.
+
+    Parameters
+    ----------
+    analysis_id : str
+        The analysis ID to update the ``status.yml`` file of`
+    message : str
+        The message to set
+    stage : str, optional
+        The stage to set. If None, maintain the same stage, by default None
+    value : int, optional
+        The completion value (0 to 100) to set. If None, maintain the same val. By default None
+    """
     if not os.path.exists(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml")):
         with open(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml"), "w") as outfile:
             yaml.dump({"message": None, "stage": None, "value": None}, outfile)
@@ -123,11 +153,35 @@ def update_status(analysis_id, message, stage=None, value=None):
 
 
 def get_status(analysis_id):
+    """Fetch the `status.yml`` file and return it as a dictionary.
+
+    Parameters
+    ----------
+    analysis_id : str
+        The ID of the analysis
+
+    Returns
+    -------
+    dict
+        The status object in dictonary form
+    """
     with open(os.path.join(CACHE_FOLDER, str(analysis_id), "status.yml"), "r") as infile:
         return yaml.safe_load(infile)
 
 
 def get_config(analysis_id):
+    """Get the configuration file for a given analysis and return it as a dictionary.
+
+    Parameters
+    ----------
+    analysis_id : str
+        The ID of the analysis to get the configuraiton for.`
+
+    Returns
+    -------
+    dict
+        A dictionary containing the analysis configuration settings.
+    """
     with open(os.path.join(CACHE_FOLDER, str(analysis_id), "config.yml"), "r") as infile:
         return yaml.safe_load(infile)
 

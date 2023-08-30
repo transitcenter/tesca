@@ -11,9 +11,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -81,24 +82,45 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration Files</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#running-an-analysis-without-interface">Running an Analysis Without Interface</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#data-inputs">Data Inputs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#setting-up-the-analysis">Setting Up The Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analysis-engine">Analysis Engine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#project-structure">Project Structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#input-files">Input Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#created-files">Created Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-file">Configuration File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#r5-and-r5py">R5 and R5py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#web-application">Web Application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#url-endpoints-in-app-py">URL Endpoints in <code class="docutils literal notranslate"><span class="pre">app.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-app">Additional Functions in <code class="docutils literal notranslate"><span class="pre">app.py</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#app.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#app.get_status"><code class="docutils literal notranslate"><span class="pre">get_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#app.run_analysis_as_subprocess"><code class="docutils literal notranslate"><span class="pre">run_analysis_as_subprocess()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#app.run_validation"><code class="docutils literal notranslate"><span class="pre">run_validation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#app.update_status"><code class="docutils literal notranslate"><span class="pre">update_status()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-tesca.analysis">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-tesca.analysis">Analysis Object Reference</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.Analysis"><code class="docutils literal notranslate"><span class="pre">Analysis</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.assemble_gtfs_files"><code class="docutils literal notranslate"><span class="pre">Analysis.assemble_gtfs_files()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compare_scenarios"><code class="docutils literal notranslate"><span class="pre">Analysis.compare_scenarios()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_cumulative_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_cumulative_measure()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_metrics"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_summaries"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_summaries()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_travel_time_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_time_measure()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_travel_times"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_times()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.compute_unreachable"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_unreachable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.fetch_block_groups"><code class="docutils literal notranslate"><span class="pre">Analysis.fetch_block_groups()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.fetch_block_groups_from_bg_ids"><code class="docutils literal notranslate"><span class="pre">Analysis.fetch_block_groups_from_bg_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.fetch_demographic_data"><code class="docutils literal notranslate"><span class="pre">Analysis.fetch_demographic_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.from_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.from_config_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.validate_analysis_area"><code class="docutils literal notranslate"><span class="pre">Analysis.validate_analysis_area()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.validate_demographics"><code class="docutils literal notranslate"><span class="pre">Analysis.validate_demographics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.validate_opportunities"><code class="docutils literal notranslate"><span class="pre">Analysis.validate_opportunities()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tesca.analysis.Analysis.write_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.write_config_file()</span></code></a></li>
 </ul>
 </li>
@@ -113,6 +135,46 @@
 <li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.SETTINGS_FILENAME"><code class="docutils literal notranslate"><span class="pre">SETTINGS_FILENAME</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.SUMMARY_FILENAME"><code class="docutils literal notranslate"><span class="pre">SUMMARY_FILENAME</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tesca.analysis.VALIDATION_SUBFOLDER"><code class="docutils literal notranslate"><span class="pre">VALIDATION_SUBFOLDER</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#javascript-reference">Javascript Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configure-js"><code class="docutils literal notranslate"><span class="pre">configure.js</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#counties-js"><code class="docutils literal notranslate"><span class="pre">counties.js</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#addSelectedCounties"><code class="docutils literal notranslate"><span class="pre">addSelectedCounties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#checkForAnySelectedCounties"><code class="docutils literal notranslate"><span class="pre">checkForAnySelectedCounties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loadCountyData"><code class="docutils literal notranslate"><span class="pre">loadCountyData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#makeAllSelected"><code class="docutils literal notranslate"><span class="pre">makeAllSelected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removeSelectedCounties"><code class="docutils literal notranslate"><span class="pre">removeSelectedCounties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stateSelectChanged"><code class="docutils literal notranslate"><span class="pre">stateSelectChanged()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#results-js"><code class="docutils literal notranslate"><span class="pre">results.js</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#loadCompareData"><code class="docutils literal notranslate"><span class="pre">loadCompareData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loadConfigData"><code class="docutils literal notranslate"><span class="pre">loadConfigData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loadImpactData"><code class="docutils literal notranslate"><span class="pre">loadImpactData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loadSummaryData"><code class="docutils literal notranslate"><span class="pre">loadSummaryData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loadUnreachableData"><code class="docutils literal notranslate"><span class="pre">loadUnreachableData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mapSelectionChanged"><code class="docutils literal notranslate"><span class="pre">mapSelectionChanged()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#updateLegend"><code class="docutils literal notranslate"><span class="pre">updateLegend()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#updateMap"><code class="docutils literal notranslate"><span class="pre">updateMap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#renderGroupedBarChart"><code class="docutils literal notranslate"><span class="pre">renderGroupedBarChart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#blockGroupStyleDefault"><code class="docutils literal notranslate"><span class="pre">blockGroupStyleDefault()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#impactBlockGroupDefault"><code class="docutils literal notranslate"><span class="pre">impactBlockGroupDefault()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#styleNumbers"><code class="docutils literal notranslate"><span class="pre">styleNumbers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getTravelTimeDeltaColor"><code class="docutils literal notranslate"><span class="pre">getTravelTimeDeltaColor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getPercentDeltaColor"><code class="docutils literal notranslate"><span class="pre">getPercentDeltaColor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resizeTextAreas"><code class="docutils literal notranslate"><span class="pre">resizeTextAreas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#toggleEditMode"><code class="docutils literal notranslate"><span class="pre">toggleEditMode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getOrdinal"><code class="docutils literal notranslate"><span class="pre">getOrdinal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#run-js-and-validate-js"><code class="docutils literal notranslate"><span class="pre">run.js</span></code> and <code class="docutils literal notranslate"><span class="pre">validate.js</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run.updateLogTable"><code class="docutils literal notranslate"><span class="pre">run.updateLogTable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run.updateStatusMessage"><code class="docutils literal notranslate"><span class="pre">run.updateStatusMessage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validate.updateLogTable"><code class="docutils literal notranslate"><span class="pre">validate.updateLogTable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validate.updateStatusMessage"><code class="docutils literal notranslate"><span class="pre">validate.updateStatusMessage()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -147,115 +209,439 @@
            <div itemprop="articleBody">
              
   <section id="developer-reference">
-<h1>Developer Reference<a class="headerlink" href="#developer-reference" title="Permalink to this heading"></a></h1>
-<section id="configuration-files">
-<h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this heading"></a></h2>
-<p>Configuration files</p>
-<section id="running-an-analysis-without-interface">
-<h3>Running an Analysis Without Interface<a class="headerlink" href="#running-an-analysis-without-interface" title="Permalink to this heading"></a></h3>
-<section id="data-inputs">
-<h4>Data Inputs<a class="headerlink" href="#data-inputs" title="Permalink to this heading"></a></h4>
-<p>In order to run an analysis without the user interface, you will need to assemble much of the data sources yourself. A folder needs to be created in the <cite>cache</cite> directory which represents an individual project. Here’s what your initial folder structure should look like:</p>
+<span id="devref"></span><h1>Developer Reference<a class="headerlink" href="#developer-reference" title="Permalink to this heading"></a></h1>
+<p>This reference contains information about the design and code structure of
+TESCA. It is intended as a guide to help future development of the project.</p>
+<p>There are two main sections to the code: The analysis engine (contained in
+<cite>tesca</cite>, primarly in <cite>tesca.Analysis</cite>) which contains a series of methods to set
+up and anlayze travel times and accessibility, and a web application which
+gathers inputs to generate configuration settings for the analysis, execute the
+analysis, and report on the output.</p>
+<p>We discuss first the underlying analysis application, followed by a discussion
+of the design of the web tool.</p>
+<section id="analysis-engine">
+<h2>Analysis Engine<a class="headerlink" href="#analysis-engine" title="Permalink to this heading"></a></h2>
+<section id="project-structure">
+<h3>Project Structure<a class="headerlink" href="#project-structure" title="Permalink to this heading"></a></h3>
+<p>Each individual project lives in a folder inside the <code class="docutils literal notranslate"><span class="pre">cache</span></code> folder, and is assigned an ID
+based on the time of creation of the project. Here’s a rough example of the folder
+structure <em>before</em> an analysis is run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cache
-├── example-analysis
-│    ├── analysis_centroids.geojson
-│    ├── analysis_polygons.geojson
-│    ├── config.yml
-│    ├── demographics.csv
-│    ├── gtfs0
+├── 20230822141413
+|    ├── gtfs0
 │    │    ├── cta.zip
 │    │    └── metra.zip
 │    ├── gtfs1
 │    │    ├── cta.zip
 │    │    └── metra.zip
+|    ├── validation
+│    ├── config.yml
 │    ├── impact_area.csv
 │    ├── opportunities.csv
 │    ├── osm.pbf
 </pre></div>
 </div>
+<p>Using these input files, the analysis runs through a series of methods and
+produces a number of files in the process that are used both as interim outputs
+as well as final visualizaitons. The diagram below illustrates the basic
+workflow and file input and output flow. A description of the input data is
+detailed in the <a class="reference internal" href="guide.html#runanalysis"><span class="std std-ref">user guide</span></a>.</p>
+<a class="reference internal image-reference" href="_images/file_input_output.png"><img alt="A schematic of file inputs and outputs of the analysis" src="_images/file_input_output.png" style="width: 900px;" /></a>
 <p>Here’s a description of each file:</p>
+<section id="input-files">
+<h4>Input Files<a class="headerlink" href="#input-files" title="Permalink to this heading"></a></h4>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">analysis_centroids.geojson</span></code> contains geospatial point data of the representative centers or centroids of the block group zone.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">analysis_polygons.geojson</span></code> contains geospatial area data of the block group zones. This file should contain an <code class="docutils literal notranslate"><span class="pre">id</span></code> column with block group IDs.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the configuration file which contains all of the parameters of the analysis. You can read more about that <code class="docutils literal notranslate"><span class="pre">INSERT_LINK_TO_FILE</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">demographics.csv</span></code> (optional) contain the demographic counts of the population groups used in the analysis. These should correspond to the demogrpahic keys listed in the configuration file, and should span all impact area zones. This file should contain a <code class="docutils literal notranslate"><span class="pre">bg_id</span></code> column along with a column for each demographic group matching the keys provided in the configuration file. The data for this file can be fetched automatically from the Census API.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">gtfs0</span></code> is a folder containing all of the <code class="docutils literal notranslate"><span class="pre">.zip</span></code> files of all GTFS data used for Scenario A analysis.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">gtfs1</span></code> is a folder containing all of the <code class="docutils literal notranslate"><span class="pre">.zip</span></code> files of all GTFS data used for Scenario B analysis.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">impact_area.csv</span></code> is a file containing a single column (<code class="docutils literal notranslate"><span class="pre">bg_id</span></code>) with block group defintions for the impact area</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">opportunities.csv</span></code> is a file containing a <code class="docutils literal notranslate"><span class="pre">bg_id</span></code> column containing block groups for all analysis area zones, and a column for each opportunity type matching the opportunity keys in the configuration file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> contains the prepared analysis configuration settings,
+including things like maximum travel time, modes, and metadata about the
+analysis for reporting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opportunities.csv</span></code> is a file containing a <code class="docutils literal notranslate"><span class="pre">bg_id</span></code> column containing block
+groups for all analysis area zones, and a column for each opportunity type
+matching the opportunity keys in the configuration file.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">osm.pbf</span></code> is the OpenStreetMap PBF file spanning the analysis area.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gtfs0</span></code> is a folder containing all of the <code class="docutils literal notranslate"><span class="pre">.zip</span></code> files of all GTFS data
+used for Scenario A analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gtfs1</span></code> is a folder containing all of the <code class="docutils literal notranslate"><span class="pre">.zip</span></code> files of all GTFS data
+used for Scenario B analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impact_area.csv</span></code> is a file containing a single column (<code class="docutils literal notranslate"><span class="pre">bg_id</span></code>) with
+block group defintions for the impact area</p></li>
 </ul>
 </section>
-<section id="setting-up-the-analysis">
-<h4>Setting Up The Analysis<a class="headerlink" href="#setting-up-the-analysis" title="Permalink to this heading"></a></h4>
-<p>You will need to set up the <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> file with the appropriate parameters. Here’s an example file you can work from.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a configuration file for a TESCA analysis</span>
-<span class="c1"># The parameters provided in this file can be changed</span>
-<span class="c1">#</span>
-<span class="nt">analyst</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Willem</span><span class="w">  </span><span class="c1"># The analysis name appears on the reporting output</span>
-<span class="nt">project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Morning Peak and Evening Service Comparisons</span><span class="w">  </span><span class="c1"># The project title is used for plot titles</span>
-<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Comparing weekday peak and weekend service in Chicago.</span><span class="w">  </span><span class="c1"># Longer title for reporting outputs</span>
-<span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Philadelphia Metropolitan Statisical Area</span>
-<span class="c1"># TODO: Allow scenario-specific infinity values, or use an infinity factor</span>
+<section id="created-files">
+<h4>Created Files<a class="headerlink" href="#created-files" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">error.log</span></code> and <code class="docutils literal notranslate"><span class="pre">info.log</span></code> contain error and info messages produced by the
+analysis. <code class="docutils literal notranslate"><span class="pre">info.log</span></code> is used to display updates to the user in the web
+applicaiton.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">status.yml</span></code> contains information about the current status of the project
+and completion values, used by the web application to udpate the user on the
+applciation status.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">analysis_centroids.geojson</span></code> contains geospatial point data of the
+representative centers or centroids of the block group zone.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">analysis_polygons.geojson</span></code> contains geospatial area data of the block group
+zones. This file should contain an <code class="docutils literal notranslate"><span class="pre">id</span></code> column with block group IDs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validation/gtfs_validation0/&lt;agency&gt;/report.html</span></code> contains the HTML
+MobilityData report for the given GTFS feed for a given scenario (0 or 1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matrix0.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">matrix1.csv</span></code> are the travel time matrices generged for
+the two scenarios.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics0.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">metrics1.csv</span></code> are the metrics (access to opportunity
+computations) computed for the two scenarios.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compared.csv</span></code> is the difference between metrics for the two scenarios
+across all block groups.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">demographics.csv</span></code> contain the demographic counts of the population groups
+used in the analysis. These should correspond to the demogrpahic keys listed
+in the configuration file, and should span all impact area zones.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">summary.csv</span></code> contains population weighted summary computations across
+demographic groups for the block groups specified in the <code class="docutils literal notranslate"><span class="pre">impact_area.csv</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unreachable.csv</span></code> contains total counts of various population groups who
+cannot reach a given destination in the alotted time. Used for travel time
+measures only.</p></li>
+</ul>
+</section>
+</section>
+<section id="configuration-file">
+<h3>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> contains all the necessary metadata and configuraiton
+specificiations to set up and run an analysis. Here the default configuration
+file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">analyst</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No Analyst Specified</span><span class="w">  </span><span class="c1"># The analysis name appears on the reporting output</span>
+<span class="nt">project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No Project Specified</span><span class="w">  </span><span class="c1"># The project title is used for plot titles</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No Description Provided</span><span class="w">  </span><span class="c1"># Longer title for reporting outputs</span>
+<span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no-uid</span>
 <span class="nt">fetch_demographics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Whether or not to fetch demographics</span>
-<span class="nt">infinity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span><span class="w">  </span><span class="c1"># You can restrict the maximum walking time</span>
-<span class="nt">max_time_walking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">  </span><span class="c1"># We now define the opportunities as they are coded in the opportunities file</span>
-<span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chicago-test</span><span class="w"> </span><span class="c1"># A unique ID which is used for logging (should match the cache folder)</span>
+<span class="nt">infinity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span><span class="w">  </span><span class="c1"># Placeholder for an unrechable time (not user adjustable)</span>
+<span class="nt">max_time_walking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">  </span><span class="c1"># Maximum walking time (not user adjustable)</span>
 <span class="nt">verbosity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span><span class="w"> </span><span class="c1"># A flag to set the verbosity of the output</span>
+<span class="nt">organization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No Organization Specified</span><span class="w">  </span><span class="c1"># The organization running the analysis</span>
 <span class="nt">opportunities</span><span class="p">:</span><span class="w">  </span><span class="c1"># Each item in the list of opportunities corresponds with a column in opportunities.csv</span>
-<span class="w">  </span><span class="nt">emp_all</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cumulative</span><span class="w">  </span><span class="c1"># Method can be either &quot;cumulative&quot; or &quot;travel_time&quot;</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Total Employment</span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w">  </span><span class="c1"># Cumulative parameters are travel time thresholds, travel_time parameters are nth closest</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span>
-<span class="w">  </span><span class="nt">emp_low</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cumulative</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Low-Income Employment</span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45</span>
-<span class="w">  </span><span class="nt">hospitals</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">travel_time</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hospitals</span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="nt">pharmacies</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">travel_time</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pharmacies</span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-<span class="w">  </span><span class="nt">urgent_care_facilities</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">travel_time</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Urgent Care</span>
-<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="c1"># Demographics are defined here</span>
-<span class="nt">demographics</span><span class="p">:</span><span class="w">  </span><span class="c1"># Each key correponds with a column in the demogrpahics.csv file and is given a name</span>
+<span class="nt">demographics</span><span class="p">:</span><span class="w">  </span><span class="c1"># Each key correponds with a column in the demographics.csv file and is given a name</span>
+<span class="w">  </span><span class="nt">B03002_001E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Everyone</span>
 <span class="w">  </span><span class="nt">B03002_003E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">White People</span>
 <span class="w">  </span><span class="nt">B03002_004E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Black People</span>
-<span class="w">  </span><span class="nt">B03002_006E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AAPI</span>
+<span class="w">  </span><span class="nt">B03002_006E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Asian</span>
 <span class="w">  </span><span class="nt">B03002_012E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hispanic or Latino</span>
+<span class="w">  </span><span class="nt">C17002_003E</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">In Poverty</span>
+<span class="w">  </span><span class="nt">zero_car_hhld</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Zero-Car Households</span>
+<span class="w">  </span><span class="nt">age_65p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Age 65+</span>
 <span class="c1"># Scenarios are defined as an ordered list</span>
 <span class="nt">scenarios</span><span class="p">:</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span><span class="w">  </span><span class="c1"># Duration of analysis, in minutes</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Morning Peak</span><span class="w">  </span><span class="c1"># A pretty name for the analysis</span>
-<span class="w">  </span><span class="nt">start_datetime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2023-03-07 07:00</span><span class="w">  </span><span class="c1"># Should be in YYYY-MM-DD HH:MM</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scenario A</span><span class="w">  </span><span class="c1"># A pretty name for the scenario</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"> </span><span class="c1"># A narrative description of the scenario</span>
+<span class="w">  </span><span class="nt">start_datetime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2023-03-29 07:00</span><span class="w">  </span><span class="c1"># Should be in YYYY-MM-DD HH:MM</span>
 <span class="w">  </span><span class="nt">transit_modes</span><span class="p">:</span><span class="w">  </span><span class="c1"># A list of transit modes to use, in capitalized string form</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRANSIT</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Evening</span>
-<span class="w">  </span><span class="nt">start_datetime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2023-03-07 21:00</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Scenario B</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="w">  </span><span class="nt">start_datetime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2023-03-29 07:00</span>
 <span class="w">  </span><span class="nt">transit_modes</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRANSIT</span>
 </pre></div>
 </div>
 </section>
+<section id="r5-and-r5py">
+<h3>R5 and R5py<a class="headerlink" href="#r5-and-r5py" title="Permalink to this heading"></a></h3>
+<p>This analysis engine relies heavily on Conveyals <a class="reference external" href="https://github.com/conveyal/r5">R5 routing engine</a> and the Python wrapped for that engine named
+<a class="reference external" href="https://r5py.readthedocs.io/en/stable/">R5py</a>. Because these projects (R5py
+in particular) are under active development, using the latest version may
+introduce breaking changes.</p>
+</section>
+</section>
+<section id="web-application">
+<h2>Web Application<a class="headerlink" href="#web-application" title="Permalink to this heading"></a></h2>
+<p>The web application consists of a Python Flask application framework that reads
+and writes directly to files and folders within the <code class="docutils literal notranslate"><span class="pre">cache</span></code> directory. This
+was done for developmental simplicity and because the design of this application
+is not intended to scale past one or two simultaneous users. Further development
+or scaling of this applicaiton may need to consider a database interface.</p>
+<p>The web application workfow follows a similar pattern to the data flow described
+above, and is diagrammed below:</p>
+<a class="reference internal image-reference" href="_images/web_flow.png"><img alt="A schematic of workflow for the web application" src="_images/web_flow.png" style="width: 900px;" /></a>
+<p>The web application uses a combination of JavaScript files, web endpoints, and
+API-style endpoints to fetch and display approrpriate data. Because of the
+simplicty of the structure, we do not follow any specific RESTful API
+convention, however the endpoints are documented below.</p>
+<section id="url-endpoints-in-app-py">
+<h3>URL Endpoints in <code class="docutils literal notranslate"><span class="pre">app.py</span></code><a class="headerlink" href="#url-endpoints-in-app-py" title="Permalink to this heading"></a></h3>
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/</span></span></dt>
+<dd><p>Display the start page and opportunties upload form</p>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/</span></span></dt>
+<dd><p>Upload the supplied opportunities data and initalize analysis</p>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/cache/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Retrieve a specific file from the cache folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> – The path to the cached object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/config/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Fetch the configuration file as a JSON object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> – analysis_id (<em>requried</em>) The ID of the analysis to fetch the configuration file for</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/configure/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Display the configuration page for the specified analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The ID of the analysis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/configure/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Upload the provided data files and initiate validation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The ID of the analysis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/counties</span></span></dt>
+<dd><p>Display the page for fetching block group data by county</p>
+</dd></dl>
+
+<dl class="http post">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/counties</span></span></dt>
+<dd><p>Using the submitted form data, fetch the appropriate block group data and
+return to the user to download.</p>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/delete/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Display a confirmation page for deletion of a project. If the querystring
+<code class="docutils literal notranslate"><span class="pre">confirm=yes</span></code> is provided, execute the deletion.</p>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/info/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return a JSON dictionary of the information log for the analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The analysis id.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/guide/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_path</span></em><span class="sig-paren">)</span></dt>
+<dd><p>A filepath extension to display documentation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – file_path (<em>required</em>, default <code class="docutils literal notranslate"><span class="pre">index.html</span></code>) – The documentation page to view.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/gtfs/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>A summary page of GTFS validation results for a given analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The analysis ID to view GTFS validation results for</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/projects</span></span></dt>
+<dd><p>A page showing a list of projects and their current status</p>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/results/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>View the results report for a given analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The analysis ID to view the result output for</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/run/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Start the run process or view the current run status. If the <code class="docutils literal notranslate"><span class="pre">status.yml</span></code>
+file for the analysis indicates the stage is at <code class="docutils literal notranslate"><span class="pre">validate</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">value</span></code> is 100, then the analysis will be executed. Otherwise the results
+will be displayed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The analysis ID to run or view</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/status/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Fetch a JSON version of the <code class="docutils literal notranslate"><span class="pre">status.yml</span></code> file for a given project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The analysis ID to fetch the status of</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="http get">
+<dt class="sig sig-object http">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/validate/</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">analysis_id</span></em><span class="sig-paren">)</span></dt>
+<dd><p>View the status of the validation of a given analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Query Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – analysis_id (<em>required</em>) – The analysis ID to view the validation status of.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-app">
+<span id="additional-functions-in-app-py"></span><h3>Additional Functions in <code class="docutils literal notranslate"><span class="pre">app.py</span></code><a class="headerlink" href="#module-app" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.get_config">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analysis_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.get_config" title="Permalink to this definition"></a></dt>
+<dd><p>Get the configuration file for a given analysis and return it as a dictionary.</p>
+<section id="parameters">
+<h4>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>analysis_id<span class="classifier">str</span></dt><dd><p>The ID of the analysis to get the configuraiton for.`</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h4>Returns<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>dict</dt><dd><p>A dictionary containing the analysis configuration settings.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.get_status">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analysis_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.get_status" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch the <cite>status.yml`</cite> file and return it as a dictionary.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>analysis_id<span class="classifier">str</span></dt><dd><p>The ID of the analysis</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h4>Returns<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>dict</dt><dd><p>The status object in dictonary form</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.run_analysis_as_subprocess">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">run_analysis_as_subprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analysis_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.run_analysis_as_subprocess" title="Permalink to this definition"></a></dt>
+<dd><p>Start an analysis by executing <code class="docutils literal notranslate"><span class="pre">do_analysis.py</span></code> as a subprocess.</p>
+<p>Note: This method seems to avoid underlying multiprocessing issues resulting
+from executing the analysis directly.</p>
+<section id="id3">
+<h4>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>analysis_id<span class="classifier">str</span></dt><dd><p>The ID of the analysis to execute</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.run_validation">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">run_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analysis_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.run_validation" title="Permalink to this definition"></a></dt>
+<dd><p>Execute the validation process for a given analysis</p>
+<section id="id4">
+<h4>Parameters<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>analysis_id<span class="classifier">str</span></dt><dd><p>The analysis ID to validate</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.update_status">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">update_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analysis_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.update_status" title="Permalink to this definition"></a></dt>
+<dd><p>Update the status.yml file for a given analysis.</p>
+<section id="id5">
+<h4>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h4>
+<dl class="simple">
+<dt>analysis_id<span class="classifier">str</span></dt><dd><p>The analysis ID to update the <code class="docutils literal notranslate"><span class="pre">status.yml</span></code> file of`</p>
+</dd>
+<dt>message<span class="classifier">str</span></dt><dd><p>The message to set</p>
+</dd>
+<dt>stage<span class="classifier">str, optional</span></dt><dd><p>The stage to set. If None, maintain the same stage, by default None</p>
+</dd>
+<dt>value<span class="classifier">int, optional</span></dt><dd><p>The completion value (0 to 100) to set. If None, maintain the same val. By default None</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
 </section>
 </section>
 <section id="module-tesca.analysis">
-<span id="analysis"></span><h2>Analysis<a class="headerlink" href="#module-tesca.analysis" title="Permalink to this heading"></a></h2>
+<span id="analysis-object-reference"></span><h2>Analysis Object Reference<a class="headerlink" href="#module-tesca.analysis" title="Permalink to this heading"></a></h2>
 <p>The analysis object is used to initalize and perform a comparative data analysis. 
 It contains a number of validation and helper functions as well as analysis functions.</p>
 <dl class="py class">
@@ -266,15 +652,15 @@ It contains a number of validation and helper functions as well as analysis func
 <dt class="sig sig-object py" id="tesca.analysis.Analysis.assemble_gtfs_files">
 <span class="sig-name descname"><span class="pre">assemble_gtfs_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.assemble_gtfs_files" title="Permalink to this definition"></a></dt>
 <dd><p>Build a list of GTFS files for a given scenario for validation</p>
-<section id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>scenario_idx<span class="classifier">int</span></dt><dd><p>Can be 0 or 1 depending on the scenario</p>
 </dd>
 </dl>
 </section>
-<section id="returns">
-<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h3>
+<section id="id7">
+<h3>Returns<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>list</dt><dd><p>A list of GTFS files to be assessed.</p>
 </dd>
@@ -292,8 +678,8 @@ It contains a number of validation and helper functions as well as analysis func
 <dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_cumulative_measure">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_cumulative_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunity_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunity_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.compute_cumulative_measure" title="Permalink to this definition"></a></dt>
 <dd><p>Calcualte the cumulative number of opportunities for each origin within the destination threshold.</p>
-<section id="id1">
-<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<section id="id8">
+<h3>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>matrix<span class="classifier">pd.DataFrame</span></dt><dd><p>The travel time matrix</p>
 </dd>
@@ -305,8 +691,8 @@ It contains a number of validation and helper functions as well as analysis func
 </dd>
 </dl>
 </section>
-<section id="id2">
-<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h3>Returns<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pd.DataFrame</dt><dd><p>A dataframe containing each origin and a count of reachable opportunities</p>
 </dd>
@@ -321,11 +707,17 @@ It contains a number of validation and helper functions as well as analysis func
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_summaries">
+<span class="sig-name descname"><span class="pre">compute_summaries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.compute_summaries" title="Permalink to this definition"></a></dt>
+<dd><p>Compute population-weighted summaries for all demographic groups</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="tesca.analysis.Analysis.compute_travel_time_measure">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_travel_time_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunty_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opportunity_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.compute_travel_time_measure" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate travel time to nth nearest destination</p>
-<section id="id3">
-<h3>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<section id="id10">
+<h3>Parameters<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>matrix<span class="classifier">pd.DataFrame</span></dt><dd><p>A dataframe containing the travel time matrix</p>
 </dd>
@@ -339,8 +731,8 @@ It contains a number of validation and helper functions as well as analysis func
 </dd>
 </dl>
 </section>
-<section id="id4">
-<h3>Returns<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<section id="id11">
+<h3>Returns<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pd.DataFrame</dt><dd><p>A dataframe containing the minimum travel time to the nth nearest destination for each origin</p>
 </dd>
@@ -361,23 +753,89 @@ It contains a number of validation and helper functions as well as analysis func
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.fetch_block_groups">
+<span class="sig-name descname"><span class="pre">fetch_block_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counties_by_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.fetch_block_groups" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch all block groups based on a dictonary of counties by state.</p>
+<section id="id12">
+<h3>Parameters<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>counties_by_state<span class="classifier">dict</span></dt><dd><p>The dictionary with the state as a key and a list of counties as a list</p>
+</dd>
+<dt>overwrite<span class="classifier">bool, optional</span></dt><dd><p>Whether to overwrite the existing demographics.csv file, by default False</p>
+</dd>
+</dl>
+</section>
+<section id="raises">
+<h3>Raises<a class="headerlink" href="#raises" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>FileExistsError</dt><dd><p>Raised when a file exists and overwrite is not set to <code class="docutils literal notranslate"><span class="pre">true</span></code></p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.fetch_block_groups_from_bg_ids">
+<span class="sig-name descname"><span class="pre">fetch_block_groups_from_bg_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.fetch_block_groups_from_bg_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch block group shapes and data from a list of block group IDs</p>
+<section id="id13">
+<h3>Parameters<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>ids_list<span class="classifier">List[str]</span></dt><dd><p>A list of 12-character block group ids (strings)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.fetch_demographic_data">
+<span class="sig-name descname"><span class="pre">fetch_demographic_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#tesca.analysis.Analysis.fetch_demographic_data" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch demographic data based on provided impact area</p>
+<section id="id14">
+<h3>Returns<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>DataFrame</dt><dd><p>A pandas dataframe containing the demographic data for the impact area.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="tesca.analysis.Analysis.from_config_file">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.from_config_file" title="Permalink to this definition"></a></dt>
 <dd><p>Create an analysis object from a yaml configuration file.</p>
-<section id="id5">
-<h3>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<section id="id15">
+<h3>Parameters<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>config_file<span class="classifier">str</span></dt><dd><p>Path to the yaml configuration file</p>
 </dd>
 </dl>
 </section>
-<section id="id6">
-<h3>Returns<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<section id="id16">
+<h3>Returns<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Analysis</dt><dd><p>The instantiated analysis object</p>
 </dd>
 </dl>
 </section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.validate_analysis_area">
+<span class="sig-name descname"><span class="pre">validate_analysis_area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.validate_analysis_area" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the analysis area</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.validate_demographics">
+<span class="sig-name descname"><span class="pre">validate_demographics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.validate_demographics" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the demographics file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tesca.analysis.Analysis.validate_opportunities">
+<span class="sig-name descname"><span class="pre">validate_opportunities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tesca.analysis.Analysis.validate_opportunities" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the opportunities file</p>
 </dd></dl>
 
 <dl class="py method">
@@ -454,6 +912,288 @@ It contains a number of validation and helper functions as well as analysis func
 <dd><p>Validation subfolder name for validation outputs</p>
 </dd></dl>
 
+</section>
+<section id="javascript-reference">
+<h2>Javascript Reference<a class="headerlink" href="#javascript-reference" title="Permalink to this heading"></a></h2>
+<section id="configure-js">
+<h3><code class="docutils literal notranslate"><span class="pre">configure.js</span></code><a class="headerlink" href="#configure-js" title="Permalink to this heading"></a></h3>
+<p>The configuration JS file loads the contextual map and displays centroids. It
+contains no additional methods.</p>
+</section>
+<section id="counties-js">
+<h3><code class="docutils literal notranslate"><span class="pre">counties.js</span></code><a class="headerlink" href="#counties-js" title="Permalink to this heading"></a></h3>
+<p>The counties JavaScript file controls the selection behaviour when picking
+counties.</p>
+<dl class="js function">
+<dt class="sig sig-object js" id="addSelectedCounties">
+<span class="sig-name descname"><span class="n"><span class="pre">addSelectedCounties</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#addSelectedCounties" title="Permalink to this definition"></a></dt>
+<dd><p>Add selected counties to the list of counties selected.
+This checks for duplicates also, and calls <code class="docutils literal notranslate"><span class="pre">checkForAnySelectedCouties</span></code></p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="checkForAnySelectedCounties">
+<span class="sig-name descname"><span class="n"><span class="pre">checkForAnySelectedCounties</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#checkForAnySelectedCounties" title="Permalink to this definition"></a></dt>
+<dd><p>Toggle the fetch button on and off depending on if there are any counties in
+the list or not.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="loadCountyData">
+<span class="sig-name descname"><span class="n"><span class="pre">loadCountyData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#loadCountyData" title="Permalink to this definition"></a></dt>
+<dd><p>Load the initial set of states and couties.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="makeAllSelected">
+<span class="sig-name descname"><span class="n"><span class="pre">makeAllSelected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#makeAllSelected" title="Permalink to this definition"></a></dt>
+<dd><p>A function called on submission to ensure all counties in the selection box
+are actually selected. This ensures the form submission works properly/</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="removeSelectedCounties">
+<span class="sig-name descname"><span class="n"><span class="pre">removeSelectedCounties</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#removeSelectedCounties" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the selected counties in the “selected counties” list from the list</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="stateSelectChanged">
+<span class="sig-name descname"><span class="n"><span class="pre">stateSelectChanged</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#stateSelectChanged" title="Permalink to this definition"></a></dt>
+<dd><p>Triggered when a new state is selected. Sorts the counties in the state
+alphabetically and displays them.</p>
+</dd></dl>
+
+</section>
+<section id="results-js">
+<h3><code class="docutils literal notranslate"><span class="pre">results.js</span></code><a class="headerlink" href="#results-js" title="Permalink to this heading"></a></h3>
+<p>In addition to the functions below, the results page initializes two maps (the
+results map and the impact area map) with appropriate layers and backgrounds.</p>
+<dl class="js function">
+<dt class="sig sig-object js" id="loadCompareData">
+<span class="sig-name descname"><span class="n"><span class="pre">loadCompareData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#loadCompareData" title="Permalink to this definition"></a></dt>
+<dd><p>Load the comparison CSV data and update the map based on selection. This
+function calls <code class="docutils literal notranslate"><span class="pre">updateMap</span></code> on completion.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="loadConfigData">
+<span class="sig-name descname"><span class="n"><span class="pre">loadConfigData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#loadConfigData" title="Permalink to this definition"></a></dt>
+<dd><p>Load the configuration data into memory and call the appropriate charts. This
+function calls <code class="docutils literal notranslate"><span class="pre">loadSummaryData</span></code> on completion.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="loadImpactData">
+<span class="sig-name descname"><span class="n"><span class="pre">loadImpactData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#loadImpactData" title="Permalink to this definition"></a></dt>
+<dd><p>Load the impact zone data and style the map accordingly</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="loadSummaryData">
+<span class="sig-name descname"><span class="n"><span class="pre">loadSummaryData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#loadSummaryData" title="Permalink to this definition"></a></dt>
+<dd><p>Load the summary data and plot the summary charts.</p>
+<p>This method fetches the CSV file containing the summary data for the results, compiles it into
+a useful format for D3, and then iteratively goes through all of the summary div elements in the page
+and creates a chart for each of them.</p>
+<p>This method calls <code class="docutils literal notranslate"><span class="pre">loadCompareData</span></code> and <code class="docutils literal notranslate"><span class="pre">loadUnreachableData</span></code> at certain stages.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="loadUnreachableData">
+<span class="sig-name descname"><span class="n"><span class="pre">loadUnreachableData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#loadUnreachableData" title="Permalink to this definition"></a></dt>
+<dd><p>Load the unreachable destinations and populate the tables</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="mapSelectionChanged">
+<span class="sig-name descname"><span class="n"><span class="pre">mapSelectionChanged</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mapSelectionChanged" title="Permalink to this definition"></a></dt>
+<dd><p>Update the map once the selector has change using the appropraite metric.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="updateLegend">
+<span class="sig-name descname"><span class="n"><span class="pre">updateLegend</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateLegend" title="Permalink to this definition"></a></dt>
+<dd><p>Update the legend with the appropriate color styles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>string</em>) – either <cite>travel_time</cite> or <cite>cumulative</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="updateMap">
+<span class="sig-name descname"><span class="n"><span class="pre">updateMap</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateMap" title="Permalink to this definition"></a></dt>
+<dd><p>Update the map to show changes in values between scenarios</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> (<em>String</em>) – The metric to filter and color the map on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="renderGroupedBarChart">
+<span class="sig-name descname"><span class="n"><span class="pre">renderGroupedBarChart</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgroups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#renderGroupedBarChart" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Object</em>) – A dictionary containing the relevant bar chart data</p></li>
+<li><p><strong>id</strong> (<em>String</em>) – The element ID to create the plot in</p></li>
+<li><p><strong>groups</strong> (<em>Array</em>) – A list of the groups (demographics) to plot</p></li>
+<li><p><strong>subgroups</strong> (<em>Array</em>) – A list of the subgroups to make the “grouped” in grouped bar chart</p></li>
+<li><p><strong>title</strong> (<em>String</em>) – The title to append to the chart</p></li>
+<li><p><strong>subtitle</strong> (<em>String</em>) – The subtitle to append to the chart</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="blockGroupStyleDefault">
+<span class="sig-name descname"><span class="n"><span class="pre">blockGroupStyleDefault</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#blockGroupStyleDefault" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature</strong> (<em>geojson.feature</em>) – The feature to style from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>object</strong> – a dictionary of style attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="impactBlockGroupDefault">
+<span class="sig-name descname"><span class="n"><span class="pre">impactBlockGroupDefault</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#impactBlockGroupDefault" title="Permalink to this definition"></a></dt>
+<dd><p>Style the impact block group by default</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature</strong> (<em>geojson.feature</em>) – the feature to style</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>object</strong> – a dictionary of style attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="styleNumbers">
+<span class="sig-name descname"><span class="n"><span class="pre">styleNumbers</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#styleNumbers" title="Permalink to this definition"></a></dt>
+<dd><p>This function styles numbers based on their magnitutde. Numbers greater than 1,000
+are styled using a ‘k’ to represent thousands, with an aim of having at least two
+significant digits for all numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>Number</em>) – The value to style</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>string</strong> – A styled value string for display.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="getTravelTimeDeltaColor">
+<span class="sig-name descname"><span class="n"><span class="pre">getTravelTimeDeltaColor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getTravelTimeDeltaColor" title="Permalink to this definition"></a></dt>
+<dd><p>Colour value based on pre-defiend travel time range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Number</em>) – Data to quintile.</p></li>
+<li><p><strong>colors</strong> (<em>Array</em>) – Array of 5 colors to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>string</strong> – A hexidecimal colour to style with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="getPercentDeltaColor">
+<span class="sig-name descname"><span class="n"><span class="pre">getPercentDeltaColor</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getPercentDeltaColor" title="Permalink to this definition"></a></dt>
+<dd><p>Style a number baced on a percentage change</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>Number</em>) – the value to style</p></li>
+<li><p><strong>colors</strong> (<em>Array</em>) – a list of hexidecimal color values to reference</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>string</strong> – A hexidecimal color code to style with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="resizeTextAreas">
+<span class="sig-name descname"><span class="n"><span class="pre">resizeTextAreas</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#resizeTextAreas" title="Permalink to this definition"></a></dt>
+<dd><p>Automatically resize text areas on inputs</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="toggleEditMode">
+<span class="sig-name descname"><span class="n"><span class="pre">toggleEditMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toggleEditMode" title="Permalink to this definition"></a></dt>
+<dd><p>Toggle the edit mode on and off by enabling/showing editable fields</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="getOrdinal">
+<span class="sig-name descname"><span class="n"><span class="pre">getOrdinal</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#getOrdinal" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a suffix for any ordinal number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>Number</em>) – the ordinal number to generate a suffix for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>string</strong> – the suffix for the ordinal number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="run-js-and-validate-js">
+<h3><code class="docutils literal notranslate"><span class="pre">run.js</span></code> and <code class="docutils literal notranslate"><span class="pre">validate.js</span></code><a class="headerlink" href="#run-js-and-validate-js" title="Permalink to this heading"></a></h3>
+<p>These two files contain the same two methods, repeated here:</p>
+<dl class="js function">
+<dt class="sig sig-object js" id="run.updateLogTable">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">updateLogTable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#run.updateLogTable" title="Permalink to this definition"></a></dt>
+<dd><p>Update the table showing the logfile information.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="run.updateStatusMessage">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">updateStatusMessage</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#run.updateStatusMessage" title="Permalink to this definition"></a></dt>
+<dd><p>Update the status message.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="validate.updateLogTable">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">updateLogTable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#validate.updateLogTable" title="Permalink to this definition"></a></dt>
+<dd><p>Update the table showing the logfile information.</p>
+</dd></dl>
+
+<dl class="js function">
+<dt class="sig sig-object js" id="validate.updateStatusMessage">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">updateStatusMessage</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#validate.updateStatusMessage" title="Permalink to this definition"></a></dt>
+<dd><p>Update the status message.</p>
+</dd></dl>
+
+</section>
 </section>
 </section>
 

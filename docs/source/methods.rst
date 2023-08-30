@@ -74,7 +74,7 @@ TESCA follows an approach similar to that of the `TransitCenter Equity Dashboard
 of the dashboard's construction in `this document
 <https://transitcenter.org/wp-content/uploads/2021/07/TransitCenterEquityDashboardTechDocumentation_062421.pdf>`_
 (PDF). More detail on the code and structure of the applicaiton can be found in
-the :ref:`developer reference` section.
+the :ref:`developer reference <devref>` section.
 
 Acknowledgements
 ^^^^^^^^^^^^^^^^

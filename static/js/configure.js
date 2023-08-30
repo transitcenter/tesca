@@ -79,23 +79,3 @@ var points = new L.GeoJSON.AJAX("/cache/" + config["analysis_id"] + "/analysis_c
 points.on('data:loaded', function () {
   map.fitBounds(points.getBounds());
 }.bind(this));
-
-
-function methodChanged(methodSelect) {
-  // // Get the ID of the submitted form
-  // var selectName = methodSelect.name.slice(0, -7)
-  // var selectValue = methodSelect.value
-  // var unitField = document.getElementById(selectName + "-unit")
-  // // Change that corresponding unit field
-  // if (selectValue == "travel_time") {
-  //   unitField.value = "minutes"
-  //   unitField.disabled = true;
-  // }
-  // else {
-  //   unitField.value = ""
-  //   unitField.disabled = false;
-  // }
-
-
-  // console.log(selectName)
-}

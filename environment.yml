@@ -25,4 +25,4 @@ dependencies:
   - pip:
     - gtfs-lite
     - pygris
-    - git+https://github.com/r5py/r5py.git#egg=r5py
+    - r5py==0.1.0

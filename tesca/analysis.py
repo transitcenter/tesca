@@ -12,6 +12,7 @@ import os
 import pathlib
 import subprocess
 import time
+from typing import List
 import yaml
 
 os.environ["USE_PYGEOS"] = "0"
@@ -27,7 +28,9 @@ from r5py import TransportNetwork, TravelTimeMatrixComputer
 from .util import demographic_categories, age_categories, total_hhld, zero_car_hhld
 
 LOG_FORMATTER = logging.Formatter("%(name)-12s %(levelname)-8s %(message)s")
-LOG_CSV_FORMATTER = logging.Formatter("%(asctime)s,%(levelname)s,%(message)s", datefmt="%Y-%m-%d %H:%M")
+LOG_CSV_FORMATTER = logging.Formatter(
+    "%(asctime)s,%(levelname)s,%(message)s", datefmt="%Y-%m-%d %H:%M"
+)
 
 #: Cache folder for project storage
 CACHE_FOLDER = "cache"
@@ -52,7 +55,9 @@ SUMMARY_FILENAME = "summary.csv"
 #: Settings location
 SETTINGS_FILENAME = "settings.yml"
 
-MAX_TIME = dt.timedelta(hours=2)  # The maximum trip time for the analysis (could make adjustable later)
+MAX_TIME = dt.timedelta(
+    hours=2
+)  # The maximum trip time for the analysis (could make adjustable later)
 STREAM_LOG = logging.DEBUG
 
 
@@ -78,12 +83,16 @@ class Analysis:
         self._setup_logging()
 
         if new_cache_folder is True:
-            self.log.debug(f"Created cache folder at {os.path.join(CACHE_FOLDER, self.config['uid'])}")
+            self.log.debug(
+                f"Created cache folder at {os.path.join(CACHE_FOLDER, self.config['uid'])}"
+            )
 
         new_analysis = False
         # Create a GTFS folder for each scenario if it doesn't already have one
         for idx, scenario in enumerate(self.config["scenarios"]):
-            if not os.path.exists(os.path.join(CACHE_FOLDER, self.config["uid"], f"gtfs{idx}")):
+            if not os.path.exists(
+                os.path.join(CACHE_FOLDER, self.config["uid"], f"gtfs{idx}")
+            ):
                 os.mkdir(os.path.join(CACHE_FOLDER, self.config["uid"], f"gtfs{idx}"))
                 self.log.debug(f"Created gtfs{idx} folder")
                 new_analysis = True
@@ -136,12 +145,16 @@ class Analysis:
                 stream_handler.setLevel(logging.INFO)
             self.log.addHandler(stream_handler)
 
-            handler_info = logging.FileHandler(os.path.join(self.cache_folder, "info.log"))
+            handler_info = logging.FileHandler(
+                os.path.join(self.cache_folder, "info.log")
+            )
             handler_info.setFormatter(LOG_CSV_FORMATTER)
             handler_info.setLevel(logging.INFO)
             self.log.addHandler(handler_info)
 
-            handler_error = logging.FileHandler(os.path.join(self.cache_folder, "error.log"))
+            handler_error = logging.FileHandler(
+                os.path.join(self.cache_folder, "error.log")
+            )
             handler_error.setFormatter(LOG_CSV_FORMATTER)
             handler_error.setLevel(logging.ERROR)
             self.log.addHandler(handler_error)
@@ -165,7 +178,10 @@ class Analysis:
         gtfs_folder = os.path.join(self.cache_folder, f"gtfs{scenario_idx}")
         for path in os.listdir(gtfs_folder):
             gtfs_filepath = os.path.join(gtfs_folder, path)
-            if os.path.isfile(gtfs_filepath) and os.path.splitext(gtfs_filepath)[1] == ".zip":
+            if (
+                os.path.isfile(gtfs_filepath)
+                and os.path.splitext(gtfs_filepath)[1] == ".zip"
+            ):
                 self.log.debug(f"    Including GTFS: {gtfs_filepath}")
                 gtfs.append(gtfs_filepath)
         return gtfs
@@ -173,7 +189,9 @@ class Analysis:
     def compute_travel_times(self):
         """Compute the travel times for the provided scenarios"""
         self.log.info("Starting travel time matrix computations")
-        origins = gpd.read_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME), dtype={"id": str})
+        origins = gpd.read_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME), dtype={"id": str}
+        )
         self.log.debug(f"There are {origins.shape[0]} origins")
 
         for idx, scenario in enumerate(self.config["scenarios"]):
@@ -202,7 +220,9 @@ class Analysis:
                 departure=start_time,
                 departure_time_window=dt.timedelta(minutes=int(scenario["duration"])),
                 max_time=MAX_TIME,
-                max_time_walking=dt.timedelta(minutes=int(self.config["max_time_walking"])),
+                max_time_walking=dt.timedelta(
+                    minutes=int(self.config["max_time_walking"])
+                ),
                 transport_modes=transport_modes,
             )
             self.log.info(f"{scenario['name']}: Computing travel time matrix")
@@ -210,7 +230,9 @@ class Analysis:
             travel_time_matrix = ttmc.compute_travel_times()
             end = time.time()
             self.log.info(f"{scenario['name']}: Matrix computation complete")
-            self.log.debug(f"{scenario['name']}: Matrix computation took {end-start} seconds")
+            self.log.debug(
+                f"{scenario['name']}: Matrix computation took {end-start} seconds"
+            )
             travel_time_matrix.to_csv(
                 os.path.join(CACHE_FOLDER, self.uid, f"matrix{idx}.csv"),
                 index=False,
@@ -239,19 +261,27 @@ class Analysis:
             )
             for opportunity in self.config["opportunities"]:
                 if self.config["opportunities"][opportunity]["method"] == "cumulative":
-                    for threshold in self.config["opportunities"][opportunity]["parameters"]:
+                    for threshold in self.config["opportunities"][opportunity][
+                        "parameters"
+                    ]:
                         self.log.debug(
                             f"{scenario['name']}: Computing {self.config['opportunities'][opportunity]['method']} ({threshold}) access to {self.config['opportunities'][opportunity]['name']}"
                         )
-                        metric_df = Analysis.compute_cumulative_measure(matrix, opportunity_df, opportunity, threshold)
+                        metric_df = Analysis.compute_cumulative_measure(
+                            matrix, opportunity_df, opportunity, threshold
+                        )
                         self.log.debug(f"Result has {metric_df.shape[0]} rows.")
                         metrics.append(metric_df)
-                elif self.config["opportunities"][opportunity]["method"] == "travel_time":
+                elif (
+                    self.config["opportunities"][opportunity]["method"] == "travel_time"
+                ):
                     for n in self.config["opportunities"][opportunity]["parameters"]:
                         self.log.debug(
                             f"{scenario['name']}: Computing {self.config['opportunities'][opportunity]['method']} ({n}) access to {self.config['opportunities'][opportunity]['name']}"
                         )
-                        metric_df = Analysis.compute_travel_time_measure(matrix, opportunity_df, opportunity, n=n)
+                        metric_df = Analysis.compute_travel_time_measure(
+                            matrix, opportunity_df, opportunity, n=n
+                        )
                         self.log.debug(f"Result has {metric_df.shape[0]} rows.")
                         metrics.append(metric_df)
                 else:
@@ -261,7 +291,9 @@ class Analysis:
 
             # Merge all dataframes together.
             metrics = reduce(lambda df1, df2: pd.merge(df1, df2, on="bg_id"), metrics)
-            metrics.to_csv(os.path.join(self.cache_folder, f"metrics{idx}.csv"), index=False)
+            metrics.to_csv(
+                os.path.join(self.cache_folder, f"metrics{idx}.csv"), index=False
+            )
             self.log.info(f"Finished computing metrics")
 
     @staticmethod
@@ -292,13 +324,21 @@ class Analysis:
         # Keep only travel times under the threshold
         matrix = matrix[matrix["travel_time"] <= threshold]
         # Joining matrix in
-        mx_opportunity = pd.merge(matrix, opportunity_df, left_on="to_id", right_on="bg_id")
-        result = mx_opportunity[["from_id", opportunity_name]].groupby("from_id", as_index=False).sum()
+        mx_opportunity = pd.merge(
+            matrix, opportunity_df, left_on="to_id", right_on="bg_id"
+        )
+        result = (
+            mx_opportunity[["from_id", opportunity_name]]
+            .groupby("from_id", as_index=False)
+            .sum()
+        )
         result.columns = ["bg_id", f"{opportunity_name}_c{threshold}"]
 
         # Ensure we return a complete dataframe
         result = pd.merge(result, opportunity_df[["bg_id"]], how="right")
-        result[f"{opportunity_name}_c{threshold}"] = result[f"{opportunity_name}_c{threshold}"].fillna(0)
+        result[f"{opportunity_name}_c{threshold}"] = result[
+            f"{opportunity_name}_c{threshold}"
+        ].fillna(0)
         return result
 
     @staticmethod
@@ -338,7 +378,9 @@ class Analysis:
             how="right",
         )
         matrix_dest = matrix_dest[matrix_dest[opportunity_name] > 0]
-        matrix_dest = matrix_dest.sort_values(["from_id", "travel_time"], ascending=True, na_position="last")
+        matrix_dest = matrix_dest.sort_values(
+            ["from_id", "travel_time"], ascending=True, na_position="last"
+        )
 
         def get_nth(df, o, n):
             df = df.sort_values(by="travel_time", ascending=True)
@@ -359,8 +401,12 @@ class Analysis:
 
         self.log.info("Computing unreachable destinations")
         # Grab the "metrics" file for each one
-        demographics = pd.read_csv(os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), dtype={"bg_id": str})
-        impact_area = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
+        demographics = pd.read_csv(
+            os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), dtype={"bg_id": str}
+        )
+        impact_area = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
 
         unreachable_dfs = []
         for idx, scenario in enumerate(self.config["scenarios"]):
@@ -376,19 +422,30 @@ class Analysis:
             # If the measure is travel time, let's find the unreachables
             for opportunity in self.config["opportunities"]:
                 if self.config["opportunities"][opportunity]["method"] == "travel_time":
-                    for parameter in self.config["opportunities"][opportunity]["parameters"]:
+                    for parameter in self.config["opportunities"][opportunity][
+                        "parameters"
+                    ]:
                         # Filter dataframe to only keep where this parameter is NA
-                        na_metrics = metrics_demo[metrics_demo[f"{opportunity}_t{parameter}"].isna()]
+                        na_metrics = metrics_demo[
+                            metrics_demo[f"{opportunity}_t{parameter}"].isna()
+                        ]
                         # Sum all the demographic keys
-                        na_metrics_sum = na_metrics[[i for i in self.config["demographics"].keys()]].sum().to_frame().T
+                        na_metrics_sum = (
+                            na_metrics[[i for i in self.config["demographics"].keys()]]
+                            .sum()
+                            .to_frame()
+                            .T
+                        )
                         # na_metrics_sum.columns = ["unreachable"]
                         na_metrics_sum["scenario"] = idx
                         na_metrics_sum["metric"] = f"{opportunity}_t{parameter}"
                         unreachable_dfs.append(na_metrics_sum)
         if len(unreachable_dfs) > 0:
             result = pd.concat(unreachable_dfs, axis="index").reset_index(drop=True)
-            result[result.columns[::-1]].to_csv(os.path.join(self.cache_folder, "unreachable.csv"), index=False)
-            
+            result[result.columns[::-1]].to_csv(
+                os.path.join(self.cache_folder, "unreachable.csv"), index=False
+            )
+
         else:
             self.log.info("No travel time destinations")
         self.log.info("Finished computing unreachable destinations")
@@ -421,10 +478,14 @@ class Analysis:
                     method = "c"
                 else:
                     method = "t"
-                for parameter in self.config["opportunities"][opportunity]["parameters"]:
+                for parameter in self.config["opportunities"][opportunity][
+                    "parameters"
+                ]:
                     series_a = metrics[f"{opportunity}_{method}{parameter}_{pair[1]}"]
                     series_b = metrics[f"{opportunity}_{method}{parameter}_{pair[0]}"]
-                    metrics[f"{opportunity}_{method}{parameter}_{pair[1]}-{pair[0]}"] = series_a - series_b
+                    metrics[
+                        f"{opportunity}_{method}{parameter}_{pair[1]}-{pair[0]}"
+                    ] = (series_a - series_b)
 
             compared_dfs.append(metrics)
 
@@ -433,6 +494,7 @@ class Analysis:
         self.log.info("Finished computing scenario comparisons")
 
     def compute_summaries(self):
+        """Compute population-weighted summaries for all demographic groups"""
         # Take the compared metrics and summarize all of them
         self.log.info("Computing scenario summaries")
         compared = pd.read_csv(
@@ -474,9 +536,25 @@ class Analysis:
         self.log.info("Finished computing scenario summaries")
 
     def download_block_groups(self, state, county):
-        return block_groups(state=state, county=county, year=self.settings["census_year"], cb=False)
+        return block_groups(
+            state=state, county=county, year=self.settings["census_year"], cb=False
+        )
 
     def fetch_block_groups(self, counties_by_state: dict, overwrite=False):
+        """Fetch all block groups based on a dictonary of counties by state.
+
+        Parameters
+        ----------
+        counties_by_state : dict
+            The dictionary with the state as a key and a list of counties as a list
+        overwrite : bool, optional
+            Whether to overwrite the existing demographics.csv file, by default False
+
+        Raises
+        ------
+        FileExistsError
+            Raised when a file exists and overwrite is not set to ``true``
+        """
         # Fetch all block groups based on a list of states/counties
         # TODO: Check if analysis file already exists?
         if overwrite == False:
@@ -491,10 +569,19 @@ class Analysis:
         bg_centroid = bg_df.copy()
         bg_centroid["geometry"] = bg_centroid["geometry"].centroid
         bg_centroid = bg_centroid.rename(columns={"GEOID": "id"})
-        bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
+        bg_centroid[["id", "geometry"]].to_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME)
+        )
         bg_df.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
 
-    def fetch_block_groups_from_bg_ids(self, ids_list):
+    def fetch_block_groups_from_bg_ids(self, ids_list: List[str]):
+        """Fetch block group shapes and data from a list of block group IDs
+
+        Parameters
+        ----------
+        ids_list : List[str]
+            A list of 12-character block group ids (strings)
+        """
         self.log.info("Downloading block group data")
         ids_list = [str(i) for i in ids_list]
         states = {i[:2]: [] for i in ids_list}
@@ -518,25 +605,40 @@ class Analysis:
         bg_centroid = all_bg.copy()
         bg_centroid["geometry"] = bg_centroid["geometry"].centroid
         bg_centroid = bg_centroid.rename(columns={"bg_id": "id"})
-        bg_centroid[["id", "geometry"]].to_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME))
+        bg_centroid[["id", "geometry"]].to_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME)
+        )
         all_bg.to_file(os.path.join(self.cache_folder, "analysis_areas.geojson"))
         self.log.info("Finished downloading block group data")
 
-    def fetch_demographic_data(self):
+    def fetch_demographic_data(self) -> pd.DataFrame:
+        """Fetch demographic data based on provided impact area
+
+        Returns
+        -------
+        DataFrame
+            A pandas dataframe containing the demographic data for the impact area.
+        """
         # See: https://api.census.gov/data/2021/acs/acs5
         # Read in the analysis centroids
         api_key = self.settings["api_key"]
         self.log.info("Downloading demographic data")
-        impact_area_bgs = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
+        impact_area_bgs = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
         impact_area_bgs["state"] = impact_area_bgs["bg_id"].str[:2]
         impact_area_bgs["county"] = impact_area_bgs["bg_id"].str[2:5]
-        states_and_counties = impact_area_bgs[["state", "county"]].drop_duplicates().sort_values("state")
+        states_and_counties = (
+            impact_area_bgs[["state", "county"]].drop_duplicates().sort_values("state")
+        )
         all_data = []
         # First we fetch all the easy ones
         variables = [i for i in demographic_categories.keys()]
         print(variables)
         for idx, area in states_and_counties.iterrows():
-            self.log.debug(f"  Fetching State: {area['state']} County: {area['county']}")
+            self.log.debug(
+                f"  Fetching State: {area['state']} County: {area['county']}"
+            )
             data = get_census(
                 dataset="acs/acs5",
                 year="2021",
@@ -581,7 +683,11 @@ class Analysis:
             )
             all_hhld["tract_id"] = all_hhld["GEOID"].str[:-1]
             all_hhld[total_hhld] = all_hhld[total_hhld].astype(int)
-            all_hhld_gb = all_hhld[["tract_id", total_hhld]].groupby("tract_id", as_index=False).sum()
+            all_hhld_gb = (
+                all_hhld[["tract_id", total_hhld]]
+                .groupby("tract_id", as_index=False)
+                .sum()
+            )
             all_hhld = pd.merge(all_hhld, all_hhld_gb, how="left", on="tract_id")
             # Create a proportion table for assignment
             all_hhld.columns = ["bg_hhld", "bg_id", "tract_id", "tract_hhld"]
@@ -602,9 +708,13 @@ class Analysis:
             )
 
             zc_hhld[zero_car_hhld] = zc_hhld[zero_car_hhld].astype(int)
-            zc_all = pd.merge(all_hhld, zc_hhld, how="left", left_on="tract_id", right_on="GEOID")
+            zc_all = pd.merge(
+                all_hhld, zc_hhld, how="left", left_on="tract_id", right_on="GEOID"
+            )
             zc_all["zero_car_hhld"] = zc_all[zero_car_hhld] * zc_all["proportion"]
-            zc_all["zero_car_hhld"] = zc_all["zero_car_hhld"].fillna(0).round().astype(int)
+            zc_all["zero_car_hhld"] = (
+                zc_all["zero_car_hhld"].fillna(0).round().astype(int)
+            )
 
             # Rename columns back to match the pattern above
             zc_all = zc_all[["bg_id", "zero_car_hhld"]]
@@ -624,18 +734,23 @@ class Analysis:
         # Move the bg_id column to the front
         bg_column = result.pop("bg_id")
         result.insert(0, "bg_id", bg_column)
-        result.to_csv(os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), index=False)
+        result.to_csv(
+            os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), index=False
+        )
         self.log.info("Finished downloading demographic data")
         return result
 
     def validate_analysis_area(self):
+        """Validate the analysis area"""
         # Open up the analysis area and the geojson
         self.log.info("Validating analysis area")
         analysis_area = gpd.read_file(
             os.path.join(self.cache_folder, CENTROIDS_FILENAME),
             dtype={"id": str},
         )
-        impact_area = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
+        impact_area = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
         # Check to make sure the ID string is long enough to be a block group
         wrong_length = analysis_area[analysis_area["id"].str.len() != 12]
         if wrong_length.shape[0] > 0:
@@ -657,7 +772,9 @@ class Analysis:
             self.log.error(
                 f"  There are {wrong_length.shape[0]} rows in the impact area with invalid zone IDs. See {wrong_length_filename} for a list."
             )
-        impact_not_in_analysis = impact_area[~impact_area["bg_id"].isin(analysis_area["id"])]
+        impact_not_in_analysis = impact_area[
+            ~impact_area["bg_id"].isin(analysis_area["id"])
+        ]
         if impact_not_in_analysis.shape[0] > 0:
             impact_not_in_analysis_filename = os.path.join(
                 self.cache_folder,
@@ -671,10 +788,15 @@ class Analysis:
         self.log.info("Validation of analysis area complete")
 
     def validate_demographics(self):
+        """Validate the demographics file"""
         # Let's pull the demographics file and the equity file
         self.log.info("Validating Demographic Data")
-        demographics = pd.read_csv(os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), dtype={"bg_id": str})
-        impact_area = pd.read_csv(os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str})
+        demographics = pd.read_csv(
+            os.path.join(self.cache_folder, DEMOGRAPHICS_FILENAME), dtype={"bg_id": str}
+        )
+        impact_area = pd.read_csv(
+            os.path.join(self.cache_folder, IMPACT_AREA_FILENAME), dtype={"bg_id": str}
+        )
         no_demographics = impact_area[~impact_area["bg_id"].isin(demographics["bg_id"])]
         if no_demographics.shape[0] > 0:
             invalid_demographics_file = os.path.join(
@@ -708,7 +830,9 @@ class Analysis:
                 output_folder = os.path.join(validator_folder, gtfs_filename)
                 if not os.path.exists(output_folder):
                     os.mkdir(output_folder)
-                self.log.info(f"{scenario['name']}: Running MobilityData Validator on {gtfs_filename}")
+                self.log.info(
+                    f"{scenario['name']}: Running MobilityData Validator on {gtfs_filename}"
+                )
                 try:
                     subprocess.call(
                         [
@@ -727,7 +851,9 @@ class Analysis:
                     self.log.exception(e)
 
                 # First let's check for system errors
-                with open(os.path.join(output_folder, "system_errors.json")) as system_errors_file:
+                with open(
+                    os.path.join(output_folder, "system_errors.json")
+                ) as system_errors_file:
                     system_errors = json.load(system_errors_file)
                     if len(system_errors["notices"]) > 0:
                         self.log.info(
@@ -735,7 +861,9 @@ class Analysis:
                         )
 
                 # Next let's go through the notices
-                with open(os.path.join(output_folder, "report.json")) as validation_report_file:
+                with open(
+                    os.path.join(output_folder, "report.json")
+                ) as validation_report_file:
                     validation_report = json.load(validation_report_file)
                     # Let's sort the relevant outputs
                     levels = {
@@ -744,7 +872,9 @@ class Analysis:
                         "INFO": {"total_count": 0, "unique_count": 0, "codes": []},
                     }
                     for notice in validation_report["notices"]:
-                        levels[notice["severity"]]["total_count"] += notice["totalNotices"]
+                        levels[notice["severity"]]["total_count"] += notice[
+                            "totalNotices"
+                        ]
                         levels[notice["severity"]]["unique_count"] += 1
                         levels[notice["severity"]]["codes"].append(notice["code"])
                     if levels["ERROR"]["total_count"] > 0:
@@ -752,13 +882,17 @@ class Analysis:
                             f"{scenario['name']}: {levels['ERROR']['total_count']} errors found in {gtfs_filename}"
                         )
                     else:
-                        self.log.info(f"{scenario['name']}: No errors found in {gtfs_filename}")
+                        self.log.info(
+                            f"{scenario['name']}: No errors found in {gtfs_filename}"
+                        )
                     if levels["WARNING"]["total_count"] > 0:
                         self.log.warning(
                             f"{scenario['name']}: {levels['WARNING']['total_count']} warnings found in {gtfs_filename}"
                         )
                     else:
-                        self.log.info(f"{scenario['name']}: No warnings found in {gtfs_filename}")
+                        self.log.info(
+                            f"{scenario['name']}: No warnings found in {gtfs_filename}"
+                        )
                     self.log.info(
                         f"{scenario['name']}: {levels['INFO']['total_count']} infos found in {gtfs_filename}"
                     )
@@ -769,10 +903,16 @@ class Analysis:
                 start_time = self.config["scenarios"][idx]["start_datetime"]
                 if not isinstance(start_time, dt.datetime):
                     start_time = dt.datetime.strptime(
-                        self.config["scenarios"][idx]["start_datetime"], "%Y-%m-%d %H:%M"
+                        self.config["scenarios"][idx]["start_datetime"],
+                        "%Y-%m-%d %H:%M",
                     )
-                end_time = start_time + dt.timedelta(minutes=self.config["scenarios"][idx]["duration"])
-                if gtfs_lite.valid_date(start_time.date()) == False or gtfs_lite.valid_date(end_time.date()) == False:
+                end_time = start_time + dt.timedelta(
+                    minutes=self.config["scenarios"][idx]["duration"]
+                )
+                if (
+                    gtfs_lite.valid_date(start_time.date()) == False
+                    or gtfs_lite.valid_date(end_time.date()) == False
+                ):
                     self.log.error(f"Start or end date of analysis {idx} is invalid")
                 # Analysis date
 
@@ -780,16 +920,23 @@ class Analysis:
         raise NotImplementedError
 
     def validate_opportunities(self):
+        """Validate the opportunities file"""
         # Let's pull the demographics file and the equity file
         self.log.info("Starting validation of opportunities file")
         opportunities = pd.read_csv(
             os.path.join(self.cache_folder, OPPORTUNITIES_FILENAME),
             dtype={"bg_id": str},
         )
-        analysis_area = gpd.read_file(os.path.join(self.cache_folder, CENTROIDS_FILENAME), dtype={"bg_id": str})
-        no_opportunities = analysis_area[~analysis_area["id"].isin(opportunities["bg_id"])]
+        analysis_area = gpd.read_file(
+            os.path.join(self.cache_folder, CENTROIDS_FILENAME), dtype={"bg_id": str}
+        )
+        no_opportunities = analysis_area[
+            ~analysis_area["id"].isin(opportunities["bg_id"])
+        ]
         if no_opportunities.shape[0] > 0:
-            no_opportunities_filename = os.path.join(self.cache_folder, VALIDATION_SUBFOLDER, "no_opportunities.csv")
+            no_opportunities_filename = os.path.join(
+                self.cache_folder, VALIDATION_SUBFOLDER, "no_opportunities.csv"
+            )
             no_opportunities[["id"]].to_csv(no_opportunities_filename, index=False)
             self.log.error(
                 f"  There are {no_opportunities.shape[0]} analysis area zones that do not have opportunity data. See {no_opportunities_filename} for zones with missing data."

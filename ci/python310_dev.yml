@@ -29,6 +29,7 @@ dependencies:
   - pytest
   - sphinx
   - sphinx_rtd_theme
+  - sphinxcontrib-httpdomain
   - pip:
     - gtfs-lite
     - pygris

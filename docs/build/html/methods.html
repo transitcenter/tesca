@@ -11,9 +11,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -68,7 +69,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.html#step-3-data-validation">Step 3: Data Validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.html#step-4-analysis-run-and-results">Step 4: Analysis Run and Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#step-4-analysis-run-and-results">Step 4: Analysis Run and Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#editing-results">Editing Results</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Methods</a><ul>
@@ -78,24 +82,45 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-files">Configuration Files</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference.html#running-an-analysis-without-interface">Running an Analysis Without Interface</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference.html#data-inputs">Data Inputs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference.html#setting-up-the-analysis">Setting Up The Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#analysis-engine">Analysis Engine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#project-structure">Project Structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#input-files">Input Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#created-files">Created Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#configuration-file">Configuration File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#r5-and-r5py">R5 and R5py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#web-application">Web Application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#url-endpoints-in-app-py">URL Endpoints in <code class="docutils literal notranslate"><span class="pre">app.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#module-app">Additional Functions in <code class="docutils literal notranslate"><span class="pre">app.py</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#app.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#app.get_status"><code class="docutils literal notranslate"><span class="pre">get_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#app.run_analysis_as_subprocess"><code class="docutils literal notranslate"><span class="pre">run_analysis_as_subprocess()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#app.run_validation"><code class="docutils literal notranslate"><span class="pre">run_validation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#app.update_status"><code class="docutils literal notranslate"><span class="pre">update_status()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-tesca.analysis">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-tesca.analysis">Analysis Object Reference</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.Analysis"><code class="docutils literal notranslate"><span class="pre">Analysis</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.assemble_gtfs_files"><code class="docutils literal notranslate"><span class="pre">Analysis.assemble_gtfs_files()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compare_scenarios"><code class="docutils literal notranslate"><span class="pre">Analysis.compare_scenarios()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_cumulative_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_cumulative_measure()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_metrics"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_summaries"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_summaries()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_travel_time_measure"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_time_measure()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_travel_times"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_travel_times()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.compute_unreachable"><code class="docutils literal notranslate"><span class="pre">Analysis.compute_unreachable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.fetch_block_groups"><code class="docutils literal notranslate"><span class="pre">Analysis.fetch_block_groups()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.fetch_block_groups_from_bg_ids"><code class="docutils literal notranslate"><span class="pre">Analysis.fetch_block_groups_from_bg_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.fetch_demographic_data"><code class="docutils literal notranslate"><span class="pre">Analysis.fetch_demographic_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.from_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.from_config_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.validate_analysis_area"><code class="docutils literal notranslate"><span class="pre">Analysis.validate_analysis_area()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.validate_demographics"><code class="docutils literal notranslate"><span class="pre">Analysis.validate_demographics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.validate_opportunities"><code class="docutils literal notranslate"><span class="pre">Analysis.validate_opportunities()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference.html#tesca.analysis.Analysis.write_config_file"><code class="docutils literal notranslate"><span class="pre">Analysis.write_config_file()</span></code></a></li>
 </ul>
 </li>
@@ -110,6 +135,44 @@
 <li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.SETTINGS_FILENAME"><code class="docutils literal notranslate"><span class="pre">SETTINGS_FILENAME</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.SUMMARY_FILENAME"><code class="docutils literal notranslate"><span class="pre">SUMMARY_FILENAME</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference.html#tesca.analysis.VALIDATION_SUBFOLDER"><code class="docutils literal notranslate"><span class="pre">VALIDATION_SUBFOLDER</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#javascript-reference">Javascript Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#configure-js"><code class="docutils literal notranslate"><span class="pre">configure.js</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#counties-js"><code class="docutils literal notranslate"><span class="pre">counties.js</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#addSelectedCounties"><code class="docutils literal notranslate"><span class="pre">addSelectedCounties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#checkForAnySelectedCounties"><code class="docutils literal notranslate"><span class="pre">checkForAnySelectedCounties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#loadCountyData"><code class="docutils literal notranslate"><span class="pre">loadCountyData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#makeAllSelected"><code class="docutils literal notranslate"><span class="pre">makeAllSelected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#removeSelectedCounties"><code class="docutils literal notranslate"><span class="pre">removeSelectedCounties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#stateSelectChanged"><code class="docutils literal notranslate"><span class="pre">stateSelectChanged()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#results-js"><code class="docutils literal notranslate"><span class="pre">results.js</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#loadCompareData"><code class="docutils literal notranslate"><span class="pre">loadCompareData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#loadConfigData"><code class="docutils literal notranslate"><span class="pre">loadConfigData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#loadImpactData"><code class="docutils literal notranslate"><span class="pre">loadImpactData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#loadSummaryData"><code class="docutils literal notranslate"><span class="pre">loadSummaryData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#loadUnreachableData"><code class="docutils literal notranslate"><span class="pre">loadUnreachableData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#mapSelectionChanged"><code class="docutils literal notranslate"><span class="pre">mapSelectionChanged()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#updateLegend"><code class="docutils literal notranslate"><span class="pre">updateLegend()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#updateMap"><code class="docutils literal notranslate"><span class="pre">updateMap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#renderGroupedBarChart"><code class="docutils literal notranslate"><span class="pre">renderGroupedBarChart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#blockGroupStyleDefault"><code class="docutils literal notranslate"><span class="pre">blockGroupStyleDefault()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#impactBlockGroupDefault"><code class="docutils literal notranslate"><span class="pre">impactBlockGroupDefault()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#styleNumbers"><code class="docutils literal notranslate"><span class="pre">styleNumbers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#getTravelTimeDeltaColor"><code class="docutils literal notranslate"><span class="pre">getTravelTimeDeltaColor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#getPercentDeltaColor"><code class="docutils literal notranslate"><span class="pre">getPercentDeltaColor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#resizeTextAreas"><code class="docutils literal notranslate"><span class="pre">resizeTextAreas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#toggleEditMode"><code class="docutils literal notranslate"><span class="pre">toggleEditMode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#getOrdinal"><code class="docutils literal notranslate"><span class="pre">getOrdinal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference.html#run-js-and-validate-js"><code class="docutils literal notranslate"><span class="pre">run.js</span></code> and <code class="docutils literal notranslate"><span class="pre">validate.js</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#run.updateLogTable"><code class="docutils literal notranslate"><span class="pre">run.updateLogTable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference.html#run.updateStatusMessage"><code class="docutils literal notranslate"><span class="pre">run.updateStatusMessage()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -207,7 +270,7 @@ the 2021 five-year American Community Survey data from the US Census.</p>
 <p>TESCA follows an approach similar to that of the <a class="reference external" href="https://dasboard.transitcenter.org">TransitCenter Equity Dashboard</a>, and you can read a detailed methodology
 of the dashboard’s construction in <a class="reference external" href="https://transitcenter.org/wp-content/uploads/2021/07/TransitCenterEquityDashboardTechDocumentation_062421.pdf">this document</a>
 (PDF). More detail on the code and structure of the applicaiton can be found in
-the <a class="reference internal" href="reference.html#developer-reference"><span class="std std-ref">Developer Reference</span></a> section.</p>
+the <a class="reference internal" href="reference.html#devref"><span class="std std-ref">developer reference</span></a> section.</p>
 </section>
 <section id="acknowledgements">
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading"></a></h2>
