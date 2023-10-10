@@ -108,13 +108,14 @@
                                 {{ opportunity_form.method.label}}
                                 {{ opportunity_form.method(onchange="methodChanged(this)")}}
 
+                                {{ opportunity_form.parameters.label}}
+                                {{ opportunity_form.parameters}}
+                                <div class="pure-u-1-2 small"><b>Note: </b>For "cumulative" measures, the values entered here indicate the cutoff travel time, in minutes. For "nth closest" measures, the value here indicates the 'n'. For example, a 3 for travel time will measure travel time to the 3rd closest.</div>
+
                                 {{ opportunity_form.unit.label}}
                                 {{ opportunity_form.unit}}
                                 <div class="pure-u-1-2 small"><b>Note: </b>Travel time measures will default to minutes
                                     no matter what is put here.</div>
-
-                                {{ opportunity_form.parameters.label}}
-                                {{ opportunity_form.parameters}}
                             </div>
                         </fieldset>
                     </div>

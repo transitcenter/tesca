@@ -210,6 +210,9 @@ def home():
         config["uid"] = analysis_id
         a = Analysis(config=config)
 
+        # Write the config file in case something happens
+        a.write_config_file()
+
         # Store the opportunities data
         opportunities_filename = secure_filename(form.file.data.filename)
         form.file.data.save(os.path.join(upload_folder, opportunities_filename))
@@ -229,11 +232,7 @@ def home():
 
         config["opportunities"] = opp_dict
 
-        # Write the analysis configured file
-        # with open(os.path.join(CACHE_FOLDER, analysis_id, "analysis.p"), "wb") as outfile:
-        #     pickle.dump(a, outfile)
 
-        a.write_config_file()
 
         return redirect(f"/configure/{analysis_id}")
 
