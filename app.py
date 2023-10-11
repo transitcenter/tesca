@@ -232,7 +232,8 @@ def home():
 
         config["opportunities"] = opp_dict
 
-
+        # Write the config file again
+        a.write_config_file()
 
         return redirect(f"/configure/{analysis_id}")
 
@@ -408,7 +409,8 @@ def log_info(analysis_id):
     info.columns = ["timestamp", "level", "message"]
     info["timestamp"] = pd.to_datetime(info["timestamp"])
     info = info.sort_values("timestamp", ascending=True)
-    return info.to_dict(orient="records")
+    info["timestamp"] = info["timestamp"].astype(str)
+    return json.dumps(info.to_dict(orient="records"))
 
 
 @app.route("/guide/", defaults={"filename": "index.html"})
@@ -526,7 +528,7 @@ def results(analysis_id):
     # Let's pre-format the dates here
     start_datetime0 = config["scenarios"][0]["start_datetime"]
     end_datetime0 = start_datetime0 + timedelta(minutes=config["scenarios"][1]["duration"])
-    start_datetime1 = config["scenarios"][0]["start_datetime"]
+    start_datetime1 = config["scenarios"][1]["start_datetime"]
     end_datetime1 = start_datetime1 + timedelta(minutes=config["scenarios"][1]["duration"])
     window0 = (
         f"{start_datetime0.strftime('%a, %b %-d at %-H:%M%p')} to {end_datetime0.strftime('%a, %b %-d at %-H:%M%p')}"

@@ -318,7 +318,7 @@ function updateLegend(method) {
         .attr("y", legendMargin.top + 10)
         .attr("x", (d, i) => legendMargin.left + i * legendBinWidth)
         .attr("width", legendBinWidth)
-        .attrenderGroupedBarChartr("height", 10)
+        .attr("height", 10)
         .style("fill", d => d)
         .style("opacity", 0.7)
         .style("stroke", "none")
