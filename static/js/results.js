@@ -593,7 +593,7 @@ var demoStyle = {
         'sentence': 'white people',
         'color': "#9467BD"
     },
-    'C17002_003E': {
+    'in_poverty': {
         'label': "In Poverty",
         'sentence': 'people in poverty',
         'color': '#8C564B'

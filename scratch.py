@@ -7,6 +7,8 @@ import pygris
 from tesca.analysis import Analysis
 import pandas as pd
 
+from gtfslite import GTFS
+
 # baltimore = {
 #     "Maryland": [
 #         "Baltimore City",
@@ -22,18 +24,20 @@ import pandas as pd
 # opp = pd.read_csv(os.path.join("cache", "septa-redesign-half-mile", "opportunities.csv"), dtype={"bg_id": str})
 # bg_ids = opp.bg_id.to_list()
 
-a = Analysis.from_config_file(os.path.join("cache", "20230822091044", "config.yml"))
+# gtfs = GTFS.load_zip("/")
+
+a = Analysis.from_config_file(os.path.join("cache", "20231115150600", "config.yml"))
 # a.fetch_demographic_data()
 # a.compute_travel_times()
 # Compute the travel time matrix - this takes a while
-a.compute_travel_times()
+# a.compute_travel_times()
 # Compute the access metrics as configured in the config.yml file
 # a.compute_metrics()
 # # Compute the scenario comparison of the metrics
 # a.compare_scenarios()
 # a.fetch_demographic_data()
 # # Summarize these metrics (and comparison) across imapct area demographics
-# a.compute_summaries()
+a.compute_summaries()
 # # Compute unreachable destinations
 # a.compute_unreachable()
 

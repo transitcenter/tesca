@@ -56,8 +56,9 @@ demographic_categories = {
     "B03002_004E": "Black People",
     "B03002_006E": "Asian",
     "B03002_012E": "Hispanic or Latino",
-    "C17002_003E": "In Poverty",
 }
+
+income_categories = ["C17002_002E", "C17002_003E"]
 
 total_hhld = "B11001_001E"
 zero_car_hhld = "B08201_002E"
